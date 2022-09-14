@@ -21,6 +21,9 @@
         <!-- project -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <!-- spring -->
         <spring-boot.version>2.7.3</spring-boot.version>
         <spring-security-oauth2.version>2.5.2.RELEASE</spring-security-oauth2.version>
@@ -36,6 +39,8 @@
         <slf4j-api.version>2.0.0</slf4j-api.version>
         <!-- tests -->
         <junit-jupiter-engine.version>5.9.0</junit-jupiter-engine.version>
+        <assert-core.version>3.19.0</assert-core.version>
+        <hamcrest.version>1.3</hamcrest.version>
         <!-- plugins -->
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
@@ -50,7 +55,7 @@
         <maven-project-info-reports-plugin.version>3.4.1</maven-project-info-reports-plugin.version>
         <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
         <maven-wrapper-plugin.version>3.1.1</maven-wrapper-plugin.version>
-        <junit-jupiter-engine.version>5.8.2</junit-jupiter-engine.version>
+
     </properties>
 
     <dependencyManagement>
@@ -132,14 +137,26 @@
                 <version>${slf4j-api.version}</version>
             </dependency>
             <!-- /others -->
-            <!-- db -->
+            <!-- test -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit-jupiter-engine.version}</version>
                 <scope>test</scope>
             </dependency>
-            <!-- /db -->
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assert-core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- /test -->
         </dependencies>
     </dependencyManagement>
 
@@ -194,6 +211,39 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>prepare-agent-integration</id>
+                            <goals>
+                                <goal>prepare-agent-integration</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report-integration</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>report-integration</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -216,50 +266,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven-failsafe-plugin.version}</version>
-                <configuration>
-                    <classesDirectory>${project.build.outputDirectory}</classesDirectory>
-                    <includes>
-                        <include>**/*IT.java</include>
-                    </includes>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>prepare-agent-integration</id>
-                        <goals>
-                            <goal>prepare-agent-integration</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report-integration</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report-integration</goal>
                         </goals>
                     </execution>
                 </executions>
