@@ -48,7 +48,7 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <!-- /others -->
-        <!-- db -->
+        <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -58,7 +58,7 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- /db -->
+        <!-- /test -->
     </dependencies>
 
     <build>
