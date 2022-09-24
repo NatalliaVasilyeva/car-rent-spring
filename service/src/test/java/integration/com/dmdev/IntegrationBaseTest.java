@@ -9,42 +9,29 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 public abstract class IntegrationBaseTest {
-
+    private final String INSERT_DATA_PATH = "insert_data.sql";
+    private final String TRUNCATE_TABLES_PATH = "truncate_tables.sql";
+    private final String insert_sql = loadSqlScript(INSERT_DATA_PATH);
+    private final String delete_sql = loadSqlScript(TRUNCATE_TABLES_PATH);
     protected static SessionFactory sessionFactory;
-    private static List tableNames;
-    private static final String DELETE_ALL_SQL = "delete from %s";
-
-    private static final String INSERT_SQL = "" +
-            "   INSERT INTO car_rent.users (login, email, password, role) VALUES ('Admin', 'admin@gmail.com', 'VasilechekBel123!', 'ADMIN');\n" +
-            "   INSERT INTO car_rent.userdetails (user_id, name, surname, address, phone, birthday, registration_date) VALUES ('1', 'Ivan', 'Ivanov', 'Minsk', '+375 29 124 56 78', '1986-07-02 00:00:00', '2022-09-22 20:30:00');\n" +
-            "   INSERT INTO car_rent.driverlicense (user_details_id, number, issue_date, expired_date) VALUES ('1', 'AB12345', '2015-03-02 00:00:00', '2025-03-01 00:00:00');\n" +
-            "   INSERT INTO car_rent.price (price) VALUES (50);\n" +
-            "   INSERT INTO car_rent.categories (name, price_id) VALUES ('ECONOMY', '1');\n" +
-            "   INSERT INTO car_rent.brand (name) VALUES ('audi');\n" +
-            "   INSERT INTO car_rent.model (brand_id, category_id, name, transmission, engine_type) VALUES ('1', '1', 'A8', 'MANUAL', 'FUEL');\n" +
-            "   INSERT INTO car_rent.car (model_id, color, year, car_number, vin, is_repaired) VALUES ('1', 'white', '2020', '7865AE-7', 'AmhBHqJ8BgD0p3PRgkoi', 'false');\n" +
-            "   INSERT INTO car_rent.orders (date, user_id, car_id, passport, insurance, order_status, sum) VALUES ('2022-07-01 00:00:00', '1', '1', 'MP1234567', 'true', 'CONFIRMATION_WAIT', 1020);\n" +
-            "   INSERT INTO car_rent.carrentaltime (order_id, start_rental_date, end_rental_date) VALUES ('1', '2022-07-02 00:00:00', '2022-07-03 23:59:00');\n" +
-            "   INSERT INTO car_rent.accident (order_id, accident_date, description, damage) VALUES ('1', '2022-07-02 16:34:00', 'faced tree', 75.50);";
 
     @BeforeAll
-    @SneakyThrows
     static void setUp() {
-        sessionFactory = HibernateSessionFactoryUtil.getSessionFactory();
-        try (Session session = sessionFactory.openSession()) {
-            tableNames = Arrays.asList(session.getMetamodel().getEntities().stream().map(table -> table.getName().toLowerCase()).toArray());
-        }
+        sessionFactory = HibernateSessionFactoryUtil.buildSessionAnnotationFactory();
     }
 
     @BeforeEach
     void insertData() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.createSQLQuery(INSERT_SQL).executeUpdate();
+            session.createSQLQuery(insert_sql).executeUpdate();
             session.getTransaction().commit();
         }
     }
@@ -53,9 +40,7 @@ public abstract class IntegrationBaseTest {
     void deleteDataFromAllTables() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            for (Object tableName : tableNames) {
-                session.createSQLQuery(String.format(DELETE_ALL_SQL, tableName));
-            }
+            session.createSQLQuery(delete_sql).executeUpdate();
             session.getTransaction().commit();
         }
     }
@@ -66,5 +51,14 @@ public abstract class IntegrationBaseTest {
         if (sessionFactory != null) {
             sessionFactory.close();
         }
+    }
+
+    private String loadSqlScript(String filePath) {
+        InputStream inputStream = IntegrationBaseTest.class.getClassLoader().getResourceAsStream(filePath);
+        if (inputStream == null) {
+            throw new IllegalArgumentException("File not found: " + filePath);
+        }
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        return bufferedReader.lines().collect(Collectors.joining());
     }
 }

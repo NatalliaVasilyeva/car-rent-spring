@@ -14,38 +14,36 @@ import com.dmdev.domain.entity.UserDetails;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.Configuration;
 
 @UtilityClass
 public class HibernateSessionFactoryUtil {
 
-    private SessionFactory sessionFactory;
-
-    public static SessionFactory getSessionFactory() {
-        if (sessionFactory == null) sessionFactory = buildSessionAnnotationFactory();
-        return sessionFactory;
-    }
-
     @SneakyThrows
-    private SessionFactory buildSessionAnnotationFactory() {
-        Configuration configuration = new Configuration();
+    public static SessionFactory buildSessionAnnotationFactory() {
+        SessionFactory sessionFactory = null;
+        if (sessionFactory == null) {
+            Configuration configuration = new Configuration();
 
-        configuration
-                .addProperties(PropertiesUtil.getProperties());
+            configuration
+                    .addProperties(PropertiesUtil.getProperties());
 
-        configuration.addAnnotatedClass(Accident.class);
-        configuration.addAnnotatedClass(Brand.class);
-        configuration.addAnnotatedClass(Car.class);
-        configuration.addAnnotatedClass(CarRentalTime.class);
-        configuration.addAnnotatedClass(Category.class);
-        configuration.addAnnotatedClass(DriverLicense.class);
-        configuration.addAnnotatedClass(Model.class);
-        configuration.addAnnotatedClass(Order.class);
-        configuration.addAnnotatedClass(Price.class);
-        configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(UserDetails.class);
-        configuration.setPhysicalNamingStrategy(new CustomPhysicalNamingStrategy());
+            configuration.addAnnotatedClass(Accident.class);
+            configuration.addAnnotatedClass(Brand.class);
+            configuration.addAnnotatedClass(Car.class);
+            configuration.addAnnotatedClass(CarRentalTime.class);
+            configuration.addAnnotatedClass(Category.class);
+            configuration.addAnnotatedClass(DriverLicense.class);
+            configuration.addAnnotatedClass(Model.class);
+            configuration.addAnnotatedClass(Order.class);
+            configuration.addAnnotatedClass(Price.class);
+            configuration.addAnnotatedClass(User.class);
+            configuration.addAnnotatedClass(UserDetails.class);
+            configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
 
-        return configuration.buildSessionFactory();
+            sessionFactory = configuration.buildSessionFactory();
+        }
+        return sessionFactory;
     }
 }

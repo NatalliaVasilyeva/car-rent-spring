@@ -98,10 +98,10 @@ CREATE TABLE IF NOT EXISTS accident
             ON UPDATE CASCADE ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS carrentaltime
+CREATE TABLE IF NOT EXISTS car_rental_time
 (
     id                BIGSERIAL                   PRIMARY KEY,
-    order_id          BIGINT                      NOT NULL,
+    order_id          BIGINT                      NOT NULL UNIQUE,
     start_rental_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     end_rental_date   TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT carrentaltime_order_fk
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS carrentaltime
             ON UPDATE CASCADE ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS userdetails
+CREATE TABLE IF NOT EXISTS user_details
 (
     id                BIGSERIAL PRIMARY KEY,
     user_id           BIGINT                      NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS userdetails
             ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS driverlicense
+CREATE TABLE IF NOT EXISTS driver_license
 (
     id              BIGSERIAL                   PRIMARY KEY,
     user_details_id BIGINT                      NOT NULL,
