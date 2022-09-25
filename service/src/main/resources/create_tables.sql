@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS car
     id          BIGSERIAL       PRIMARY KEY,
     model_id    BIGINT,
     color       VARCHAR(255),
-    year        VARCHAR(8),
+    year        SMALLINT,
     car_number  VARCHAR(16),
     vin         VARCHAR(255)    NOT NULL UNIQUE,
     is_repaired BOOLEAN DEFAULT 'FALSE',
