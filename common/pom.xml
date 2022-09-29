@@ -19,16 +19,6 @@
     </properties>
 
     <dependencies>
-        <!-- spring -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <!-- /spring -->
         <!-- others -->
         <dependency>
             <groupId>javax.validation</groupId>
@@ -48,30 +38,21 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <!-- /others -->
-        <!-- db -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
+        <!-- test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- /db -->
+        <!-- /test -->
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <useSystemClassLoader>false</useSystemClassLoader>
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
             </plugin>
