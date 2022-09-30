@@ -1,68 +1,63 @@
 package integration.com.dmdev.domain.entity;
 
+import com.dmdev.domain.entity.User;
 import com.dmdev.domain.entity.UserDetails;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.builder.ExistTesEntityBuilder;
-import integration.com.dmdev.utils.builder.FakeTestEntityBuilder;
+import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
-import static integration.com.dmdev.utils.TestEntityIdConst.CREATED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.DELETED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.EXIST_TEST_ENTITY_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_USER_DETAILS_ID_FOR_DELETE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UserDetailsTestIT extends IntegrationBaseTest {
+class UserDetailsTestIT extends IntegrationBaseTest {
+
 
     @Test
-    public void shouldCreateUserDetails() {
+    void shouldReturnUserDetails() {
         try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Long savedUserDetailsId = (Long) session.save(FakeTestEntityBuilder.createUserDetails());
-            session.getTransaction().commit();
+            UserDetails expectedUserDetails = ExistEntityBuilder.getExistUserDetails();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedUserDetailsId);
-        }
-    }
-
-    @Test
-    public void shouldReturnUserDetails() {
-        try (Session session = sessionFactory.openSession()) {
-            UserDetails actualUserDetails = session.find(UserDetails.class, EXIST_TEST_ENTITY_ID);
+            UserDetails actualUserDetails = session.find(UserDetails.class, TEST_EXISTS_USER_DETAILS_ID);
 
             assertThat(actualUserDetails).isNotNull();
-            assertEquals(ExistTesEntityBuilder.getExistUserDetails().getName(), actualUserDetails.getName());
-            assertEquals(ExistTesEntityBuilder.getExistUserDetails().getSurname(), actualUserDetails.getSurname());
-            assertEquals(ExistTesEntityBuilder.getExistUserDetails().getAddress(), actualUserDetails.getAddress());
-            assertEquals(ExistTesEntityBuilder.getExistUserDetails().getBirthday(), actualUserDetails.getBirthday());
-            assertEquals(ExistTesEntityBuilder.getExistUserDetails().getPhone(), actualUserDetails.getPhone());
+            assertEquals(expectedUserDetails, actualUserDetails);
         }
     }
 
     @Test
-    public void shouldUpdateUserDetails() {
+    void shouldUpdateUserDetails() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            UserDetails userDetailsToUpdate = ExistTesEntityBuilder.getUpdatedUserDetails();
+            UserDetails userDetailsToUpdate = session.find(UserDetails.class, TEST_EXISTS_USER_DETAILS_ID);
+
+            userDetailsToUpdate.setPhone("+375 29 678 98 66");
+            userDetailsToUpdate.setAddress("Istanbul");
             session.update(userDetailsToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.clear();
 
             UserDetails updatedUserDetails = session.find(UserDetails.class, userDetailsToUpdate.getId());
+            User updatedUser = session.find(User.class, userDetailsToUpdate.getUser().getId());
+            session.getTransaction().commit();
 
             assertThat(updatedUserDetails).isEqualTo(userDetailsToUpdate);
+            assertThat(updatedUser.getUserDetails()).isEqualTo(updatedUserDetails);
         }
     }
 
     @Test
-    public void shouldDeleteUserDetails() {
+    void shouldDeleteUserDetails() {
         try (Session session = sessionFactory.openSession()) {
-            UserDetails userToDelete = session.find(UserDetails.class, DELETED_TEST_ENTITY_ID);
+            UserDetails userDetailsToDelete = session.find(UserDetails.class, TEST_USER_DETAILS_ID_FOR_DELETE);
             session.beginTransaction();
-            session.delete(userToDelete);
+            userDetailsToDelete.getUser().setUserDetails(null);
+            session.delete(userDetailsToDelete);
             session.getTransaction().commit();
 
-            assertThat(session.find(UserDetails.class, userToDelete.getId())).isNull();
+            assertThat(session.find(UserDetails.class, userDetailsToDelete.getId())).isNull();
         }
     }
 }

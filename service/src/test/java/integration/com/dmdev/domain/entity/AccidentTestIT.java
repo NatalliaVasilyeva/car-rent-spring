@@ -1,62 +1,75 @@
 package integration.com.dmdev.domain.entity;
 
 import com.dmdev.domain.entity.Accident;
+import com.dmdev.domain.entity.Order;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.builder.ExistTesEntityBuilder;
-import integration.com.dmdev.utils.builder.FakeTestEntityBuilder;
+import integration.com.dmdev.utils.builder.ExistEntityBuilder;
+import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
-import static integration.com.dmdev.utils.TestEntityIdConst.CREATED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.DELETED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.EXIST_TEST_ENTITY_ID;
+import java.math.BigDecimal;
+
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_ACCIDENT_ID_FOR_DELETE;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_ACCIDENT_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_ORDER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AccidentTestIT extends IntegrationBaseTest {
+class AccidentTestIT extends IntegrationBaseTest {
 
     @Test
-    public void shouldCreateAccident() {
+    void shouldCreateAccident() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long savedAccidentId = (Long) session.save(FakeTestEntityBuilder.createAccident());
+            Order order = session.get(Order.class, TEST_EXISTS_ORDER_ID);
+            Accident accident = TestEntityBuilder.createAccident();
+            order.setAccident(accident);
+
+            Long savedAccidentId = (Long) session.save(accident);
             session.getTransaction().commit();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedAccidentId);
+            assertThat(savedAccidentId).isNotNull();
         }
     }
 
     @Test
-    public void shouldReturnAccident() {
+    void shouldReturnAccident() {
         try (Session session = sessionFactory.openSession()) {
-            Accident actualAccident = session.find(Accident.class, EXIST_TEST_ENTITY_ID);
+            Accident expectedAccident = ExistEntityBuilder.getExistAccident();
+
+            Accident actualAccident = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
 
             assertThat(actualAccident).isNotNull();
-            assertEquals(ExistTesEntityBuilder.getExistAccident().getDamage(), actualAccident.getDamage());
-            assertEquals(ExistTesEntityBuilder.getExistAccident().getDescription(), actualAccident.getDescription());
-            assertEquals(ExistTesEntityBuilder.getExistAccident().getOrderId(), actualAccident.getOrderId());
-            assertEquals(ExistTesEntityBuilder.getExistAccident().getAccidentDate(), actualAccident.getAccidentDate());
+            assertEquals(expectedAccident, actualAccident);
         }
     }
 
     @Test
-    public void shouldUpdateAccident() {
+    void shouldUpdateAccident() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Accident accidentToUpdate = ExistTesEntityBuilder.getUpdatedAccident();
+            Accident accidentToUpdate = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
+            Order existOrder = session.find(Order.class, TEST_EXISTS_ORDER_ID);
+
+            accidentToUpdate.setDamage(BigDecimal.valueOf(3456.76));
+            accidentToUpdate.setDescription("test description");
+            accidentToUpdate.setOrder(existOrder);
             session.update(accidentToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.evict(accidentToUpdate);
 
             Accident updatedAccident = session.find(Accident.class, accidentToUpdate.getId());
+            session.getTransaction().commit();
 
             assertThat(updatedAccident).isEqualTo(accidentToUpdate);
         }
     }
 
     @Test
-    public void shouldDeleteAccident() {
+    void shouldDeleteAccident() {
         try (Session session = sessionFactory.openSession()) {
-            Accident accidentToDelete = session.find(Accident.class, DELETED_TEST_ENTITY_ID);
+            Accident accidentToDelete = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
             session.beginTransaction();
             session.delete(accidentToDelete);
             session.getTransaction().commit();

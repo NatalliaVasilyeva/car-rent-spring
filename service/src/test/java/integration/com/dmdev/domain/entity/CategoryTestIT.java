@@ -1,60 +1,94 @@
 package integration.com.dmdev.domain.entity;
 
 import com.dmdev.domain.entity.Category;
+import com.dmdev.domain.entity.Model;
+import com.dmdev.domain.entity.Price;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.builder.ExistTesEntityBuilder;
-import integration.com.dmdev.utils.builder.FakeTestEntityBuilder;
+import integration.com.dmdev.utils.builder.ExistEntityBuilder;
+import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
-import static integration.com.dmdev.utils.TestEntityIdConst.CREATED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.DELETED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.EXIST_TEST_ENTITY_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_CATEGORY_ID_FOR_DELETE;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_CATEGORY_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_PRICE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CategoryTestIT extends IntegrationBaseTest {
+
+class CategoryTestIT extends IntegrationBaseTest {
 
     @Test
-    public void shouldCreateCategory() {
+    void shouldCreateCategory() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long savedCategoryId = (Long) session.save(FakeTestEntityBuilder.createCategory());
+            Price price = session.get(Price.class, TEST_EXISTS_PRICE_ID);
+            Category categoryToSave = TestEntityBuilder.createCategory();
+            price.setCategory(categoryToSave);
+
+            Long savedCategoryId = (Long) session.save(categoryToSave);
             session.getTransaction().commit();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedCategoryId);
+            assertThat(savedCategoryId).isNotNull();
         }
     }
 
     @Test
-    public void shouldReturnCategory() {
+    void shouldCreateCategoryWithNotExistsModel() {
         try (Session session = sessionFactory.openSession()) {
-            Category actualCategory = session.find(Category.class, EXIST_TEST_ENTITY_ID);
+            session.beginTransaction();
+            Price price = session.get(Price.class, TEST_EXISTS_PRICE_ID);
+            Model modelToSave = TestEntityBuilder.createModel();
+            Category categoryToSave = TestEntityBuilder.createCategory();
+            categoryToSave.setModel(modelToSave);
+            price.setCategory(categoryToSave);
+
+            session.save(categoryToSave);
+            session.getTransaction().commit();
+
+            assertThat(categoryToSave.getId()).isNotNull();
+            assertThat(modelToSave.getId()).isNotNull();
+            assertThat(categoryToSave.getModels()).contains(modelToSave);
+            assertThat(modelToSave.getCategory().getId()).isEqualTo(categoryToSave.getId());
+        }
+    }
+
+    @Test
+    void shouldReturnCategory() {
+        try (Session session = sessionFactory.openSession()) {
+            Category expectedCategory = ExistEntityBuilder.getExistCategory();
+
+            Category actualCategory = session.find(Category.class, TEST_EXISTS_CATEGORY_ID);
 
             assertThat(actualCategory).isNotNull();
-            assertEquals(ExistTesEntityBuilder.getExistCategory().getName(), actualCategory.getName());
-            assertEquals(ExistTesEntityBuilder.getExistCategory().getPriceId(), actualCategory.getPriceId());
+            assertEquals(expectedCategory, actualCategory);
         }
     }
 
     @Test
-    public void shouldUpdateCategory() {
+    void shouldUpdateCategory() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Category categoryToUpdate = ExistTesEntityBuilder.getUpdatedCategory();
+            Category categoryToUpdate = session.find(Category.class, TEST_EXISTS_CATEGORY_ID);
+            Price existsPrice = session.find(Price.class, 1L);
+
+            categoryToUpdate.setPrice(existsPrice);
+            categoryToUpdate.setName("test_name");
             session.update(categoryToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.evict(categoryToUpdate);
 
             Category updatedCategory = session.find(Category.class, categoryToUpdate.getId());
+            session.getTransaction().commit();
 
             assertThat(updatedCategory).isEqualTo(categoryToUpdate);
         }
     }
 
     @Test
-    public void shouldDeleteCategory() {
+    void shouldDeleteCategory() {
         try (Session session = sessionFactory.openSession()) {
-            Category categoryToDelete = session.find(Category.class, DELETED_TEST_ENTITY_ID);
+            Category categoryToDelete = session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE);
             session.beginTransaction();
             session.delete(categoryToDelete);
             session.getTransaction().commit();

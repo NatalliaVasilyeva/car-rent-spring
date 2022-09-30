@@ -1,67 +1,63 @@
 package integration.com.dmdev.domain.entity;
 
-import com.dmdev.domain.entity.Car;
 import com.dmdev.domain.entity.CarRentalTime;
+import com.dmdev.domain.entity.Order;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.builder.ExistTesEntityBuilder;
-import integration.com.dmdev.utils.builder.FakeTestEntityBuilder;
+import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
-import static integration.com.dmdev.utils.TestEntityIdConst.CREATED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.DELETED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.EXIST_TEST_ENTITY_ID;
+import java.time.LocalDateTime;
+
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_CAR_RENTAL_TIME_ID_FOR_DELETE;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_CAR_RENTAL_TIME_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CarRentalTimeTestIT extends IntegrationBaseTest {
+class CarRentalTimeTestIT extends IntegrationBaseTest {
 
     @Test
-    public void shouldCreateCarRentalTime() {
+    void shouldReturnCarRentalTime() {
         try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Long savedCarRentalTimeId = (Long) session.save(FakeTestEntityBuilder.createCarRentalTime());
-            session.getTransaction().commit();
+            CarRentalTime expectedCarRentalTime = ExistEntityBuilder.getExistCarRentalTime();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedCarRentalTimeId);
-        }
-    }
-
-    @Test
-    public void shouldReturnCarRentalTime() {
-        try (Session session = sessionFactory.openSession()) {
-            CarRentalTime actualCarRentalTime = session.find(CarRentalTime.class, EXIST_TEST_ENTITY_ID);
+            CarRentalTime actualCarRentalTime = session.find(CarRentalTime.class, TEST_EXISTS_CAR_RENTAL_TIME_ID);
 
             assertThat(actualCarRentalTime).isNotNull();
-            assertEquals(ExistTesEntityBuilder.getExistCarRentalTime().getOrderId(), actualCarRentalTime.getOrderId());
-            assertEquals(ExistTesEntityBuilder.getExistCarRentalTime().getStartRentalDate(), actualCarRentalTime.getStartRentalDate());
-            assertEquals(ExistTesEntityBuilder.getExistCarRentalTime().getEndRentalDate(), actualCarRentalTime.getEndRentalDate());
+            assertEquals(expectedCarRentalTime, actualCarRentalTime);
         }
     }
 
     @Test
-    public void shouldUpdateCarRentalTime() {
+    void shouldUpdateCarRentalTime() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            CarRentalTime carRentalTimeToUpdate = ExistTesEntityBuilder.getUpdatedCarRentalTime();
+            CarRentalTime carRentalTimeToUpdate = session.find(CarRentalTime.class, TEST_EXISTS_CAR_RENTAL_TIME_ID);
+
+            carRentalTimeToUpdate.setEndRentalDate(LocalDateTime.of(2022, 11, 9, 10, 0));
             session.update(carRentalTimeToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.clear();
 
             CarRentalTime updatedCarRentalTime = session.find(CarRentalTime.class, carRentalTimeToUpdate.getId());
+            Order updatedOrder = session.find(Order.class, carRentalTimeToUpdate.getOrder().getId());
+            session.getTransaction().commit();
 
             assertThat(updatedCarRentalTime).isEqualTo(carRentalTimeToUpdate);
+            assertThat(updatedOrder.getCarRentalTime()).isEqualTo(updatedCarRentalTime);
         }
     }
 
     @Test
-    public void shouldDeleteCarRentalTime() {
+    void shouldDeleteCarRentalTime() {
         try (Session session = sessionFactory.openSession()) {
-            Car carToDelete = session.find(Car.class, DELETED_TEST_ENTITY_ID);
+            CarRentalTime carRentalTimeToDelete = session.find(CarRentalTime.class, TEST_CAR_RENTAL_TIME_ID_FOR_DELETE);
             session.beginTransaction();
-            session.delete(carToDelete);
+            carRentalTimeToDelete.getOrder().setCarRentalTime(null);
+            session.delete(carRentalTimeToDelete);
             session.getTransaction().commit();
 
-            assertThat(session.find(Car.class, carToDelete.getId())).isNull();
+            assertThat(session.find(CarRentalTime.class, carRentalTimeToDelete.getId())).isNull();
         }
     }
 }

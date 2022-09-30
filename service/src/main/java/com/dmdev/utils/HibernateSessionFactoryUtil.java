@@ -22,28 +22,24 @@ public class HibernateSessionFactoryUtil {
 
     @SneakyThrows
     public static SessionFactory buildSessionAnnotationFactory() {
-        SessionFactory sessionFactory = null;
-        if (sessionFactory == null) {
-            Configuration configuration = new Configuration();
+        Configuration configuration = new Configuration();
 
-            configuration
-                    .addProperties(PropertiesUtil.getProperties());
+        configuration
+                .addProperties(PropertiesUtil.getProperties());
 
-            configuration.addAnnotatedClass(Accident.class);
-            configuration.addAnnotatedClass(Brand.class);
-            configuration.addAnnotatedClass(Car.class);
-            configuration.addAnnotatedClass(CarRentalTime.class);
-            configuration.addAnnotatedClass(Category.class);
-            configuration.addAnnotatedClass(DriverLicense.class);
-            configuration.addAnnotatedClass(Model.class);
-            configuration.addAnnotatedClass(Order.class);
-            configuration.addAnnotatedClass(Price.class);
-            configuration.addAnnotatedClass(User.class);
-            configuration.addAnnotatedClass(UserDetails.class);
-            configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
+        configuration.addAnnotatedClass(Accident.class);
+        configuration.addAnnotatedClass(Brand.class);
+        configuration.addAnnotatedClass(Car.class);
+        configuration.addAnnotatedClass(CarRentalTime.class);
+        configuration.addAnnotatedClass(Category.class);
+        configuration.addAnnotatedClass(DriverLicense.class);
+        configuration.addAnnotatedClass(Model.class);
+        configuration.addAnnotatedClass(Order.class);
+        configuration.addAnnotatedClass(Price.class);
+        configuration.addAnnotatedClass(User.class);
+        configuration.addAnnotatedClass(UserDetails.class);
+        configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
 
-            sessionFactory = configuration.buildSessionFactory();
-        }
-        return sessionFactory;
+        return configuration.buildSessionFactory();
     }
 }

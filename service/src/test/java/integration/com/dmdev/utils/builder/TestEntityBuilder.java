@@ -23,16 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @UtilityClass
-public class FakeTestEntityBuilder {
-
-    public static Accident createAccident() {
-        return Accident.builder()
-                .orderId(2L)
-                .accidentDate(LocalDate.of(2022, 9, 22))
-                .description("Updated accident with car")
-                .damage(BigDecimal.valueOf(40))
-                .build();
-    }
+public class TestEntityBuilder {
 
     public static Brand createBrand() {
         return Brand.builder()
@@ -42,33 +33,22 @@ public class FakeTestEntityBuilder {
 
     public static Car createCar() {
         return Car.builder()
-                .modelId(2l)
                 .color(Color.WHITE)
-                .year("2022")
+                .year(2022)
                 .carNumber("AT7654")
                 .vin("hjsdhfBJHS84")
                 .isRepaired(false)
                 .build();
     }
 
-    public static CarRentalTime createCarRentalTime() {
-        return CarRentalTime.builder()
-                .orderId(3l)
-                .startRentalDate(LocalDateTime.of(2022, 8, 20, 10, 50))
-                .endRentalDate(LocalDateTime.of(2022, 8, 25, 9, 59))
-                .build();
-    }
-
     public static Category createCategory() {
         return Category.builder()
                 .name("'BUSINESS'")
-                .priceId(2L)
                 .build();
     }
 
     public static DriverLicense createDriverLicense() {
         return DriverLicense.builder()
-                .userDetailsId(3l)
                 .number("6878942")
                 .issueDate(LocalDate.of(2019, 8, 17))
                 .expiredDate(LocalDate.of(2029, 8, 16))
@@ -77,19 +57,16 @@ public class FakeTestEntityBuilder {
 
     public static Model createModel() {
         return Model.builder()
-                .brandId(2l)
-                .categoryId(2l)
+                .category(ExistEntityBuilder.getExistCategory())
                 .name("M3")
                 .engineType(EngineType.DIESEL)
                 .transmission(Transmission.AUTOMATIC)
                 .build();
     }
-
+    //
     public static Order createOrder() {
         return Order.builder()
                 .date(LocalDate.of(2022, 9, 22))
-                .userId(2L)
-                .carId(2L)
                 .passport("MP67236")
                 .insurance(true)
                 .orderStatus(OrderStatus.DECLINED)
@@ -97,9 +74,25 @@ public class FakeTestEntityBuilder {
                 .build();
     }
 
+    public static Accident createAccident() {
+        return Accident.builder()
+                .damage(BigDecimal.valueOf(99.99))
+                .description("accident test description saved")
+                .accidentDate(LocalDate.of(2022, 9, 18))
+                .build();
+    }
+
+
+    public static CarRentalTime createCarRentalTime() {
+        return CarRentalTime.builder()
+                .startRentalDate(LocalDateTime.of(2002, 10, 12, 11, 0))
+                .endRentalDate(LocalDateTime.of(2002, 10, 13, 11, 0))
+                .build();
+    }
+
     public static Price createPrice() {
         return Price.builder()
-                .price(BigDecimal.valueOf(99))
+                .sum(BigDecimal.valueOf(99))
                 .build();
     }
 
@@ -114,7 +107,6 @@ public class FakeTestEntityBuilder {
 
     public static UserDetails createUserDetails() {
         return UserDetails.builder()
-                .userId(3L)
                 .name("Nikolai")
                 .surname("Ivanov")
                 .address("Minsk")
@@ -123,5 +115,4 @@ public class FakeTestEntityBuilder {
                 .registrationDate(LocalDate.of(2022, 9, 22))
                 .build();
     }
-
 }

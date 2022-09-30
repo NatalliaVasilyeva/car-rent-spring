@@ -3,35 +3,38 @@ package com.dmdev.domain.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.Valid;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Valid
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "order")
+@EqualsAndHashCode(exclude = "order")
 @Builder
+@Entity
 public class CarRentalTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true)
     private Long id;
 
     @NotNull
-    @Column(nullable = false)
-    private Long orderId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private Order order;
 
     @NotNull
     @Column(nullable = false)
@@ -40,4 +43,9 @@ public class CarRentalTime {
     @NotNull
     @Column(nullable = false)
     private LocalDateTime endRentalDate;
+
+    public void setOrder(Order order) {
+        order.setCarRentalTime(this);
+        this.order = order;
+    }
 }
