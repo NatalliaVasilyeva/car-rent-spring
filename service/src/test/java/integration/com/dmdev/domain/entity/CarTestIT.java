@@ -22,7 +22,6 @@ class CarTestIT extends IntegrationBaseTest {
             session.beginTransaction();
             Model model = ExistEntityBuilder.getExistModel();
             Car car = TestEntityBuilder.createCar();
-
             model.setCar(car);
 
             Long savedCarId = (Long) session.save(car);
@@ -50,10 +49,10 @@ class CarTestIT extends IntegrationBaseTest {
             session.beginTransaction();
             Car carToUpdate = session.find(Car.class, TEST_EXISTS_CAR_ID);
             Model existModel = session.find(Model.class, 1L);
-
             carToUpdate.setColor(Color.BLUE);
             carToUpdate.setYear(2010);
             carToUpdate.setModel(existModel);
+
             session.update(carToUpdate);
             session.flush();
             session.evict(carToUpdate);
@@ -68,8 +67,9 @@ class CarTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteCar() {
         try (Session session = sessionFactory.openSession()) {
-            Car carToDelete = session.find(Car.class, TEST_CAR_ID_FOR_DELETE);
             session.beginTransaction();
+            Car carToDelete = session.find(Car.class, TEST_CAR_ID_FOR_DELETE);
+
             session.delete(carToDelete);
             session.getTransaction().commit();
 

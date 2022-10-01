@@ -61,8 +61,8 @@ class BrandTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Brand brandToUpdate = session.find(Brand.class, TEST_EXISTS_BRAND_ID);
-
             brandToUpdate.setName("pegas");
+
             session.update(brandToUpdate);
             session.flush();
             session.evict(brandToUpdate);
@@ -78,8 +78,9 @@ class BrandTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteBrand() {
         try (Session session = sessionFactory.openSession()) {
-            Brand brandToDelete = session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE);
             session.beginTransaction();
+            Brand brandToDelete = session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE);
+
             session.delete(brandToDelete);
             session.getTransaction().commit();
 

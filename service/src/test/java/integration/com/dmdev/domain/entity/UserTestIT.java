@@ -63,7 +63,7 @@ class UserTestIT extends IntegrationBaseTest {
             session.beginTransaction();
             User userToUpdate = session.find(User.class, TEST_EXISTS_USER_ID);
             UserDetails userDetails = userToUpdate.getUserDetails();
-            userDetails.setAddress(newAddress);
+            userDetails.getUserContact().setAddress(newAddress);
             userToUpdate.setPassword("8967562");
             userDetails.setUser(userToUpdate);
 
@@ -75,15 +75,16 @@ class UserTestIT extends IntegrationBaseTest {
             session.getTransaction().commit();
 
             assertThat(updatedUser).isEqualTo(userToUpdate);
-            assertThat(updatedUser.getUserDetails().getAddress()).isEqualTo(newAddress);
+            assertThat(updatedUser.getUserDetails().getUserContact().getAddress()).isEqualTo(newAddress);
         }
     }
 
     @Test
     void shouldDeleteUser() {
         try (Session session = sessionFactory.openSession()) {
-            User userToDelete = session.find(User.class, TEST_USER_ID_FOR_DELETE);
             session.beginTransaction();
+            User userToDelete = session.find(User.class, TEST_USER_ID_FOR_DELETE);
+
             session.delete(userToDelete);
             session.getTransaction().commit();
 

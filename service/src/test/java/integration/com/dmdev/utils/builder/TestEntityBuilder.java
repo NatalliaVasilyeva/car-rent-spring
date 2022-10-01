@@ -10,6 +10,7 @@ import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.entity.Order;
 import com.dmdev.domain.entity.Price;
 import com.dmdev.domain.entity.User;
+import com.dmdev.domain.entity.UserContact;
 import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.EngineType;
@@ -63,7 +64,7 @@ public class TestEntityBuilder {
                 .transmission(Transmission.AUTOMATIC)
                 .build();
     }
-    //
+
     public static Order createOrder() {
         return Order.builder()
                 .date(LocalDate.of(2022, 9, 22))
@@ -109,10 +110,20 @@ public class TestEntityBuilder {
         return UserDetails.builder()
                 .name("Nikolai")
                 .surname("Ivanov")
-                .address("Minsk")
-                .phone("+375 29 126 54 79")
+                .userContact(UserContact.builder()
+                        .address("Minsk")
+                        .phone("+375 29 126 54 79")
+                        .build())
                 .birthday(LocalDate.of(2000, 1, 1))
                 .registrationDate(LocalDate.of(2022, 9, 22))
                 .build();
     }
+
+    public static UserContact createUserContact() {
+        return UserContact.builder()
+                .address("Istanbul")
+                .phone("+375 29 678 98 66")
+                .build();
+    }
+
 }

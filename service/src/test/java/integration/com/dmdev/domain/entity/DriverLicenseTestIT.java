@@ -48,8 +48,8 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             DriverLicense driverLicenseToUpdate = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
-
             driverLicenseToUpdate.setNumber("dn36632");
+
             session.update(driverLicenseToUpdate);
             session.flush();
             session.evict(driverLicenseToUpdate);
@@ -64,8 +64,9 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
-            DriverLicense driverLicenseToDelete = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
             session.beginTransaction();
+            DriverLicense driverLicenseToDelete = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
+
             session.delete(driverLicenseToDelete);
             session.getTransaction().commit();
 

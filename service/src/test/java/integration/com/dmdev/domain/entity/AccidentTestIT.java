@@ -51,10 +51,10 @@ class AccidentTestIT extends IntegrationBaseTest {
             session.beginTransaction();
             Accident accidentToUpdate = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
             Order existOrder = session.find(Order.class, TEST_EXISTS_ORDER_ID);
-
             accidentToUpdate.setDamage(BigDecimal.valueOf(3456.76));
             accidentToUpdate.setDescription("test description");
             accidentToUpdate.setOrder(existOrder);
+
             session.update(accidentToUpdate);
             session.flush();
             session.evict(accidentToUpdate);
@@ -69,8 +69,9 @@ class AccidentTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteAccident() {
         try (Session session = sessionFactory.openSession()) {
-            Accident accidentToDelete = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
             session.beginTransaction();
+            Accident accidentToDelete = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
+
             session.delete(accidentToDelete);
             session.getTransaction().commit();
 

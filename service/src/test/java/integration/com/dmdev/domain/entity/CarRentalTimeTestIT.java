@@ -37,7 +37,7 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
             carRentalTimeToUpdate.setEndRentalDate(LocalDateTime.of(2022, 11, 9, 10, 0));
             session.update(carRentalTimeToUpdate);
             session.flush();
-            session.evict(carRentalTimeToUpdate);
+            session.clear();
 
             CarRentalTime updatedCarRentalTime = session.find(CarRentalTime.class, carRentalTimeToUpdate.getId());
             Order updatedOrder = session.find(Order.class, carRentalTimeToUpdate.getOrder().getId());
@@ -51,9 +51,10 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteCarRentalTime() {
         try (Session session = sessionFactory.openSession()) {
-            CarRentalTime carRentalTimeToDelete = session.find(CarRentalTime.class, TEST_CAR_RENTAL_TIME_ID_FOR_DELETE);
             session.beginTransaction();
+            CarRentalTime carRentalTimeToDelete = session.find(CarRentalTime.class, TEST_CAR_RENTAL_TIME_ID_FOR_DELETE);
             carRentalTimeToDelete.getOrder().setCarRentalTime(null);
+
             session.delete(carRentalTimeToDelete);
             session.getTransaction().commit();
 

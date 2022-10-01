@@ -63,8 +63,8 @@ class PriceTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Price priceToUpdate = session.find(Price.class, TEST_EXISTS_PRICE_ID);
-
             priceToUpdate.setSum(BigDecimal.valueOf(67.90));
+
             session.update(priceToUpdate);
             session.flush();
             session.evict(priceToUpdate);
@@ -80,8 +80,9 @@ class PriceTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeletePrice() {
         try (Session session = sessionFactory.openSession()) {
-            Price priceToDelete = session.find(Price.class, TEST_PRICE_ID_FOR_DELETE);
             session.beginTransaction();
+            Price priceToDelete = session.find(Price.class, TEST_PRICE_ID_FOR_DELETE);
+
             session.delete(priceToDelete);
             session.getTransaction().commit();
 

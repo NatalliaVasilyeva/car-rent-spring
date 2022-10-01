@@ -49,7 +49,6 @@ class OrderTestIT extends IntegrationBaseTest {
             Car car = session.get(Car.class, TEST_EXISTS_CAR_ID);
             Accident accidentToSave = TestEntityBuilder.createAccident();
             Order orderToSave = TestEntityBuilder.createOrder();
-
             orderToSave.setUser(user);
             orderToSave.setCar(car);
             orderToSave.setAccident(accidentToSave);
@@ -87,9 +86,9 @@ class OrderTestIT extends IntegrationBaseTest {
             Order orderToUpdate = session.find(Order.class, TEST_EXISTS_ORDER_ID);
             CarRentalTime carRentalTime = orderToUpdate.getCarRentalTime();
             carRentalTime.setStartRentalDate(startRentalDate);
-
             orderToUpdate.setInsurance(false);
             carRentalTime.setOrder(orderToUpdate);
+
             session.update(orderToUpdate);
             session.flush();
             session.clear();
@@ -105,8 +104,9 @@ class OrderTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteOrder() {
         try (Session session = sessionFactory.openSession()) {
-            Order orderToDelete = session.find(Order.class, TEST_ORDER_ID_FOR_DELETE);
             session.beginTransaction();
+            Order orderToDelete = session.find(Order.class, TEST_ORDER_ID_FOR_DELETE);
+
             session.delete(orderToDelete);
             session.getTransaction().commit();
 

@@ -77,9 +77,9 @@ class ModelTestIT extends IntegrationBaseTest {
             session.beginTransaction();
             Model modelToUpdate = session.find(Model.class, TEST_EXISTS_MODEL_ID);
             Category category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
-
             modelToUpdate.setEngineType(EngineType.ELECTRIC);
             modelToUpdate.setCategory(category);
+
             session.update(modelToUpdate);
             session.flush();
             session.evict(modelToUpdate);
@@ -94,8 +94,9 @@ class ModelTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteModel() {
         try (Session session = sessionFactory.openSession()) {
-            Model modelToDelete = session.find(Model.class, TEST_MODEL_ID_FOR_DELETE);
             session.beginTransaction();
+            Model modelToDelete = session.find(Model.class, TEST_MODEL_ID_FOR_DELETE);
+
             session.delete(modelToDelete);
             session.getTransaction().commit();
 

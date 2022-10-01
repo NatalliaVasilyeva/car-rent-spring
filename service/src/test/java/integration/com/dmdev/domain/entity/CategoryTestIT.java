@@ -71,9 +71,9 @@ class CategoryTestIT extends IntegrationBaseTest {
             session.beginTransaction();
             Category categoryToUpdate = session.find(Category.class, TEST_EXISTS_CATEGORY_ID);
             Price existsPrice = session.find(Price.class, 1L);
-
             categoryToUpdate.setPrice(existsPrice);
             categoryToUpdate.setName("test_name");
+
             session.update(categoryToUpdate);
             session.flush();
             session.evict(categoryToUpdate);
@@ -88,8 +88,9 @@ class CategoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteCategory() {
         try (Session session = sessionFactory.openSession()) {
-            Category categoryToDelete = session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE);
             session.beginTransaction();
+            Category categoryToDelete = session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE);
+
             session.delete(categoryToDelete);
             session.getTransaction().commit();
 

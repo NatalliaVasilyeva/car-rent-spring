@@ -10,6 +10,7 @@ import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.entity.Order;
 import com.dmdev.domain.entity.Price;
 import com.dmdev.domain.entity.User;
+import com.dmdev.domain.entity.UserContact;
 import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.EngineType;
@@ -129,8 +130,10 @@ public class ExistEntityBuilder {
                 .user(getExistUser())
                 .name("Petia")
                 .surname("Petrov")
-                .address("Minsk")
-                .phone("+375 29 124 56 79")
+                .userContact(UserContact.builder()
+                        .address("Minsk")
+                        .phone("+375 29 124 56 79")
+                        .build())
                 .birthday(LocalDate.of(1989, 3, 12))
                 .registrationDate(LocalDate.of(2022, 9, 22))
                 .build();
