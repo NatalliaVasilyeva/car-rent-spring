@@ -75,7 +75,7 @@ public class Order {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal sum;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, optional = false)
+    @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
     private CarRentalTime carRentalTime;
 
     @Builder.Default

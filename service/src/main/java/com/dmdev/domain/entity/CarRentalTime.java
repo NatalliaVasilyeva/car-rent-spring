@@ -32,7 +32,7 @@ public class CarRentalTime {
     private Long id;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 

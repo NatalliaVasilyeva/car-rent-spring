@@ -37,7 +37,7 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
             carRentalTimeToUpdate.setEndRentalDate(LocalDateTime.of(2022, 11, 9, 10, 0));
             session.update(carRentalTimeToUpdate);
             session.flush();
-            session.clear();
+            session.evict(carRentalTimeToUpdate);
 
             CarRentalTime updatedCarRentalTime = session.find(CarRentalTime.class, carRentalTimeToUpdate.getId());
             Order updatedOrder = session.find(Order.class, carRentalTimeToUpdate.getOrder().getId());
