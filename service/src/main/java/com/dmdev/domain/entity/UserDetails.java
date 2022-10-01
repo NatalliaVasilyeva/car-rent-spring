@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -49,13 +50,8 @@ public class UserDetails {
     @Column(nullable = false)
     private String surname;
 
-    @NotNull
-    @Column(nullable = false)
-    private String address;
-
-    @NotNull
-    @Column(nullable = false)
-    private String phone;
+    @Embedded
+    private UserContact userContact;
 
     @NotNull
     @Column(nullable = false)
