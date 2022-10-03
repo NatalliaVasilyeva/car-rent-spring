@@ -1,5 +1,8 @@
 package integration.com.dmdev.utils;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class TestEntityIdConst {
 
     public static final Long TEST_EXISTS_ACCIDENT_ID = 2L;

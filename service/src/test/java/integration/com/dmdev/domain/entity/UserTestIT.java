@@ -19,12 +19,12 @@ class UserTestIT extends IntegrationBaseTest {
     void shouldCreateUserWithoutUserDetails() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            User userToSave = TestEntityBuilder.createUser();
+            var userToSave = TestEntityBuilder.createUser();
 
-            Long savedUserId = (Long) session.save(userToSave);
+            var savedUser = session.save(userToSave);
             session.getTransaction().commit();
 
-            assertThat(savedUserId).isNotNull();
+            assertThat(savedUser).isNotNull();
         }
     }
 
@@ -32,11 +32,11 @@ class UserTestIT extends IntegrationBaseTest {
     void shouldCreateUserWithUserDetails() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            User userToSave = TestEntityBuilder.createUser();
-            UserDetails userDetails = TestEntityBuilder.createUserDetails();
+            var userToSave = TestEntityBuilder.createUser();
+            var userDetails = TestEntityBuilder.createUserDetails();
             userDetails.setUser(userToSave);
 
-            Long savedUserId = (Long) session.save(userToSave);
+            var savedUserId = session.save(userToSave);
             session.getTransaction().commit();
 
             assertThat(savedUserId).isNotNull();
@@ -47,9 +47,9 @@ class UserTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnUser() {
         try (Session session = sessionFactory.openSession()) {
-            User expectedUser = ExistEntityBuilder.getExistUser();
+            var expectedUser = ExistEntityBuilder.getExistUser();
 
-            User actualUser = session.find(User.class, TEST_EXISTS_USER_ID);
+            var actualUser = session.find(User.class, TEST_EXISTS_USER_ID);
 
             assertThat(actualUser).isNotNull();
             assertEquals(expectedUser, actualUser);
@@ -61,8 +61,8 @@ class UserTestIT extends IntegrationBaseTest {
         String newAddress = "Hamburg";
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            User userToUpdate = session.find(User.class, TEST_EXISTS_USER_ID);
-            UserDetails userDetails = userToUpdate.getUserDetails();
+            var userToUpdate = session.find(User.class, TEST_EXISTS_USER_ID);
+            var userDetails = userToUpdate.getUserDetails();
             userDetails.getUserContact().setAddress(newAddress);
             userToUpdate.setPassword("8967562");
             userDetails.setUser(userToUpdate);
@@ -71,7 +71,7 @@ class UserTestIT extends IntegrationBaseTest {
             session.flush();
             session.clear();
 
-            User updatedUser = session.find(User.class, userToUpdate.getId());
+            var updatedUser = session.find(User.class, userToUpdate.getId());
             session.getTransaction().commit();
 
             assertThat(updatedUser).isEqualTo(userToUpdate);
@@ -83,7 +83,7 @@ class UserTestIT extends IntegrationBaseTest {
     void shouldDeleteUser() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            User userToDelete = session.find(User.class, TEST_USER_ID_FOR_DELETE);
+            var userToDelete = session.find(User.class, TEST_USER_ID_FOR_DELETE);
 
             session.delete(userToDelete);
             session.getTransaction().commit();

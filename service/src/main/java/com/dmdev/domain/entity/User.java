@@ -20,7 +20,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,15 +37,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(nullable = false, unique = true)
     private String login;
 
-    @NotNull
     @Column(nullable = false, unique = true)
     private String email;
 
-    @NotNull
     @Column(nullable = false)
     private String password;
 

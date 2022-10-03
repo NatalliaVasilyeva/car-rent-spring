@@ -8,7 +8,6 @@ import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.entity.Order;
-import com.dmdev.domain.entity.Price;
 import com.dmdev.domain.entity.User;
 import com.dmdev.domain.entity.UserContact;
 import com.dmdev.domain.entity.UserDetails;
@@ -17,6 +16,7 @@ import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.OrderStatus;
 import com.dmdev.domain.model.Role;
 import com.dmdev.domain.model.Transmission;
+import integration.com.dmdev.utils.TestEntityIdConst;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ public class ExistEntityBuilder {
 
     public static Accident getExistAccident() {
         return Accident.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_ACCIDENT_ID)
                 .order(getExistOrder())
                 .accidentDate(LocalDate.of(2022, 9, 3))
                 .description("accident")
@@ -39,26 +39,26 @@ public class ExistEntityBuilder {
 
     public static Brand getExistBrand() {
         return Brand.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_BRAND_ID)
                 .name("mercedes")
                 .build();
     }
 
     public static Car getExistCar() {
         return Car.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_CAR_ID)
                 .model(getExistModel())
                 .color(Color.RED)
                 .year(2022)
                 .carNumber("7834AE-7")
                 .vin("AmhBdhjJ8BgD0p3PRgkoi")
-                .isRepaired(false)
+                .repaired(false)
                 .build();
     }
 
     public static CarRentalTime getExistCarRentalTime() {
         return CarRentalTime.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_CAR_RENTAL_TIME_ID)
                 .order(getExistOrder())
                 .startRentalDate(LocalDateTime.of(2022, 9, 2, 0, 0))
                 .endRentalDate(LocalDateTime.of(2022, 9, 4, 23, 59))
@@ -67,15 +67,15 @@ public class ExistEntityBuilder {
 
     public static Category getExistCategory() {
         return Category.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID)
                 .name("BUSINESS")
-                .price(getExistPrice())
+                .price(BigDecimal.valueOf(100))
                 .build();
     }
 
     public static DriverLicense getExistDriverLicense() {
         return DriverLicense.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_DRIVER_LICENSE_ID)
                 .userDetails(getExistUserDetails())
                 .number("AB12346")
                 .issueDate(LocalDate.of(2014, 3, 2))
@@ -85,7 +85,7 @@ public class ExistEntityBuilder {
 
     public static Model getExistModel() {
         return Model.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_MODEL_ID)
                 .brand(getExistBrand())
                 .category(getExistCategory())
                 .name("Benz")
@@ -96,7 +96,7 @@ public class ExistEntityBuilder {
 
     public static Order getExistOrder() {
         return Order.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_ORDER_ID)
                 .date(LocalDate.of(2022, 7, 2))
                 .user(getExistUser())
                 .car(getExistCar())
@@ -107,16 +107,9 @@ public class ExistEntityBuilder {
                 .build();
     }
 
-    public static Price getExistPrice() {
-        return Price.builder()
-                .id(2L)
-                .sum(BigDecimal.valueOf(100))
-                .build();
-    }
-
     public static User getExistUser() {
         return User.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_USER_ID)
                 .login("Client")
                 .email("client@gmail.com")
                 .password("VasilechekBel123!")
@@ -126,7 +119,7 @@ public class ExistEntityBuilder {
 
     public static UserDetails getExistUserDetails() {
         return UserDetails.builder()
-                .id(2L)
+                .id(TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID)
                 .user(getExistUser())
                 .name("Petia")
                 .surname("Petrov")

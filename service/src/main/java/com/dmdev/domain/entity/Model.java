@@ -21,7 +21,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,7 +45,6 @@ public class Model {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @NotNull
     @Column(nullable = false)
     private String name;
 

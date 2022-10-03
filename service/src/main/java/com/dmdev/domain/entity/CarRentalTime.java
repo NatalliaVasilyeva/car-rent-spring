@@ -9,13 +9,11 @@ import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -31,16 +29,13 @@ public class CarRentalTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne()
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDateTime startRentalDate;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDateTime endRentalDate;
 

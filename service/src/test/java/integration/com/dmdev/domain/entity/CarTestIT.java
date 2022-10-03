@@ -20,23 +20,23 @@ class CarTestIT extends IntegrationBaseTest {
     void shouldCreateCar() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Model model = ExistEntityBuilder.getExistModel();
-            Car car = TestEntityBuilder.createCar();
+            var model = ExistEntityBuilder.getExistModel();
+            var car = TestEntityBuilder.createCar();
             model.setCar(car);
 
-            Long savedCarId = (Long) session.save(car);
+            var savedCar = session.save(car);
             session.getTransaction().commit();
 
-            assertThat(savedCarId).isNotNull();
+            assertThat(savedCar).isNotNull();
         }
     }
 
     @Test
     void shouldReturnCar() {
         try (Session session = sessionFactory.openSession()) {
-            Car expectedCar = ExistEntityBuilder.getExistCar();
+            var expectedCar = ExistEntityBuilder.getExistCar();
 
-            Car actualCar = session.find(Car.class, TEST_EXISTS_CAR_ID);
+            var actualCar = session.find(Car.class, TEST_EXISTS_CAR_ID);
 
             assertThat(actualCar).isNotNull();
             assertEquals(expectedCar, actualCar);
@@ -47,8 +47,8 @@ class CarTestIT extends IntegrationBaseTest {
     void shouldUpdateCar() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Car carToUpdate = session.find(Car.class, TEST_EXISTS_CAR_ID);
-            Model existModel = session.find(Model.class, 1L);
+            var carToUpdate = session.find(Car.class, TEST_EXISTS_CAR_ID);
+            var existModel = session.find(Model.class, 1L);
             carToUpdate.setColor(Color.BLUE);
             carToUpdate.setYear(2010);
             carToUpdate.setModel(existModel);
@@ -57,7 +57,7 @@ class CarTestIT extends IntegrationBaseTest {
             session.flush();
             session.evict(carToUpdate);
 
-            Car updatedCar = session.find(Car.class, carToUpdate.getId());
+            var updatedCar = session.find(Car.class, carToUpdate.getId());
             session.getTransaction().commit();
 
             assertThat(updatedCar).isEqualTo(carToUpdate);
@@ -68,7 +68,7 @@ class CarTestIT extends IntegrationBaseTest {
     void shouldDeleteCar() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Car carToDelete = session.find(Car.class, TEST_CAR_ID_FOR_DELETE);
+            var carToDelete = session.find(Car.class, TEST_CAR_ID_FOR_DELETE);
 
             session.delete(carToDelete);
             session.getTransaction().commit();

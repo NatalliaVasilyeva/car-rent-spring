@@ -8,7 +8,6 @@ import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.entity.Order;
-import com.dmdev.domain.entity.Price;
 import com.dmdev.domain.entity.User;
 import com.dmdev.domain.entity.UserContact;
 import com.dmdev.domain.entity.UserDetails;
@@ -38,13 +37,14 @@ public class TestEntityBuilder {
                 .year(2022)
                 .carNumber("AT7654")
                 .vin("hjsdhfBJHS84")
-                .isRepaired(false)
+                .repaired(false)
                 .build();
     }
 
     public static Category createCategory() {
         return Category.builder()
                 .name("'BUSINESS'")
+                .price(BigDecimal.valueOf(99))
                 .build();
     }
 
@@ -88,12 +88,6 @@ public class TestEntityBuilder {
         return CarRentalTime.builder()
                 .startRentalDate(LocalDateTime.of(2002, 10, 12, 11, 0))
                 .endRentalDate(LocalDateTime.of(2002, 10, 13, 11, 0))
-                .build();
-    }
-
-    public static Price createPrice() {
-        return Price.builder()
-                .sum(BigDecimal.valueOf(99))
                 .build();
     }
 

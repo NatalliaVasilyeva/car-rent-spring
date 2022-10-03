@@ -32,12 +32,10 @@ public class Accident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDate accidentDate;
 

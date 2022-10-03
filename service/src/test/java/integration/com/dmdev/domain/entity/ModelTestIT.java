@@ -24,16 +24,16 @@ class ModelTestIT extends IntegrationBaseTest {
     void shouldCreateModel() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Brand brand = session.get(Brand.class, TEST_EXISTS_BRAND_ID);
-            Category category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
-            Model modelToSave = TestEntityBuilder.createModel();
+            var brand = session.get(Brand.class, TEST_EXISTS_BRAND_ID);
+            var category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
+            var modelToSave = TestEntityBuilder.createModel();
             brand.setModel(modelToSave);
             category.setModel(modelToSave);
 
-            Long savedModelId = (Long) session.save(modelToSave);
+            var savedModel = session.save(modelToSave);
             session.getTransaction().commit();
 
-            assertThat(savedModelId).isNotNull();
+            assertThat(savedModel).isNotNull();
         }
     }
 
@@ -41,10 +41,10 @@ class ModelTestIT extends IntegrationBaseTest {
     void shouldCreateModelWithNotExistsCar() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Brand brand = session.get(Brand.class, TEST_EXISTS_BRAND_ID);
-            Category category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
-            Car carToSave = TestEntityBuilder.createCar();
-            Model modelToSave = TestEntityBuilder.createModel();
+            var brand = session.get(Brand.class, TEST_EXISTS_BRAND_ID);
+            var category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
+            var carToSave = TestEntityBuilder.createCar();
+            var modelToSave = TestEntityBuilder.createModel();
             modelToSave.setCar(carToSave);
             brand.setModel(modelToSave);
             category.setModel(modelToSave);
@@ -62,9 +62,9 @@ class ModelTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnModel() {
         try (Session session = sessionFactory.openSession()) {
-            Model expectedModel = ExistEntityBuilder.getExistModel();
+            var expectedModel = ExistEntityBuilder.getExistModel();
 
-            Model actualModel = session.find(Model.class, TEST_EXISTS_MODEL_ID);
+            var actualModel = session.find(Model.class, TEST_EXISTS_MODEL_ID);
 
             assertThat(actualModel).isNotNull();
             assertEquals(expectedModel, actualModel);
@@ -75,8 +75,8 @@ class ModelTestIT extends IntegrationBaseTest {
     void shouldUpdateModel() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Model modelToUpdate = session.find(Model.class, TEST_EXISTS_MODEL_ID);
-            Category category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
+            var modelToUpdate = session.find(Model.class, TEST_EXISTS_MODEL_ID);
+            var category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
             modelToUpdate.setEngineType(EngineType.ELECTRIC);
             modelToUpdate.setCategory(category);
 
@@ -84,7 +84,7 @@ class ModelTestIT extends IntegrationBaseTest {
             session.flush();
             session.evict(modelToUpdate);
 
-            Model updatedModel = session.find(Model.class, modelToUpdate.getId());
+            var updatedModel = session.find(Model.class, modelToUpdate.getId());
             session.getTransaction().commit();
 
             assertThat(updatedModel).isEqualTo(modelToUpdate);
@@ -95,7 +95,7 @@ class ModelTestIT extends IntegrationBaseTest {
     void shouldDeleteModel() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Model modelToDelete = session.find(Model.class, TEST_MODEL_ID_FOR_DELETE);
+            var modelToDelete = session.find(Model.class, TEST_MODEL_ID_FOR_DELETE);
 
             session.delete(modelToDelete);
             session.getTransaction().commit();

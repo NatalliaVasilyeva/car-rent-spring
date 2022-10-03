@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -16,11 +15,9 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class UserContact {
 
-    @NotNull
     @Column(nullable = false)
     private String address;
 
-    @NotNull
     @Column(nullable = false)
     private String phone;
 }

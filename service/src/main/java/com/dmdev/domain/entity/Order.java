@@ -23,7 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -43,35 +42,29 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDate date;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id", nullable = false)
     private Car car;
 
-    @NotNull
     @Column(nullable = false)
     private String passport;
 
     @Builder.Default
     @Column(nullable = false)
-    private Boolean insurance = Boolean.TRUE;
+    private boolean insurance = true;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
-    @NotNull
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal sum;
 
