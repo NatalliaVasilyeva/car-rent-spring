@@ -1,60 +1,88 @@
 package integration.com.dmdev.domain.entity;
 
+import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.Price;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.builder.ExistTesEntityBuilder;
-import integration.com.dmdev.utils.builder.FakeTestEntityBuilder;
+import integration.com.dmdev.utils.builder.ExistEntityBuilder;
+import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
-import static integration.com.dmdev.utils.TestEntityIdConst.CREATED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.DELETED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.EXIST_TEST_ENTITY_ID;
+import java.math.BigDecimal;
+
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_PRICE_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_PRICE_ID_FOR_DELETE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PriceTestIT extends IntegrationBaseTest {
+class PriceTestIT extends IntegrationBaseTest {
 
     @Test
-    public void shouldCreatePrice() {
+    void shouldCreatePrice() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long savedPriceId = (Long) session.save(FakeTestEntityBuilder.createPrice());
+            Long savedPriceId = (Long) session.save(TestEntityBuilder.createPrice());
             session.getTransaction().commit();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedPriceId);
+            assertThat(savedPriceId).isNotNull();
         }
     }
 
     @Test
-    public void shouldReturnPrice() {
+    void shouldCreateCategoryWithNotExistscategory() {
         try (Session session = sessionFactory.openSession()) {
-            Price actualPrice = session.find(Price.class, EXIST_TEST_ENTITY_ID);
+            session.beginTransaction();
+            Category categoryToSave = TestEntityBuilder.createCategory();
+            Price priceToSave = TestEntityBuilder.createPrice();
+            priceToSave.setCategory(categoryToSave);
+
+            session.save(priceToSave);
+            session.getTransaction().commit();
+
+            assertThat(priceToSave.getId()).isNotNull();
+            assertThat(categoryToSave.getId()).isNotNull();
+            assertThat(priceToSave.getCategories()).contains(categoryToSave);
+            assertThat(categoryToSave.getPrice().getId()).isEqualTo(priceToSave.getId());
+        }
+    }
+
+    @Test
+    void shouldReturnPrice() {
+        try (Session session = sessionFactory.openSession()) {
+            Price expectedPrice = ExistEntityBuilder.getExistPrice();
+
+            Price actualPrice = session.find(Price.class, TEST_EXISTS_PRICE_ID);
 
             assertThat(actualPrice).isNotNull();
-            assertEquals(ExistTesEntityBuilder.getExistPrice().getPrice(), actualPrice.getPrice());
+            assertEquals(expectedPrice, actualPrice);
         }
     }
 
     @Test
-    public void shouldUpdatePrice() {
+    void shouldUpdatePrice() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Price priceToUpdate = ExistTesEntityBuilder.getUpdatedPrice();
+            Price priceToUpdate = session.find(Price.class, TEST_EXISTS_PRICE_ID);
+            priceToUpdate.setSum(BigDecimal.valueOf(67.90));
+
             session.update(priceToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.evict(priceToUpdate);
 
             Price updatedPrice = session.find(Price.class, priceToUpdate.getId());
+            session.getTransaction().commit();
 
+            assertThat(updatedPrice).isEqualTo(priceToUpdate);
             assertThat(updatedPrice).isEqualTo(priceToUpdate);
         }
     }
 
     @Test
-    public void shouldDeletePrice() {
+    void shouldDeletePrice() {
         try (Session session = sessionFactory.openSession()) {
-            Price priceToDelete = session.find(Price.class, DELETED_TEST_ENTITY_ID);
             session.beginTransaction();
+            Price priceToDelete = session.find(Price.class, TEST_PRICE_ID_FOR_DELETE);
+
             session.delete(priceToDelete);
             session.getTransaction().commit();
 

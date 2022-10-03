@@ -4,37 +4,47 @@ import com.dmdev.domain.model.Color;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.Valid;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
-@Valid
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"model", "orders"})
+@EqualsAndHashCode(of = "vin")
 @Builder
+@Entity
 public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true)
     private Long id;
 
-    private Long modelId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "model_id")
+    private Model model;
 
     @Enumerated(EnumType.STRING)
     private Color color;
 
-    private String year;
+    private Integer year;
 
     private String carNumber;
 
@@ -42,9 +52,12 @@ public class Car {
     @Column(nullable = false, unique = true)
     private String vin;
 
-    @NotNull
-    private Boolean isRepaired = Boolean.FALSE;
+    @Builder.Default
+    private Boolean isRepaired = Boolean.TRUE;
 
     private String image;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
 }

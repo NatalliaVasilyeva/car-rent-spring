@@ -1,63 +1,72 @@
 package integration.com.dmdev.domain.entity;
 
 import com.dmdev.domain.entity.DriverLicense;
+import com.dmdev.domain.entity.UserDetails;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.builder.ExistTesEntityBuilder;
-import integration.com.dmdev.utils.builder.FakeTestEntityBuilder;
+import integration.com.dmdev.utils.builder.ExistEntityBuilder;
+import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
-import static integration.com.dmdev.utils.TestEntityIdConst.CREATED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.DELETED_TEST_ENTITY_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.EXIST_TEST_ENTITY_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_DRIVER_LICENSE_ID_FOR_DELETE;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_DRIVER_LICENSE_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DriverLicenseTestIT extends IntegrationBaseTest {
+class DriverLicenseTestIT extends IntegrationBaseTest {
 
     @Test
-    public void shouldCreateDriverLicense() {
+    void shouldCreateDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long savedDriverLicenseId = (Long) session.save(FakeTestEntityBuilder.createDriverLicense());
+            UserDetails userDetails = session.get(UserDetails.class, TEST_EXISTS_USER_DETAILS_ID);
+            DriverLicense driverLicenceToSave = TestEntityBuilder.createDriverLicense();
+            userDetails.setDriverLicense(driverLicenceToSave);
+
+            Long savedDriverLicenseId = (Long) session.save(driverLicenceToSave);
             session.getTransaction().commit();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedDriverLicenseId);
+            assertThat(savedDriverLicenseId).isNotNull();
         }
     }
 
     @Test
-    public void shouldReturnDriverLicense() {
+    void shouldReturnDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
-            DriverLicense actualDriverLicense = session.find(DriverLicense.class, EXIST_TEST_ENTITY_ID);
+            DriverLicense expectedDriverLicense = ExistEntityBuilder.getExistDriverLicense();
+
+            DriverLicense actualDriverLicense = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
 
             assertThat(actualDriverLicense).isNotNull();
-            assertEquals(ExistTesEntityBuilder.getExistDriverLicense().getUserDetailsId(), actualDriverLicense.getUserDetailsId());
-            assertEquals(ExistTesEntityBuilder.getExistDriverLicense().getIssueDate(), actualDriverLicense.getIssueDate());
-            assertEquals(ExistTesEntityBuilder.getExistDriverLicense().getExpiredDate(), actualDriverLicense.getExpiredDate());
-            assertEquals(ExistTesEntityBuilder.getExistDriverLicense().getNumber(), actualDriverLicense.getNumber());
+            assertEquals(expectedDriverLicense, actualDriverLicense);
         }
     }
 
     @Test
-    public void shouldUpdateDriverLicense() {
+    void shouldUpdateDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            DriverLicense driverLicenseToUpdate = ExistTesEntityBuilder.getUpdatedDriverLicense();
+            DriverLicense driverLicenseToUpdate = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
+            driverLicenseToUpdate.setNumber("dn36632");
+
             session.update(driverLicenseToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.evict(driverLicenseToUpdate);
 
             DriverLicense updatedDriverLicense = session.find(DriverLicense.class, driverLicenseToUpdate.getId());
+            session.getTransaction().commit();
 
             assertThat(updatedDriverLicense).isEqualTo(driverLicenseToUpdate);
         }
     }
 
     @Test
-    public void shouldDeleteDriverLicense() {
+    void shouldDeleteDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
-            DriverLicense driverLicenseToDelete = session.find(DriverLicense.class, DELETED_TEST_ENTITY_ID);
             session.beginTransaction();
+            DriverLicense driverLicenseToDelete = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
+
             session.delete(driverLicenseToDelete);
             session.getTransaction().commit();
 

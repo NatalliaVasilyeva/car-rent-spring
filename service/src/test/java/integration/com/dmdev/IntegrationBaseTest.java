@@ -13,13 +13,14 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public abstract class IntegrationBaseTest {
-    private final String INSERT_DATA_PATH = "insert_data.sql";
-    private final String TRUNCATE_TABLES_PATH = "truncate_tables.sql";
-    private final String insert_sql = loadSqlScript(INSERT_DATA_PATH);
-    private final String delete_sql = loadSqlScript(TRUNCATE_TABLES_PATH);
+    private final static String INSERT_DATA_PATH = "insert_data.sql";
+    private final static String TRUNCATE_TABLES_PATH = "truncate_tables.sql";
+    private final String insertSql = loadSqlScript(INSERT_DATA_PATH);
+    private final String deleteSql = loadSqlScript(TRUNCATE_TABLES_PATH);
     protected static SessionFactory sessionFactory;
 
     @BeforeAll
@@ -31,7 +32,7 @@ public abstract class IntegrationBaseTest {
     void insertData() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.createSQLQuery(insert_sql).executeUpdate();
+            session.createSQLQuery(insertSql).executeUpdate();
             session.getTransaction().commit();
         }
     }
@@ -40,7 +41,7 @@ public abstract class IntegrationBaseTest {
     void deleteDataFromAllTables() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.createSQLQuery(delete_sql).executeUpdate();
+            session.createSQLQuery(deleteSql).executeUpdate();
             session.getTransaction().commit();
         }
     }
@@ -53,12 +54,14 @@ public abstract class IntegrationBaseTest {
         }
     }
 
+    @SneakyThrows
     private String loadSqlScript(String filePath) {
-        InputStream inputStream = IntegrationBaseTest.class.getClassLoader().getResourceAsStream(filePath);
-        if (inputStream == null) {
-            throw new IllegalArgumentException("File not found: " + filePath);
+        try (InputStream inputStream = IntegrationBaseTest.class.getClassLoader().getResourceAsStream(filePath)) {
+            if (inputStream == null) {
+                throw new IllegalArgumentException("File not found: " + filePath);
+            }
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            return bufferedReader.lines().collect(joining());
         }
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        return bufferedReader.lines().collect(Collectors.joining());
     }
 }
