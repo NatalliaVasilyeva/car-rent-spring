@@ -26,5 +26,5 @@ INSERT INTO car_rent.car_rental_time (order_id, start_rental_date, end_rental_da
 VALUES ('1', '2022-07-02 00:00:00', '2022-07-03 23:59:00'),
        ('2', '2022-09-02 00:00:00', '2022-09-04 23:59:00');
 INSERT INTO car_rent.accident (order_id, accident_date, description, damage)
-VALUES ('1', '2022-07-02 16:34:00', 'faced tree', 75.50),
-       ('2', '2022-09-03 16:35:00', 'accident', 10.05);
+VALUES ('1', '2022-07-02 00:00:00', 'faced tree', 75.50),
+       ('2', '2022-09-03 00:00:00', 'accident', 10.05);
