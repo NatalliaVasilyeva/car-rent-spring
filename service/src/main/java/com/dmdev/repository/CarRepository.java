@@ -4,10 +4,12 @@ import com.dmdev.domain.dto.CarFilter;
 import com.dmdev.domain.entity.Car;
 import com.dmdev.domain.entity.CarRentalTime;
 import com.dmdev.domain.entity.Car_;
+import com.dmdev.domain.model.Transmission;
 import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
+import org.hibernate.graph.GraphSemantic;
 
 import javax.persistence.criteria.Predicate;
 import java.util.List;
@@ -79,6 +81,18 @@ public class CarRepository implements Repository<Long, Car> {
                 .where(cb.equal(car.get(Car_.carNumber), carNumber));
 
         return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+    }
+
+    public List<Car> findCarByTransmissionGraph(Session session, Transmission transmission) {
+        var carGraph = session.createEntityGraph(Car.class);
+        carGraph.addAttributeNodes("model");
+
+        return new JPAQuery<Car>(session)
+                .select(car)
+                .setHint(GraphSemantic.LOAD.getJpaHintName(), carGraph)
+                .from(car)
+                .where(car.model.transmission.eq(transmission))
+                .fetch();
     }
 
     public List<Car> findCarsByColorAndYearOrGreaterCriteria(Session session, CarFilter carFilter) {

@@ -5,6 +5,7 @@ import com.dmdev.domain.entity.Brand;
 import com.dmdev.domain.entity.Car;
 import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.model.Color;
+import com.dmdev.domain.model.Transmission;
 import com.dmdev.repository.CarRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
@@ -114,6 +115,19 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
 
             assertThat(optionalCar).isNotNull();
             optionalCar.ifPresent(car -> assertThat(car).isEqualTo(ExistEntityBuilder.getExistCar()));
+
+        }
+    }
+
+    @Test
+    void shouldReturnCarByTransmissionGraph() {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            List<Car> cars = carRepository.findCarByTransmissionGraph(session, Transmission.ROBOT);
+            session.getTransaction().commit();
+
+            assertThat(cars).hasSize(1);
+            assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
 
         }
     }
