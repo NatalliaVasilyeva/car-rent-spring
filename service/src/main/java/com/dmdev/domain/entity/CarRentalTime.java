@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(exclude = "order")
 @Builder
 @Entity
-public class CarRentalTime {
+public class CarRentalTime implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

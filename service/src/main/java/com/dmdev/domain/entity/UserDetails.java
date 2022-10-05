@@ -31,7 +31,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = {"user", "driverLicenses"})
 @Builder
 @Entity
-public class UserDetails {
+public class UserDetails implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
