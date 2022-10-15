@@ -18,7 +18,7 @@ public class BrandRepository implements Repository<Long, Brand> {
     }
 
     @Override
-    public List<Brand> findAllHQL(Session session) {
+    public List<Brand> findAllHql(Session session) {
         return session.createQuery("select b from Brand b", Brand.class)
                 .list();
     }

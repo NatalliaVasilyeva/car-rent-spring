@@ -26,8 +26,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllModelsWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<Model> models = modelRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<Model> models = modelRepository.findAllHql(session);
 
             assertThat(models).hasSize(2);
 
@@ -36,6 +35,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
 
             List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
             assertThat(brands).contains("audi", "mercedes");
+            session.getTransaction().rollback();
         }
     }
 
@@ -44,7 +44,6 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Model> models = modelRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(models).hasSize(2);
 
@@ -53,6 +52,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
 
             List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
             assertThat(brands).contains("audi", "mercedes");
+            session.getTransaction().rollback();
         }
     }
 
@@ -61,7 +61,6 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Model> models = modelRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(models).hasSize(2);
 
@@ -70,6 +69,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
 
             List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
             assertThat(brands).contains("audi", "mercedes");
+            session.getTransaction().rollback();
         }
     }
 
@@ -78,10 +78,11 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Model> optionalModel = modelRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_MODEL_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalModel).isNotNull();
-            optionalModel.ifPresent(driverLicense -> assertThat(driverLicense).isEqualTo(ExistEntityBuilder.getExistModel()));
+            optionalModel.ifPresent(model -> assertThat(model.getId()).isEqualTo(ExistEntityBuilder.getExistModel().getId()));
+            assertThat(optionalModel).isEqualTo(Optional.of(ExistEntityBuilder.getExistModel()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -90,10 +91,11 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Model> optionalModel = modelRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_MODEL_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalModel).isNotNull();
-            optionalModel.ifPresent(driverLicense -> assertThat(driverLicense).isEqualTo(ExistEntityBuilder.getExistModel()));
+            optionalModel.ifPresent(model -> assertThat(model.getId()).isEqualTo(ExistEntityBuilder.getExistModel().getId()));
+            assertThat(optionalModel).isEqualTo(Optional.of(ExistEntityBuilder.getExistModel()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -106,10 +108,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                     .name("Benz")
                     .build();
             List<Model> models = modelRepository.findModelsByModelAndBrandNameCriteria(session, modelFilter);
-            session.getTransaction().commit();
 
             assertThat(models).hasSize(1);
             assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
+            session.getTransaction().rollback();
         }
     }
 
@@ -123,10 +125,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                     .engineType(EngineType.FUEL)
                     .build();
             List<Model> models = modelRepository.findModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl(session, modelFilter);
-            session.getTransaction().commit();
 
             assertThat(models).hasSize(1);
             assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
+            session.getTransaction().rollback();
         }
     }
 
@@ -140,9 +142,9 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                     .engineType(EngineType.DIESEL)
                     .build();
             List<Model> models = modelRepository.findModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl(session, modelFilter);
-            session.getTransaction().commit();
 
             assertThat(models).isEmpty();
+            session.getTransaction().rollback();
         }
     }
 
@@ -155,12 +157,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                     .categoryName("BUSINESS")
                     .build();
             List<Model> models = modelRepository.findModelsByBrandAndCategoryOrderByBrandQueryDsl(session, modelFilter);
-            session.getTransaction().commit();
 
             assertThat(models).hasSize(1);
             assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
+            session.getTransaction().rollback();
         }
     }
-
-
 }

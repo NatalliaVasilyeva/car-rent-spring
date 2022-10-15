@@ -26,7 +26,7 @@ public class AccidentRepository implements Repository<Long, Accident> {
     }
 
     @Override
-    public List<Accident> findAllHQL(Session session) {
+    public List<Accident> findAllHql(Session session) {
         return session.createQuery("select a from Accident a", Accident.class)
                 .list();
     }
@@ -84,7 +84,6 @@ public class AccidentRepository implements Repository<Long, Accident> {
     }
 
     public List<Accident> findAccidentsByAccidentDateQueryDsl(Session session, LocalDate accidentDate) {
-
         return new JPAQuery<Accident>(session)
                 .select(accident)
                 .from(accident)
@@ -110,8 +109,7 @@ public class AccidentRepository implements Repository<Long, Accident> {
 
     public List<Accident> findAccidentsByCarNumberAndDamageQueryDsl(Session session, AccidentFilter accidentFilter) {
         var predicateOr = QPredicate.builder()
-                .add(accidentFilter.getDamage(), accident.damage::eq)
-                .add(accidentFilter.getDamage(), accident.damage::gt)
+                .add(accidentFilter.getDamage(), accident.damage::goe)
                 .buildOr();
 
         var predicateAnd = QPredicate.builder()

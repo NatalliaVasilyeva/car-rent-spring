@@ -20,9 +20,9 @@ class BrandTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             var savedBrand = session.save(TestEntityBuilder.createBrand());
-            session.getTransaction().commit();
 
             assertThat(savedBrand).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -35,12 +35,12 @@ class BrandTestIT extends IntegrationBaseTest {
             brandToSave.setModel(modelToSave);
 
             session.save(brandToSave);
-            session.getTransaction().commit();
 
             assertThat(brandToSave.getId()).isNotNull();
             assertThat(modelToSave.getId()).isNotNull();
             assertThat(brandToSave.getModels()).contains(modelToSave);
             assertThat(modelToSave.getBrand().getId()).isEqualTo(brandToSave.getId());
+            session.getTransaction().rollback();
         }
     }
 
@@ -68,10 +68,10 @@ class BrandTestIT extends IntegrationBaseTest {
             session.evict(brandToUpdate);
 
             var updatedBrand = session.find(Brand.class, brandToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedBrand).isEqualTo(brandToUpdate);
             assertEquals(brandToUpdate.getName(), updatedBrand.getModels().stream().map(Model::getBrand).findFirst().get().getName());
+            session.getTransaction().rollback();
         }
     }
 
@@ -82,9 +82,9 @@ class BrandTestIT extends IntegrationBaseTest {
             var brandToDelete = session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE);
 
             session.delete(brandToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(Brand.class, brandToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

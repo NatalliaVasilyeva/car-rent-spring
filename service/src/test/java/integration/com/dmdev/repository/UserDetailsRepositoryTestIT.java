@@ -26,8 +26,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllUserDetailsWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<UserDetails> userDetails = userDetailsRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<UserDetails> userDetails = userDetailsRepository.findAllHql(session);
 
             assertThat(userDetails).hasSize(2);
 
@@ -39,6 +38,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                     .map(UserContact::getPhone)
                     .collect(toList());
             assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
+            session.getTransaction().rollback();
         }
     }
 
@@ -47,7 +47,6 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<UserDetails> userDetails = userDetailsRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(userDetails).hasSize(2);
 
@@ -59,6 +58,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                     .map(UserContact::getPhone)
                     .collect(toList());
             assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
+            session.getTransaction().rollback();
         }
     }
 
@@ -67,7 +67,6 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<UserDetails> userDetails = userDetailsRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(userDetails).hasSize(2);
 
@@ -79,6 +78,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                     .map(UserContact::getPhone)
                     .collect(toList());
             assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
+            session.getTransaction().rollback();
         }
     }
 
@@ -87,10 +87,11 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<UserDetails> optionalUserDetails = userDetailsRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalUserDetails).isNotNull();
-            optionalUserDetails.ifPresent(userDetails -> assertThat(userDetails).isEqualTo(ExistEntityBuilder.getExistUserDetails()));
+            optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
+            assertThat(optionalUserDetails).isEqualTo(Optional.of(ExistEntityBuilder.getExistUserDetails()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -99,10 +100,11 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<UserDetails> optionalUserDetails = userDetailsRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalUserDetails).isNotNull();
-            optionalUserDetails.ifPresent(userDetails -> assertThat(userDetails).isEqualTo(ExistEntityBuilder.getExistUserDetails()));
+            optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
+            assertThat(optionalUserDetails).isEqualTo(Optional.of(ExistEntityBuilder.getExistUserDetails()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -111,10 +113,11 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<UserDetails> optionalUserDetails = userDetailsRepository.findUserDetailsByUserIdCriteria(session, TestEntityIdConst.TEST_EXISTS_USER_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalUserDetails).isNotNull();
-            optionalUserDetails.ifPresent(userDetails -> assertThat(userDetails).isEqualTo(ExistEntityBuilder.getExistUserDetails()));
+            optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
+            assertThat(optionalUserDetails).isEqualTo(Optional.of(ExistEntityBuilder.getExistUserDetails()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -127,10 +130,10 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                     .surname("Petrov")
                     .build();
             List<UserDetails> userDetails = userDetailsRepository.findUserDetailsByNameAndSurnameQueryDsl(session, userDetailsFilter);
-            session.getTransaction().commit();
 
             assertThat(userDetails).hasSize(1);
             assertThat(userDetails.get(0)).isEqualTo(ExistEntityBuilder.getExistUserDetails());
+            session.getTransaction().rollback();
         }
     }
 
@@ -139,12 +142,12 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Tuple> userDetails = userDetailsRepository.findUsersDetailsTupleByBirthdayOrderedBySurnameAndNameQueryDsl(session, LocalDate.of(1989, 3, 12));
-            session.getTransaction().commit();
 
             assertThat(userDetails).hasSize(1);
 
             List<String> emails = userDetails.stream().map(r -> r.get(4, String.class)).collect(toList());
             assertThat(emails).contains("client@gmail.com");
+            session.getTransaction().rollback();
         }
     }
 }

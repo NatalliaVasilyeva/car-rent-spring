@@ -27,7 +27,7 @@ public class UserRepository implements Repository<Long, User> {
     }
 
     @Override
-    public List<User> findAllHQL(Session session) {
+    public List<User> findAllHql(Session session) {
         return session.createQuery("select u from User u", User.class)
                 .list();
     }

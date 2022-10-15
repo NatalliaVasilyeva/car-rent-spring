@@ -24,8 +24,7 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllCategoriesWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<Category> categories = categoryRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<Category> categories = categoryRepository.findAllHql(session);
 
             assertThat(categories).hasSize(2);
             assertThat(categories.get(0).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
@@ -39,6 +38,7 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+            session.getTransaction().rollback();
         }
     }
 
@@ -47,7 +47,6 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Category> categories = categoryRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(categories).hasSize(2);
             assertThat(categories.get(0).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
@@ -61,6 +60,7 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+            session.getTransaction().rollback();
         }
     }
 
@@ -69,7 +69,6 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Category> categories = categoryRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(categories).hasSize(2);
             assertThat(categories.get(0).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
@@ -83,6 +82,7 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+            session.getTransaction().rollback();
         }
     }
 
@@ -91,10 +91,11 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Category> optionalCategory = categoryRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalCategory).isNotNull();
-            optionalCategory.ifPresent(category -> assertThat(category).isEqualTo(ExistEntityBuilder.getExistCategory()));
+            optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));
+            assertThat(optionalCategory).isEqualTo(Optional.of(ExistEntityBuilder.getExistCategory()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -103,10 +104,11 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Category> optionalCategory = categoryRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalCategory).isNotNull();
-            optionalCategory.ifPresent(category -> assertThat(category).isEqualTo(ExistEntityBuilder.getExistCategory()));
+            optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));
+            assertThat(optionalCategory).isEqualTo(Optional.of(ExistEntityBuilder.getExistCategory()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -115,10 +117,10 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Category> categories = categoryRepository.findCategoriesByPriceCriteria(session, BigDecimal.valueOf(100.00));
-            session.getTransaction().commit();
 
             assertThat(categories).hasSize(1);
             assertThat(categories.get(0).getName()).isEqualTo("BUSINESS");
+            session.getTransaction().rollback();
         }
     }
 
@@ -127,10 +129,10 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Category> categories = categoryRepository.findCategoriesByPriceQueryDsl(session, BigDecimal.valueOf(100.00));
-            session.getTransaction().commit();
 
             assertThat(categories).hasSize(1);
             assertThat(categories.get(0).getName()).isEqualTo("BUSINESS");
+            session.getTransaction().rollback();
         }
     }
 
@@ -139,10 +141,10 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Category> categories = categoryRepository.findCategoriesByPriceLessThanQueryDsl(session, BigDecimal.valueOf(100.00));
-            session.getTransaction().commit();
 
             assertThat(categories).hasSize(2);
             assertThat(categories).contains(ExistEntityBuilder.getExistCategory());
+            session.getTransaction().rollback();
         }
     }
 
@@ -151,10 +153,10 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Category> categories = categoryRepository.findCategoriesByNameCriteria(session, "BUSINESS");
-            session.getTransaction().commit();
 
             assertThat(categories).hasSize(1);
             assertThat(categories.get(0)).isEqualTo(ExistEntityBuilder.getExistCategory());
+            session.getTransaction().rollback();
         }
     }
 }

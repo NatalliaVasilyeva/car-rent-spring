@@ -20,8 +20,7 @@ public class CategoryRepository implements Repository<Long, Category> {
     }
 
     @Override
-    public List<Category> findAllHQL(Session session) {
-
+    public List<Category> findAllHql(Session session) {
         return session.createQuery("select c from Category c", Category.class)
                 .list();
     }
@@ -89,8 +88,7 @@ public class CategoryRepository implements Repository<Long, Category> {
 
     public List<Category> findCategoriesByPriceLessThanQueryDsl(Session session, BigDecimal price) {
         var predicateOr = QPredicate.builder()
-                .add(price, category.price::eq)
-                .add(price, category.price::lt)
+                .add(price, category.price::loe)
                 .buildOr();
 
         return new JPAQuery<Category>(session)

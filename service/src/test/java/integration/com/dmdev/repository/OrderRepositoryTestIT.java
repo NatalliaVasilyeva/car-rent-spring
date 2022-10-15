@@ -29,8 +29,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllOrdersWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<Order> orders = orderRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<Order> orders = orderRepository.findAllHql(session);
 
             assertThat(orders).hasSize(2);
 
@@ -42,6 +41,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                     .map(Car::getCarNumber)
                     .collect(toList());
             assertThat(carsNumber).contains("7865AE-7", "7834AE-7");
+            session.getTransaction().rollback();
         }
     }
 
@@ -50,7 +50,6 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Order> orders = orderRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(orders).hasSize(2);
 
@@ -62,6 +61,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                     .map(Car::getCarNumber)
                     .collect(toList());
             assertThat(carsNumber).contains("7865AE-7", "7834AE-7");
+            session.getTransaction().rollback();
         }
     }
 
@@ -70,7 +70,6 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Order> orders = orderRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(orders).hasSize(2);
 
@@ -82,6 +81,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                     .map(Car::getCarNumber)
                     .collect(toList());
             assertThat(carsNumber).contains("7865AE-7", "7834AE-7");
+            session.getTransaction().rollback();
         }
     }
 
@@ -90,10 +90,11 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Order> optionalOrder = orderRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_ORDER_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalOrder).isNotNull();
-            optionalOrder.ifPresent(order -> assertThat(order).isEqualTo(ExistEntityBuilder.getExistOrder()));
+            optionalOrder.ifPresent(order -> assertThat(order.getId()).isEqualTo(ExistEntityBuilder.getExistOrder().getId()));
+            assertThat(optionalOrder).isEqualTo(Optional.of(ExistEntityBuilder.getExistOrder()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -102,10 +103,11 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Order> optionalOrder = orderRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_ORDER_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalOrder).isNotNull();
-            optionalOrder.ifPresent(order -> assertThat(order).isEqualTo(ExistEntityBuilder.getExistOrder()));
+            optionalOrder.ifPresent(order -> assertThat(order.getId()).isEqualTo(ExistEntityBuilder.getExistOrder().getId()));
+            assertThat(optionalOrder).isEqualTo(Optional.of(ExistEntityBuilder.getExistOrder()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -114,10 +116,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Order> orders = orderRepository.findOrdersByCarNumberCriteria(session, "7834AE-7");
-            session.getTransaction().commit();
 
             assertThat(orders).hasSize(1);
             assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+            session.getTransaction().rollback();
         }
     }
 
@@ -126,10 +128,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Order> orders = orderRepository.findOrdersByOrderStatusCriteria(session, OrderStatus.PAYED);
-            session.getTransaction().commit();
 
             assertThat(orders).hasSize(1);
             assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+            session.getTransaction().rollback();
         }
     }
 
@@ -143,10 +145,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                     .build();
 
             List<Order> orders = orderRepository.findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(session, orderFilter);
-            session.getTransaction().commit();
 
             assertThat(orders).hasSize(1);
             assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+            session.getTransaction().rollback();
         }
     }
 
@@ -156,7 +158,6 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
             session.beginTransaction();
 
             List<Order> orders = orderRepository.findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(orders).hasSize(1);
             assertThat(orders.get(0)
@@ -165,6 +166,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                     .map(Accident::getDamage)
                     .collect(toList()))
                     .contains(BigDecimal.valueOf(75.50).setScale(2));
+            session.getTransaction().rollback();
         }
     }
 
@@ -174,11 +176,11 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
             session.beginTransaction();
 
             List<Tuple> orders = orderRepository.findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(orders).hasSize(2);
             List<LocalDate> dates = orders.stream().map(r -> r.get(0, LocalDate.class)).collect(toList());
             assertThat(dates).containsAll(List.of(LocalDate.of(2022, 7, 2), LocalDate.of(2022, 7, 1)));
+            session.getTransaction().rollback();
         }
     }
 }

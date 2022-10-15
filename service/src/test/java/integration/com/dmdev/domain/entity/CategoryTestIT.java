@@ -25,9 +25,9 @@ class CategoryTestIT extends IntegrationBaseTest {
             var categoryToSave = TestEntityBuilder.createCategory();
 
             var savedCategory = session.save(categoryToSave);
-            session.getTransaction().commit();
 
             assertThat(savedCategory).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -40,12 +40,12 @@ class CategoryTestIT extends IntegrationBaseTest {
             categoryToSave.setModel(modelToSave);
 
             session.save(categoryToSave);
-            session.getTransaction().commit();
 
             assertThat(categoryToSave.getId()).isNotNull();
             assertThat(modelToSave.getId()).isNotNull();
             assertThat(categoryToSave.getModels()).contains(modelToSave);
             assertThat(modelToSave.getCategory().getId()).isEqualTo(categoryToSave.getId());
+            session.getTransaction().rollback();
         }
     }
 
@@ -74,9 +74,9 @@ class CategoryTestIT extends IntegrationBaseTest {
             session.evict(categoryToUpdate);
 
             var updatedCategory = session.find(Category.class, categoryToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedCategory).isEqualTo(categoryToUpdate);
+            session.getTransaction().rollback();
         }
     }
 
@@ -87,9 +87,9 @@ class CategoryTestIT extends IntegrationBaseTest {
             var categoryToDelete = session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE);
 
             session.delete(categoryToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(Category.class, categoryToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

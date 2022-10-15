@@ -31,9 +31,9 @@ class ModelTestIT extends IntegrationBaseTest {
             category.setModel(modelToSave);
 
             var savedModel = session.save(modelToSave);
-            session.getTransaction().commit();
 
             assertThat(savedModel).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -50,12 +50,12 @@ class ModelTestIT extends IntegrationBaseTest {
             category.setModel(modelToSave);
 
             session.save(modelToSave);
-            session.getTransaction().commit();
 
             assertThat(modelToSave.getId()).isNotNull();
             assertThat(carToSave.getId()).isNotNull();
             assertThat(modelToSave.getCars()).contains(carToSave);
             assertThat(carToSave.getModel().getId()).isEqualTo(modelToSave.getId());
+            session.getTransaction().rollback();
         }
     }
 
@@ -85,9 +85,9 @@ class ModelTestIT extends IntegrationBaseTest {
             session.evict(modelToUpdate);
 
             var updatedModel = session.find(Model.class, modelToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedModel).isEqualTo(modelToUpdate);
+            session.getTransaction().rollback();
         }
     }
 
@@ -98,9 +98,9 @@ class ModelTestIT extends IntegrationBaseTest {
             var modelToDelete = session.find(Model.class, TEST_MODEL_ID_FOR_DELETE);
 
             session.delete(modelToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(Model.class, modelToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

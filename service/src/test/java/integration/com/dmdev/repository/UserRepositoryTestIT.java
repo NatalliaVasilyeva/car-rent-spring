@@ -27,8 +27,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllUsersWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<User> users = userRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<User> users = userRepository.findAllHql(session);
 
             assertThat(users).hasSize(2);
 
@@ -40,6 +39,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .map(UserDetails::getBirthday)
                     .collect(toList());
             assertThat(birthdays).contains(LocalDate.of(1989, 3, 12), LocalDate.of(1986, 7, 2));
+            session.getTransaction().rollback();
         }
     }
 
@@ -48,7 +48,6 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<User> users = userRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(2);
 
@@ -60,6 +59,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .map(UserDetails::getBirthday)
                     .collect(toList());
             assertThat(birthdays).contains(LocalDate.of(1989, 3, 12), LocalDate.of(1986, 7, 2));
+            session.getTransaction().rollback();
         }
     }
 
@@ -68,7 +68,6 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<User> users = userRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(2);
 
@@ -80,6 +79,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .map(UserDetails::getBirthday)
                     .collect(toList());
             assertThat(birthdays).contains(LocalDate.of(1989, 3, 12), LocalDate.of(1986, 7, 2));
+            session.getTransaction().rollback();
         }
     }
 
@@ -88,10 +88,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<User> optionalUser = userRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_USER_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalUser).isNotNull();
-            optionalUser.ifPresent(user -> assertThat(user).isEqualTo(ExistEntityBuilder.getExistUser()));
+            optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
+            assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -100,10 +101,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<User> optionalUser = userRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_USER_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalUser).isNotNull();
-            optionalUser.ifPresent(user -> assertThat(user).isEqualTo(ExistEntityBuilder.getExistUser()));
+            optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
+            assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -116,10 +118,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .password("VasilechekBel123!")
                     .build();
             Optional<User> optionalUser = userRepository.findUsersByEmailAndPasswordCriteria(session, userFilter);
-            session.getTransaction().commit();
 
             assertThat(optionalUser).isNotNull();
-            optionalUser.ifPresent(user -> assertThat(user).isEqualTo(ExistEntityBuilder.getExistUser()));
+            optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
+            assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -132,10 +135,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .password("VasilechekBel123!")
                     .build();
             Optional<User> optionalUser = userRepository.findUsersByEmailAndPasswordQueryDsl(session, userFilter);
-            session.getTransaction().commit();
 
             assertThat(optionalUser).isNotNull();
-            optionalUser.ifPresent(user -> assertThat(user).isEqualTo(ExistEntityBuilder.getExistUser()));
+            optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
+            assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -147,11 +151,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .birthday(LocalDate.of(1989, 3, 12))
                     .build();
             List<User> users = userRepository.findUsersByBirthdayCriteria(session, userFilter);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(1);
             assertThat(users.get(0).getUserDetails().getName()).isEqualTo("Petia");
             assertThat(users.get(0).getUserDetails().getSurname()).isEqualTo("Petrov");
+            session.getTransaction().rollback();
         }
     }
 
@@ -163,11 +167,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .birthday(LocalDate.of(1989, 3, 12))
                     .build();
             List<User> users = userRepository.findUsersByBirthdayQueryDsl(session, userFilter);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(1);
             assertThat(users.get(0).getUserDetails().getName()).isEqualTo("Petia");
             assertThat(users.get(0).getUserDetails().getSurname()).isEqualTo("Petrov");
+            session.getTransaction().rollback();
         }
     }
 
@@ -176,7 +180,6 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<UserDto> users = userRepository.findUsersWithShortDataOrderedByEmailCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(2);
             assertThat(users.get(0).getEmail()).isEqualTo("admin@gmail.com");
@@ -184,6 +187,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .map(UserDto::getPhone)
                     .collect(toList());
             assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
+            session.getTransaction().rollback();
         }
     }
 
@@ -192,7 +196,6 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Tuple> users = userRepository.findUsersTupleWithShortDataOrderedByEmailQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(2);
             List<String> emails = users.stream().map(r -> r.get(0, String.class)).collect(toList());
@@ -203,6 +206,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
 
             List<String> phones = users.stream().map(r -> r.get(4, String.class)).collect(toList());
             assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
+            session.getTransaction().rollback();
         }
     }
 
@@ -216,11 +220,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .birthday(LocalDate.of(1989, 3, 12))
                     .build();
             List<UserDto> users = userRepository.findUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailCriteria(session, userFilter);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(1);
             assertThat(users.get(0).getName()).isEqualTo("Petia");
             assertThat(users.get(0).getPhone()).isEqualTo("+375 29 124 56 79");
+            session.getTransaction().rollback();
         }
     }
 
@@ -233,11 +237,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .surname("Petrov")
                     .build();
             List<UserDto> users = userRepository.findUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailCriteria(session, userFilter);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(2);
             assertThat(users.get(0).getEmail()).isEqualTo("admin@gmail.com");
             assertThat(users.get(1).getEmail()).isEqualTo("client@gmail.com");
+            session.getTransaction().rollback();
         }
     }
 
@@ -251,11 +255,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                     .birthday(LocalDate.of(1989, 3, 12))
                     .build();
             List<Tuple> users = userRepository.findUsersTupleByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl(session, userFilter);
-            session.getTransaction().commit();
 
             assertThat(users).hasSize(1);
             List<String> emails = users.stream().map(r -> r.get(0, String.class)).collect(toList());
             assertThat(emails).contains("client@gmail.com");
+            session.getTransaction().rollback();
         }
     }
 }

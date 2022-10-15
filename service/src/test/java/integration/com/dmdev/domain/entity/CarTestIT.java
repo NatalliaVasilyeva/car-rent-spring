@@ -25,9 +25,9 @@ class CarTestIT extends IntegrationBaseTest {
             model.setCar(car);
 
             var savedCar = session.save(car);
-            session.getTransaction().commit();
 
             assertThat(savedCar).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -58,9 +58,9 @@ class CarTestIT extends IntegrationBaseTest {
             session.evict(carToUpdate);
 
             var updatedCar = session.find(Car.class, carToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedCar).isEqualTo(carToUpdate);
+            session.getTransaction().rollback();
         }
     }
 
@@ -71,9 +71,9 @@ class CarTestIT extends IntegrationBaseTest {
             var carToDelete = session.find(Car.class, TEST_CAR_ID_FOR_DELETE);
 
             session.delete(carToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(Car.class, carToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

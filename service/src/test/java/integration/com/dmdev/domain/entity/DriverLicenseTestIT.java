@@ -25,9 +25,9 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
             userDetails.setDriverLicense(driverLicenceToSave);
 
             var savedDriverLicense = session.save(driverLicenceToSave);
-            session.getTransaction().commit();
 
             assertThat(savedDriverLicense).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -55,9 +55,9 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
             session.evict(driverLicenseToUpdate);
 
             var updatedDriverLicense = session.find(DriverLicense.class, driverLicenseToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedDriverLicense).isEqualTo(driverLicenseToUpdate);
+            session.getTransaction().rollback();
         }
     }
 
@@ -68,9 +68,9 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
             var driverLicenseToDelete = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
 
             session.delete(driverLicenseToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(DriverLicense.class, driverLicenseToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

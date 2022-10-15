@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Value
 @Builder
 public class CarRentalTimeFilter {
-    String orderId;
+    Long orderId;
     LocalDateTime startRentalDate;
     LocalDateTime endRentalDate;
 

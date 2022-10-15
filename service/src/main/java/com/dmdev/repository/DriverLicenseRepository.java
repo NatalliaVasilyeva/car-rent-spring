@@ -13,7 +13,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
 import javax.persistence.criteria.Predicate;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ public class DriverLicenseRepository implements Repository<Long, DriverLicense> 
     }
 
     @Override
-    public List<DriverLicense> findAllHQL(Session session) {
+    public List<DriverLicense> findAllHql(Session session) {
         return session.createQuery("select d from DriverLicense d", DriverLicense.class)
                 .list();
     }
@@ -85,13 +84,13 @@ public class DriverLicenseRepository implements Repository<Long, DriverLicense> 
         return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
     }
 
-    public List<DriverLicense> findDriverLicenseByExpiredDateOrLessCriteria(Session session, LocalDate expiredDate) {
+    public List<DriverLicense> findDriverLicenseByExpiredDateOrLessCriteria(Session session, DriverLicenseFilter driverLicenseFilter) {
         var cb = session.getCriteriaBuilder();
         var criteria = cb.createQuery(DriverLicense.class);
         var driverLicense = criteria.from(DriverLicense.class);
 
         criteria.select(driverLicense)
-                .where(cb.lessThanOrEqualTo(driverLicense.get(DriverLicense_.expiredDate), expiredDate));
+                .where(cb.lessThanOrEqualTo(driverLicense.get(DriverLicense_.expiredDate), driverLicenseFilter.getExpiredDate()));
 
         return session.createQuery(criteria)
                 .list();
@@ -115,13 +114,11 @@ public class DriverLicenseRepository implements Repository<Long, DriverLicense> 
 
     public List<DriverLicense> findDriverLicensesByIssueAndExpiredDateQueryDsl(Session session, DriverLicenseFilter driverLicenseFilter) {
         var predicateIssueDte = QPredicate.builder()
-                .add(driverLicenseFilter.getIssueDate(), driverLicense.issueDate::eq)
-                .add(driverLicenseFilter.getIssueDate(), driverLicense.issueDate::gt)
+                .add(driverLicenseFilter.getIssueDate(), driverLicense.issueDate::goe)
                 .buildOr();
 
         var predicateExpiredDate = QPredicate.builder()
-                .add(driverLicenseFilter.getExpiredDate(), driverLicense.expiredDate::eq)
-                .add(driverLicenseFilter.getExpiredDate(), driverLicense.expiredDate::lt)
+                .add(driverLicenseFilter.getExpiredDate(), driverLicense.expiredDate::loe)
                 .buildOr();
 
         var predicateAll = QPredicate.builder()
@@ -136,12 +133,12 @@ public class DriverLicenseRepository implements Repository<Long, DriverLicense> 
                 .fetch();
     }
 
-    public List<DriverLicenseDto> findDriverLicensesByExpiredDateOrderBySurnameCriteria(Session session, LocalDate expiredDate) {
+    public List<DriverLicenseDto> findDriverLicensesByExpiredDateOrderBySurnameCriteria(Session session, DriverLicenseFilter driverLicenseFilter) {
         var cb = session.getCriteriaBuilder();
         var criteria = cb.createQuery(DriverLicenseDto.class);
         var driverLicense = criteria.from(DriverLicense.class);
         var userDetails = driverLicense.join(DriverLicense_.userDetails);
-        Predicate predicate = cb.lessThan(driverLicense.get(DriverLicense_.expiredDate), expiredDate);
+        Predicate predicate = cb.lessThan(driverLicense.get(DriverLicense_.expiredDate), driverLicenseFilter.getExpiredDate());
 
         criteria.select(
                         cb.construct(DriverLicenseDto.class,
@@ -160,10 +157,9 @@ public class DriverLicenseRepository implements Repository<Long, DriverLicense> 
                 .list();
     }
 
-    public List<Tuple> findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(Session session, LocalDate expiredDate) {
+    public List<Tuple> findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(Session session, DriverLicenseFilter driverLicenseFilter) {
         var predicate = QPredicate.builder()
-                .add(expiredDate, driverLicense.expiredDate::eq)
-                .add(expiredDate, driverLicense.expiredDate::lt)
+                .add(driverLicenseFilter.getExpiredDate(), driverLicense.expiredDate::loe)
                 .buildOr();
 
         return new JPAQuery<Tuple>(session)

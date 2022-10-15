@@ -27,8 +27,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllCarsWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<Car> cars = carRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<Car> cars = carRepository.findAllHql(session);
 
             assertThat(cars).hasSize(2);
 
@@ -39,6 +38,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
+            session.getTransaction().rollback();
         }
     }
 
@@ -47,7 +47,6 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Car> cars = carRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(cars).hasSize(2);
 
@@ -58,6 +57,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
+            session.getTransaction().rollback();
         }
     }
 
@@ -66,7 +66,6 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Car> cars = carRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(cars).hasSize(2);
 
@@ -77,6 +76,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
+            session.getTransaction().rollback();
         }
     }
 
@@ -85,11 +85,11 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Car> optionalCar = carRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_CAR_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalCar).isNotNull();
-            optionalCar.ifPresent(car -> assertThat(car).isEqualTo(ExistEntityBuilder.getExistCar()));
-
+            optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
+            assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -98,11 +98,11 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Car> optionalCar = carRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_CAR_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalCar).isNotNull();
-            optionalCar.ifPresent(car -> assertThat(car).isEqualTo(ExistEntityBuilder.getExistCar()));
-
+            optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
+            assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -111,11 +111,11 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Car> optionalCar = carRepository.findCarByNumberCriteria(session, "7834AE-7");
-            session.getTransaction().commit();
 
             assertThat(optionalCar).isNotNull();
-            optionalCar.ifPresent(car -> assertThat(car).isEqualTo(ExistEntityBuilder.getExistCar()));
-
+            optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
+            assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -124,11 +124,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Car> cars = carRepository.findCarByTransmissionGraph(session, Transmission.ROBOT);
-            session.getTransaction().commit();
 
             assertThat(cars).hasSize(1);
             assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-
+            session.getTransaction().rollback();
         }
     }
 
@@ -141,11 +140,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .year(2022)
                     .build();
             List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(session, carFilter);
-            session.getTransaction().commit();
 
             assertThat(cars).hasSize(1);
             assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-
+            session.getTransaction().rollback();
         }
     }
 
@@ -158,10 +156,9 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .year(2023)
                     .build();
             List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(session, carFilter);
-            session.getTransaction().commit();
 
             assertThat(cars).isEmpty();
-
+            session.getTransaction().rollback();
         }
     }
 
@@ -174,11 +171,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .year(2022)
                     .build();
             List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterQueryDsl(session, carFilter);
-            session.getTransaction().commit();
 
             assertThat(cars).hasSize(1);
             assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-
+            session.getTransaction().rollback();
         }
     }
 
@@ -192,11 +188,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .category("BUSINESS")
                     .build();
             List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(session, carFilter);
-            session.getTransaction().commit();
 
             assertThat(cars).hasSize(1);
             assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-
+            session.getTransaction().rollback();
         }
     }
 
@@ -210,9 +205,9 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                     .category("dummy")
                     .build();
             List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(session, carFilter);
-            session.getTransaction().commit();
 
             assertThat(cars).isEmpty();
+            session.getTransaction().rollback();
         }
     }
 }

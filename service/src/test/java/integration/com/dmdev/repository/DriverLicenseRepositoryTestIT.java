@@ -28,8 +28,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllDriverLicensesWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<DriverLicense> driverLicenses = driverLicenseRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<DriverLicense> driverLicenses = driverLicenseRepository.findAllHql(session);
 
             assertThat(driverLicenses).hasSize(2);
 
@@ -43,6 +42,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(userEmails).contains("admin@gmail.com", "client@gmail.com");
+            session.getTransaction().rollback();
         }
     }
 
@@ -51,7 +51,6 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<DriverLicense> driverLicenses = driverLicenseRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(driverLicenses).hasSize(2);
 
@@ -65,6 +64,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(userEmails).contains("admin@gmail.com", "client@gmail.com");
+            session.getTransaction().rollback();
         }
     }
 
@@ -73,7 +73,6 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<DriverLicense> driverLicenses = driverLicenseRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(driverLicenses).hasSize(2);
 
@@ -87,6 +86,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
                     .collect(toList());
 
             assertThat(userEmails).contains("admin@gmail.com", "client@gmail.com");
+            session.getTransaction().rollback();
         }
     }
 
@@ -95,10 +95,11 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<DriverLicense> optionalDriverLicense = driverLicenseRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_DRIVER_LICENSE_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalDriverLicense).isNotNull();
-            optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense).isEqualTo(ExistEntityBuilder.getExistDriverLicense()));
+            optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId()));
+            assertThat(optionalDriverLicense).isEqualTo(Optional.of(ExistEntityBuilder.getExistDriverLicense()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -107,10 +108,11 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<DriverLicense> optionalDriverLicense = driverLicenseRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_DRIVER_LICENSE_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalDriverLicense).isNotNull();
-            optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense).isEqualTo(ExistEntityBuilder.getExistDriverLicense()));
+            optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId()));
+            assertThat(optionalDriverLicense).isEqualTo(Optional.of(ExistEntityBuilder.getExistDriverLicense()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -119,10 +121,11 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<DriverLicense> optionalDriverLicense = driverLicenseRepository.findDriverLicenseByNumberCriteria(session, "AB12346");
-            session.getTransaction().commit();
 
             assertThat(optionalDriverLicense).isNotNull();
-            optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense).isEqualTo(ExistEntityBuilder.getExistDriverLicense()));
+            optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId()));
+            assertThat(optionalDriverLicense).isEqualTo(Optional.of(ExistEntityBuilder.getExistDriverLicense()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -130,10 +133,13 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldNotReturnDriverLicenseByExpiredDateOrLessCriteria() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<DriverLicense> driverLicenses = driverLicenseRepository.findDriverLicenseByExpiredDateOrLessCriteria(session, LocalDate.now().minusDays(1L));
-            session.getTransaction().commit();
+            DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
+                    .expiredDate(LocalDate.now().minusDays(1L))
+                    .build();
+            List<DriverLicense> driverLicenses = driverLicenseRepository.findDriverLicenseByExpiredDateOrLessCriteria(session, driverLicenseFilter);
 
             assertThat(driverLicenses).isEmpty();
+            session.getTransaction().rollback();
         }
     }
 
@@ -146,10 +152,10 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
                     .expiredDate(LocalDate.of(2030, 1, 1))
                     .build();
             List<DriverLicense> driverLicenses = driverLicenseRepository.findDriverLicensesByIssueAndExpiredDateCriteria(session, driverLicenseFilter);
-            session.getTransaction().commit();
 
             assertThat(driverLicenses).hasSize(2);
             assertThat(driverLicenses).contains(ExistEntityBuilder.getExistDriverLicense());
+            session.getTransaction().rollback();
         }
     }
 
@@ -162,10 +168,10 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
                     .expiredDate(LocalDate.of(2030, 1, 1))
                     .build();
             List<DriverLicense> driverLicenses = driverLicenseRepository.findDriverLicensesByIssueAndExpiredDateQueryDsl(session, driverLicenseFilter);
-            session.getTransaction().commit();
 
             assertThat(driverLicenses).hasSize(2);
             assertThat(driverLicenses).contains(ExistEntityBuilder.getExistDriverLicense());
+            session.getTransaction().rollback();
         }
     }
 
@@ -173,14 +179,17 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnDriverLicenseDtoByExpiredDateOrderBySurnameCriteria() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<DriverLicenseDto> driverLicenseDtos = driverLicenseRepository.findDriverLicensesByExpiredDateOrderBySurnameCriteria(session, LocalDate.of(2030, 1, 1));
-            session.getTransaction().commit();
+            DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
+                    .expiredDate(LocalDate.of(2030, 1, 1))
+                    .build();
+            List<DriverLicenseDto> driverLicenseDtos = driverLicenseRepository.findDriverLicensesByExpiredDateOrderBySurnameCriteria(session, driverLicenseFilter);
 
             assertThat(driverLicenseDtos).hasSize(2);
             assertThat(driverLicenseDtos.get(0).getNumber()).isEqualTo("AB12345");
             assertThat(driverLicenseDtos.get(1).getNumber()).isEqualTo("AB12346");
             assertThat(driverLicenseDtos.get(0).getSurname()).isEqualTo("Ivanov");
             assertThat(driverLicenseDtos.get(1).getSurname()).isEqualTo("Petrov");
+            session.getTransaction().rollback();
         }
     }
 
@@ -188,8 +197,10 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnDriverLicenseTupleByExpiredDateOrderBySurnameQueryDsl() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<Tuple> driverLicenses = driverLicenseRepository.findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(session, LocalDate.of(2025, 1, 1));
-            session.getTransaction().commit();
+            DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
+                    .expiredDate(LocalDate.of(2025, 1, 1))
+                    .build();
+            List<Tuple> driverLicenses = driverLicenseRepository.findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(session, driverLicenseFilter);
 
             assertThat(driverLicenses).hasSize(1);
             List<String> surname = driverLicenses.stream().map(r -> r.get(1, String.class)).collect(toList());
@@ -197,6 +208,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
             List<String> driverLicenseNumber = driverLicenses.stream().map(r -> r.get(3, String.class)).collect(toList());
             assertThat(driverLicenseNumber).contains("AB12346");
+            session.getTransaction().rollback();
         }
     }
 }

@@ -22,9 +22,9 @@ class UserTestIT extends IntegrationBaseTest {
             var userToSave = TestEntityBuilder.createUser();
 
             var savedUser = session.save(userToSave);
-            session.getTransaction().commit();
 
             assertThat(savedUser).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -37,10 +37,10 @@ class UserTestIT extends IntegrationBaseTest {
             userDetails.setUser(userToSave);
 
             var savedUserId = session.save(userToSave);
-            session.getTransaction().commit();
 
             assertThat(savedUserId).isNotNull();
             assertThat(userDetails).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -72,10 +72,10 @@ class UserTestIT extends IntegrationBaseTest {
             session.clear();
 
             var updatedUser = session.find(User.class, userToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedUser).isEqualTo(userToUpdate);
             assertThat(updatedUser.getUserDetails().getUserContact().getAddress()).isEqualTo(newAddress);
+            session.getTransaction().rollback();
         }
     }
 
@@ -86,9 +86,9 @@ class UserTestIT extends IntegrationBaseTest {
             var userToDelete = session.find(User.class, TEST_USER_ID_FOR_DELETE);
 
             session.delete(userToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(User.class, userToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

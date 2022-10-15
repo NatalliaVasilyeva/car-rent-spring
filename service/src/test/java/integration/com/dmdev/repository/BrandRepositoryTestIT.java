@@ -23,8 +23,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAllBrandsWithHql() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            List<Brand> brands = brandRepository.findAllHQL(session);
-            session.getTransaction().commit();
+            List<Brand> brands = brandRepository.findAllHql(session);
 
             assertThat(brands).hasSize(2);
 
@@ -38,6 +37,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
             modelNames.forEach(System.out::println);
 
             assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+            session.getTransaction().rollback();
         }
     }
 
@@ -46,7 +46,6 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Brand> brands = brandRepository.findAllCriteria(session);
-            session.getTransaction().commit();
 
             assertThat(brands).hasSize(2);
 
@@ -60,6 +59,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
             modelNames.forEach(System.out::println);
 
             assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+            session.getTransaction().rollback();
         }
     }
 
@@ -68,7 +68,6 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Brand> brands = brandRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
 
             assertThat(brands).hasSize(2);
 
@@ -82,6 +81,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
             modelNames.forEach(System.out::println);
 
             assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+            session.getTransaction().rollback();
         }
     }
 
@@ -90,10 +90,11 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Brand> optionalBrand = brandRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_BRAND_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalBrand).isNotNull();
-            optionalBrand.ifPresent(brand -> assertThat(brand).isEqualTo(ExistEntityBuilder.getExistBrand()));
+            optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
+            assertThat(optionalBrand).isEqualTo(Optional.of(ExistEntityBuilder.getExistBrand()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -102,10 +103,11 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Brand> optionalBrand = brandRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_BRAND_ID);
-            session.getTransaction().commit();
 
             assertThat(optionalBrand).isNotNull();
-            optionalBrand.ifPresent(brand -> assertThat(brand).isEqualTo(ExistEntityBuilder.getExistBrand()));
+            optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
+            assertThat(optionalBrand).isEqualTo(Optional.of(ExistEntityBuilder.getExistBrand()));
+            session.getTransaction().rollback();
         }
     }
 
@@ -114,10 +116,10 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Brand> optionalBrand = brandRepository.findBrandByNameCriteria(session, "audi");
-            session.getTransaction().commit();
 
             assertThat(optionalBrand).isNotNull();
             optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("audi"));
+            session.getTransaction().rollback();
         }
     }
 
@@ -126,10 +128,10 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Optional<Brand> optionalBrand = brandRepository.findBrandByNameQueryDsl(session, "mercedes");
-            session.getTransaction().commit();
 
             assertThat(optionalBrand).isNotNull();
             optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("mercedes"));
+            session.getTransaction().rollback();
         }
     }
 }

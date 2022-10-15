@@ -26,7 +26,7 @@ public class CarRepository implements Repository<Long, Car> {
     }
 
     @Override
-    public List<Car> findAllHQL(Session session) {
+    public List<Car> findAllHql(Session session) {
         return session.createQuery("select c from Car c", Car.class)
                 .list();
     }
@@ -113,8 +113,7 @@ public class CarRepository implements Repository<Long, Car> {
 
     public List<Car> findCarsByColorAndYearOrGreaterQueryDsl(Session session, CarFilter carFilter) {
         var predicateYear = QPredicate.builder()
-                .add(carFilter.getYear(), car.year::eq)
-                .add(carFilter.getYear(), car.year::gt)
+                .add(carFilter.getYear(), car.year::goe)
                 .buildOr();
 
         var predicateColor = QPredicate.builder()
@@ -135,8 +134,7 @@ public class CarRepository implements Repository<Long, Car> {
 
     public List<Car> findCarsByBrandModelCategoryYearOrGreaterQueryDsl(Session session, CarFilter carFilter) {
         var predicateYear = QPredicate.builder()
-                .add(carFilter.getYear(), car.year::eq)
-                .add(carFilter.getYear(), car.year::gt)
+                .add(carFilter.getYear(), car.year::goe)
                 .buildOr();
 
         var predicateOther = QPredicate.builder()

@@ -24,8 +24,7 @@ public class CarRentalTimeRepository implements Repository<Long, CarRentalTime> 
     }
 
     @Override
-    public List<CarRentalTime> findAllHQL(Session session) {
-
+    public List<CarRentalTime> findAllHql(Session session) {
         return session.createQuery("select c from CarRentalTime c", CarRentalTime.class)
                 .list();
     }
@@ -111,13 +110,11 @@ public class CarRentalTimeRepository implements Repository<Long, CarRentalTime> 
 
     public List<CarRentalTime> findCarRentalTimesBetweenStartAndRentalDatesQueryDsl(Session session, CarRentalTimeFilter carRentalTimeFilter) {
         var predicateOrStart = QPredicate.builder()
-                .add(carRentalTimeFilter.getStartRentalDate(), carRentalTime.startRentalDate::eq)
-                .add(carRentalTimeFilter.getStartRentalDate(), carRentalTime.startRentalDate::gt)
+                .add(carRentalTimeFilter.getStartRentalDate(), carRentalTime.startRentalDate::goe)
                 .buildOr();
 
         var predicateOrEnd = QPredicate.builder()
-                .add(carRentalTimeFilter.getEndRentalDate(), carRentalTime.startRentalDate::eq)
-                .add(carRentalTimeFilter.getEndRentalDate(), carRentalTime.startRentalDate::lt)
+                .add(carRentalTimeFilter.getEndRentalDate(), carRentalTime.startRentalDate::loe)
                 .buildOr();
 
         var predicateAll = QPredicate.builder()

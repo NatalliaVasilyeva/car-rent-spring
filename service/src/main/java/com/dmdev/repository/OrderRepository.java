@@ -28,7 +28,7 @@ public class OrderRepository implements Repository<Long, Order> {
     }
 
     @Override
-    public List<Order> findAllHQL(Session session) {
+    public List<Order> findAllHql(Session session) {
         return session.createQuery("select o from Order o", Order.class)
                 .list();
     }

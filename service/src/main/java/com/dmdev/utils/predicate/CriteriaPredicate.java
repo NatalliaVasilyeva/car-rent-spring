@@ -10,10 +10,6 @@ import java.util.function.Function;
 public class CriteriaPredicate {
     private final List<Predicate> predicates = new ArrayList<>();
 
-    public CriteriaPredicate() {
-        //Do nothing (sonar lint)
-    }
-
     public static CriteriaPredicate builder() {
         return new CriteriaPredicate();
     }

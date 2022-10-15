@@ -25,7 +25,7 @@ public class ModelRepository implements Repository<Long, Model> {
     }
 
     @Override
-    public List<Model> findAllHQL(Session session) {
+    public List<Model> findAllHql(Session session) {
         return session.createQuery("select m from Model m", Model.class)
                 .list();
     }

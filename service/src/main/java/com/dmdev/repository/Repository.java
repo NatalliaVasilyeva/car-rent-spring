@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface Repository<K, T extends BaseEntity> {
 
-    List<T> findAllHQL(Session session);
+    List<T> findAllHql(Session session);
 
     List<T> findAllCriteria(Session session);
 
