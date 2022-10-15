@@ -11,20 +11,12 @@ CREATE TABLE IF NOT EXISTS brand
     name VARCHAR(255) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS price
-(
-    id  BIGSERIAL PRIMARY KEY,
-    sum NUMERIC(10, 2) NOT NULL CHECK (sum > 0)
-);
-
-CREATE TABLE IF NOT EXISTS categories
+CREATE TABLE IF NOT EXISTS category
 (
     id       BIGSERIAL PRIMARY KEY,
-    name     VARCHAR(255) NOT NULL UNIQUE DEFAULT 'ECONOMY',
-    price_id BIGINT,
-    CONSTRAINT category_price_fk
-        FOREIGN KEY (price_id) REFERENCES price (id)
-            ON UPDATE CASCADE ON DELETE SET NULL
+    name     VARCHAR(255) NOT NULL UNIQUE DEFAULT 'economy',
+    price    NUMERIC(10, 2) NOT NULL CHECK (price > 0) default '50'
+
 );
 
 CREATE TABLE IF NOT EXISTS model
@@ -39,7 +31,7 @@ CREATE TABLE IF NOT EXISTS model
         FOREIGN KEY (brand_id) REFERENCES brand (id)
             ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT model_category_fk
-        FOREIGN KEY (category_id) REFERENCES categories (id)
+        FOREIGN KEY (category_id) REFERENCES category (id)
             ON UPDATE CASCADE ON DELETE SET NULL
 );
 
@@ -51,7 +43,7 @@ CREATE TABLE IF NOT EXISTS car
     year        SMALLINT,
     car_number  VARCHAR(16),
     vin         VARCHAR(255) NOT NULL UNIQUE,
-    is_repaired BOOLEAN DEFAULT 'TRUE',
+    repaired    BOOLEAN DEFAULT 'TRUE',
     image       TEXT,
     CONSTRAINT car_model_fk
         FOREIGN KEY (model_id) REFERENCES model (id)

@@ -22,23 +22,23 @@ class AccidentTestIT extends IntegrationBaseTest {
     void shouldCreateAccident() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Order order = session.get(Order.class, TEST_EXISTS_ORDER_ID);
-            Accident accident = TestEntityBuilder.createAccident();
+            var order = session.get(Order.class, TEST_EXISTS_ORDER_ID);
+            var accident = TestEntityBuilder.createAccident();
             order.setAccident(accident);
 
-            Long savedAccidentId = (Long) session.save(accident);
+            var savedAccident = session.save(accident);
             session.getTransaction().commit();
 
-            assertThat(savedAccidentId).isNotNull();
+            assertThat(savedAccident).isNotNull();
         }
     }
 
     @Test
     void shouldReturnAccident() {
         try (Session session = sessionFactory.openSession()) {
-            Accident expectedAccident = ExistEntityBuilder.getExistAccident();
+            var expectedAccident = ExistEntityBuilder.getExistAccident();
 
-            Accident actualAccident = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
+            var actualAccident = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
 
             assertThat(actualAccident).isNotNull();
             assertEquals(expectedAccident, actualAccident);
@@ -49,8 +49,8 @@ class AccidentTestIT extends IntegrationBaseTest {
     void shouldUpdateAccident() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Accident accidentToUpdate = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
-            Order existOrder = session.find(Order.class, TEST_EXISTS_ORDER_ID);
+            var accidentToUpdate = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
+            var existOrder = session.find(Order.class, TEST_EXISTS_ORDER_ID);
             accidentToUpdate.setDamage(BigDecimal.valueOf(3456.76));
             accidentToUpdate.setDescription("test description");
             accidentToUpdate.setOrder(existOrder);
@@ -59,7 +59,7 @@ class AccidentTestIT extends IntegrationBaseTest {
             session.flush();
             session.evict(accidentToUpdate);
 
-            Accident updatedAccident = session.find(Accident.class, accidentToUpdate.getId());
+            var updatedAccident = session.find(Accident.class, accidentToUpdate.getId());
             session.getTransaction().commit();
 
             assertThat(updatedAccident).isEqualTo(accidentToUpdate);
@@ -70,7 +70,7 @@ class AccidentTestIT extends IntegrationBaseTest {
     void shouldDeleteAccident() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Accident accidentToDelete = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
+            var accidentToDelete = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
 
             session.delete(accidentToDelete);
             session.getTransaction().commit();

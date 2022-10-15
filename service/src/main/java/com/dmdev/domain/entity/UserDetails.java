@@ -31,7 +31,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = {"user", "driverLicenses"})
 @Builder
 @Entity
-public class UserDetails {
+public class UserDetails implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,18 +42,15 @@ public class UserDetails {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @NotNull
     @Column(nullable = false)
     private String name;
 
-    @NotNull
     @Column(nullable = false)
     private String surname;
 
     @Embedded
     private UserContact userContact;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDate birthday;
 
@@ -74,6 +71,5 @@ public class UserDetails {
     public void setUser(User user) {
         user.setUserDetails(this);
         this.user = user;
-        this.id = user.getId();
     }
 }

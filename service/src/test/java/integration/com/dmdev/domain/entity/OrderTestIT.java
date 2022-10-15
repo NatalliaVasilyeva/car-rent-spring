@@ -26,18 +26,18 @@ class OrderTestIT extends IntegrationBaseTest {
     void shouldCreateOrder() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            User user = session.get(User.class, TEST_EXISTS_USER_ID);
-            Car car = session.get(Car.class, TEST_EXISTS_CAR_ID);
-            Order orderToSave = TestEntityBuilder.createOrder();
+            var user = session.get(User.class, TEST_EXISTS_USER_ID);
+            var car = session.get(Car.class, TEST_EXISTS_CAR_ID);
+            var orderToSave = TestEntityBuilder.createOrder();
             orderToSave.setUser(user);
             orderToSave.setCar(car);
-            CarRentalTime carRentalTime = TestEntityBuilder.createCarRentalTime();
+            var carRentalTime = TestEntityBuilder.createCarRentalTime();
             carRentalTime.setOrder(orderToSave);
 
-            Long savedOrderId = (Long) session.save(orderToSave);
+            var savedOrder = session.save(orderToSave);
             session.getTransaction().commit();
 
-            assertThat(savedOrderId).isNotNull();
+            assertThat(savedOrder).isNotNull();
         }
     }
 
@@ -45,14 +45,14 @@ class OrderTestIT extends IntegrationBaseTest {
     void shouldCreateOrderWithNotExistsAccidents() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            User user = session.get(User.class, TEST_EXISTS_USER_ID);
-            Car car = session.get(Car.class, TEST_EXISTS_CAR_ID);
-            Accident accidentToSave = TestEntityBuilder.createAccident();
-            Order orderToSave = TestEntityBuilder.createOrder();
+            var user = session.get(User.class, TEST_EXISTS_USER_ID);
+            var car = session.get(Car.class, TEST_EXISTS_CAR_ID);
+            var accidentToSave = TestEntityBuilder.createAccident();
+            var orderToSave = TestEntityBuilder.createOrder();
             orderToSave.setUser(user);
             orderToSave.setCar(car);
             orderToSave.setAccident(accidentToSave);
-            CarRentalTime carRentalTime = TestEntityBuilder.createCarRentalTime();
+            var carRentalTime = TestEntityBuilder.createCarRentalTime();
             carRentalTime.setOrder(orderToSave);
 
             session.save(orderToSave);
@@ -69,9 +69,9 @@ class OrderTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnOrder() {
         try (Session session = sessionFactory.openSession()) {
-            Order expectedOrder = ExistEntityBuilder.getExistOrder();
+            var expectedOrder = ExistEntityBuilder.getExistOrder();
 
-            Order actualOrder = session.find(Order.class, TEST_EXISTS_ORDER_ID);
+            var actualOrder = session.find(Order.class, TEST_EXISTS_ORDER_ID);
 
             assertThat(actualOrder).isNotNull();
             assertEquals(expectedOrder, actualOrder);
@@ -81,10 +81,10 @@ class OrderTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateOrder() {
         try (Session session = sessionFactory.openSession()) {
-            LocalDateTime startRentalDate = LocalDateTime.of(2022, 10, 11, 13, 0);
+            var startRentalDate = LocalDateTime.of(2022, 10, 11, 13, 0);
             session.beginTransaction();
-            Order orderToUpdate = session.find(Order.class, TEST_EXISTS_ORDER_ID);
-            CarRentalTime carRentalTime = orderToUpdate.getCarRentalTime();
+            var orderToUpdate = session.find(Order.class, TEST_EXISTS_ORDER_ID);
+            var carRentalTime = orderToUpdate.getCarRentalTime();
             carRentalTime.setStartRentalDate(startRentalDate);
             orderToUpdate.setInsurance(false);
             carRentalTime.setOrder(orderToUpdate);
@@ -93,7 +93,7 @@ class OrderTestIT extends IntegrationBaseTest {
             session.flush();
             session.clear();
 
-            Order updatedOrder = session.find(Order.class, orderToUpdate.getId());
+            var updatedOrder = session.find(Order.class, orderToUpdate.getId());
             session.getTransaction().commit();
 
             assertThat(updatedOrder).isEqualTo(orderToUpdate);
@@ -105,7 +105,7 @@ class OrderTestIT extends IntegrationBaseTest {
     void shouldDeleteOrder() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Order orderToDelete = session.find(Order.class, TEST_ORDER_ID_FOR_DELETE);
+            var orderToDelete = session.find(Order.class, TEST_ORDER_ID_FOR_DELETE);
 
             session.delete(orderToDelete);
             session.getTransaction().commit();

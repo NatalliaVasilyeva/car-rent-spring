@@ -29,6 +29,7 @@
         <postgresql.version>42.5.0</postgresql.version>
         <h2.version>2.1.214</h2.version>
         <hibernate-core.version>5.6.11.Final</hibernate-core.version>
+        <querydsl.version>5.0.0</querydsl.version>
         <!-- others -->
         <validation-api.version>2.0.1.Final</validation-api.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -79,7 +80,22 @@
                 <artifactId>hibernate-core</artifactId>
                 <version>${hibernate-core.version}</version>
             </dependency>
-            <!-- /spring -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-jpamodelgen</artifactId>
+                <version>${hibernate-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-apt</artifactId>
+                <version>${querydsl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-jpa</artifactId>
+                <version>${querydsl.version}</version>
+            </dependency>
+            <!-- /db -->
             <!-- others -->
             <dependency>
                 <groupId>javax.validation</groupId>
@@ -135,9 +151,9 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
-                    <configuration>
-                        <parameters>true</parameters>
-                    </configuration>
+<!--                    <configuration>-->
+<!--                        <parameters>true</parameters>-->
+<!--                    </configuration>-->
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
@@ -195,6 +211,11 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.querydsl</groupId>
+                    <artifactId>querydsl-maven-plugin</artifactId>
+                    <version>${querydsl.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

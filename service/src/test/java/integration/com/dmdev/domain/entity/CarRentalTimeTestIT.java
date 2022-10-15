@@ -19,9 +19,9 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnCarRentalTime() {
         try (Session session = sessionFactory.openSession()) {
-            CarRentalTime expectedCarRentalTime = ExistEntityBuilder.getExistCarRentalTime();
+            var expectedCarRentalTime = ExistEntityBuilder.getExistCarRentalTime();
 
-            CarRentalTime actualCarRentalTime = session.find(CarRentalTime.class, TEST_EXISTS_CAR_RENTAL_TIME_ID);
+            var actualCarRentalTime = session.find(CarRentalTime.class, TEST_EXISTS_CAR_RENTAL_TIME_ID);
 
             assertThat(actualCarRentalTime).isNotNull();
             assertEquals(expectedCarRentalTime, actualCarRentalTime);
@@ -32,15 +32,15 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
     void shouldUpdateCarRentalTime() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            CarRentalTime carRentalTimeToUpdate = session.find(CarRentalTime.class, TEST_EXISTS_CAR_RENTAL_TIME_ID);
+            var carRentalTimeToUpdate = session.find(CarRentalTime.class, TEST_EXISTS_CAR_RENTAL_TIME_ID);
 
             carRentalTimeToUpdate.setEndRentalDate(LocalDateTime.of(2022, 11, 9, 10, 0));
             session.update(carRentalTimeToUpdate);
             session.flush();
             session.clear();
 
-            CarRentalTime updatedCarRentalTime = session.find(CarRentalTime.class, carRentalTimeToUpdate.getId());
-            Order updatedOrder = session.find(Order.class, carRentalTimeToUpdate.getOrder().getId());
+            var updatedCarRentalTime = session.find(CarRentalTime.class, carRentalTimeToUpdate.getId());
+            var updatedOrder = session.find(Order.class, carRentalTimeToUpdate.getOrder().getId());
             session.getTransaction().commit();
 
             assertThat(updatedCarRentalTime).isEqualTo(carRentalTimeToUpdate);
@@ -52,7 +52,7 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
     void shouldDeleteCarRentalTime() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            CarRentalTime carRentalTimeToDelete = session.find(CarRentalTime.class, TEST_CAR_RENTAL_TIME_ID_FOR_DELETE);
+            var carRentalTimeToDelete = session.find(CarRentalTime.class, TEST_CAR_RENTAL_TIME_ID_FOR_DELETE);
             carRentalTimeToDelete.getOrder().setCarRentalTime(null);
 
             session.delete(carRentalTimeToDelete);

@@ -21,7 +21,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +31,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = {"brand", "category", "cars"})
 @Builder
 @Entity
-public class Model {
+public class Model implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +45,6 @@ public class Model {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @NotNull
     @Column(nullable = false)
     private String name;
 

@@ -19,10 +19,10 @@ class BrandTestIT extends IntegrationBaseTest {
     void shouldCreateBrandWithoutModel() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long savedBrandId = (Long) session.save(TestEntityBuilder.createBrand());
+            var savedBrand = session.save(TestEntityBuilder.createBrand());
             session.getTransaction().commit();
 
-            assertThat(savedBrandId).isNotNull();
+            assertThat(savedBrand).isNotNull();
         }
     }
 
@@ -30,8 +30,8 @@ class BrandTestIT extends IntegrationBaseTest {
     void shouldCreateBrandWithNotExistsModel() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Model modelToSave = TestEntityBuilder.createModel();
-            Brand brandToSave = TestEntityBuilder.createBrand();
+            var modelToSave = TestEntityBuilder.createModel();
+            var brandToSave = TestEntityBuilder.createBrand();
             brandToSave.setModel(modelToSave);
 
             session.save(brandToSave);
@@ -47,9 +47,9 @@ class BrandTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnBrand() {
         try (Session session = sessionFactory.openSession()) {
-            Brand expectedBrand = ExistEntityBuilder.getExistBrand();
+            var expectedBrand = ExistEntityBuilder.getExistBrand();
 
-            Brand actualBrand = session.find(Brand.class, TEST_EXISTS_BRAND_ID);
+            var actualBrand = session.find(Brand.class, TEST_EXISTS_BRAND_ID);
 
             assertThat(actualBrand).isNotNull();
             assertEquals(expectedBrand, actualBrand);
@@ -60,14 +60,14 @@ class BrandTestIT extends IntegrationBaseTest {
     void shouldUpdateBrand() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Brand brandToUpdate = session.find(Brand.class, TEST_EXISTS_BRAND_ID);
+            var brandToUpdate = session.find(Brand.class, TEST_EXISTS_BRAND_ID);
             brandToUpdate.setName("pegas");
 
             session.update(brandToUpdate);
             session.flush();
             session.evict(brandToUpdate);
 
-            Brand updatedBrand = session.find(Brand.class, brandToUpdate.getId());
+            var updatedBrand = session.find(Brand.class, brandToUpdate.getId());
             session.getTransaction().commit();
 
             assertThat(updatedBrand).isEqualTo(brandToUpdate);
@@ -79,7 +79,7 @@ class BrandTestIT extends IntegrationBaseTest {
     void shouldDeleteBrand() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Brand brandToDelete = session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE);
+            var brandToDelete = session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE);
 
             session.delete(brandToDelete);
             session.getTransaction().commit();

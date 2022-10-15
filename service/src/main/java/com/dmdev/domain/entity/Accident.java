@@ -26,18 +26,16 @@ import java.time.LocalDate;
 @EqualsAndHashCode(exclude = "order")
 @Builder
 @Entity
-public class Accident {
+public class Accident implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDate accidentDate;
 

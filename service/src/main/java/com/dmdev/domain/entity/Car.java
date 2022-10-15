@@ -20,7 +20,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "vin")
 @Builder
 @Entity
-public class Car {
+public class Car implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,12 +47,11 @@ public class Car {
 
     private String carNumber;
 
-    @NotNull
     @Column(nullable = false, unique = true)
     private String vin;
 
     @Builder.Default
-    private Boolean isRepaired = Boolean.TRUE;
+    private boolean repaired = true;
 
     private String image;
 

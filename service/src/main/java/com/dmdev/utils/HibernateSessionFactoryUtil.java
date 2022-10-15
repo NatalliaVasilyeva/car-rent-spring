@@ -8,7 +8,6 @@ import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.entity.Order;
-import com.dmdev.domain.entity.Price;
 import com.dmdev.domain.entity.User;
 import com.dmdev.domain.entity.UserDetails;
 import lombok.SneakyThrows;
@@ -25,20 +24,18 @@ public class HibernateSessionFactoryUtil {
         Configuration configuration = new Configuration();
 
         configuration
-                .addProperties(PropertiesUtil.getProperties());
-
-        configuration.addAnnotatedClass(Accident.class);
-        configuration.addAnnotatedClass(Brand.class);
-        configuration.addAnnotatedClass(Car.class);
-        configuration.addAnnotatedClass(CarRentalTime.class);
-        configuration.addAnnotatedClass(Category.class);
-        configuration.addAnnotatedClass(DriverLicense.class);
-        configuration.addAnnotatedClass(Model.class);
-        configuration.addAnnotatedClass(Order.class);
-        configuration.addAnnotatedClass(Price.class);
-        configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(UserDetails.class);
-        configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
+                .addProperties(PropertiesUtil.getProperties())
+                .addAnnotatedClass(Accident.class)
+                .addAnnotatedClass(Brand.class)
+                .addAnnotatedClass(Car.class)
+                .addAnnotatedClass(CarRentalTime.class)
+                .addAnnotatedClass(Category.class)
+                .addAnnotatedClass(DriverLicense.class)
+                .addAnnotatedClass(Model.class)
+                .addAnnotatedClass(Order.class)
+                .addAnnotatedClass(User.class)
+                .addAnnotatedClass(UserDetails.class)
+                .setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
 
         return configuration.buildSessionFactory();
     }

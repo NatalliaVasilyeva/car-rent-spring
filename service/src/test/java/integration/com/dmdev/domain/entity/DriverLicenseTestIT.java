@@ -20,23 +20,23 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
     void shouldCreateDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            UserDetails userDetails = session.get(UserDetails.class, TEST_EXISTS_USER_DETAILS_ID);
-            DriverLicense driverLicenceToSave = TestEntityBuilder.createDriverLicense();
+            var userDetails = session.get(UserDetails.class, TEST_EXISTS_USER_DETAILS_ID);
+            var driverLicenceToSave = TestEntityBuilder.createDriverLicense();
             userDetails.setDriverLicense(driverLicenceToSave);
 
-            Long savedDriverLicenseId = (Long) session.save(driverLicenceToSave);
+            var savedDriverLicense = session.save(driverLicenceToSave);
             session.getTransaction().commit();
 
-            assertThat(savedDriverLicenseId).isNotNull();
+            assertThat(savedDriverLicense).isNotNull();
         }
     }
 
     @Test
     void shouldReturnDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
-            DriverLicense expectedDriverLicense = ExistEntityBuilder.getExistDriverLicense();
+            var expectedDriverLicense = ExistEntityBuilder.getExistDriverLicense();
 
-            DriverLicense actualDriverLicense = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
+            var actualDriverLicense = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
 
             assertThat(actualDriverLicense).isNotNull();
             assertEquals(expectedDriverLicense, actualDriverLicense);
@@ -47,14 +47,14 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
     void shouldUpdateDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            DriverLicense driverLicenseToUpdate = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
+            var driverLicenseToUpdate = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
             driverLicenseToUpdate.setNumber("dn36632");
 
             session.update(driverLicenseToUpdate);
             session.flush();
             session.evict(driverLicenseToUpdate);
 
-            DriverLicense updatedDriverLicense = session.find(DriverLicense.class, driverLicenseToUpdate.getId());
+            var updatedDriverLicense = session.find(DriverLicense.class, driverLicenseToUpdate.getId());
             session.getTransaction().commit();
 
             assertThat(updatedDriverLicense).isEqualTo(driverLicenseToUpdate);
@@ -65,7 +65,7 @@ class DriverLicenseTestIT extends IntegrationBaseTest {
     void shouldDeleteDriverLicense() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            DriverLicense driverLicenseToDelete = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
+            var driverLicenseToDelete = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
 
             session.delete(driverLicenseToDelete);
             session.getTransaction().commit();

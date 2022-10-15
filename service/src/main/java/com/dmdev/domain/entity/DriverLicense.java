@@ -15,7 +15,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data
@@ -25,22 +24,19 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = "number")
 @Builder
 @Entity
-public class DriverLicense {
+public class DriverLicense implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_details_id", nullable = false)
     private UserDetails userDetails;
 
-    @NotNull
     @Column(nullable = false, unique = true)
     private String number;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDate issueDate;
 
