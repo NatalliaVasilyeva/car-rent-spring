@@ -1,20 +1,21 @@
 package com.dmdev.repository;
 
 import com.dmdev.domain.entity.BaseEntity;
-import org.hibernate.Session;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public interface Repository<K, T extends BaseEntity> {
 
-    List<T> findAllHql(Session session);
+public interface Repository<K extends Serializable, E extends BaseEntity<K>> {
 
-    List<T> findAllCriteria(Session session);
+    E save(E entity);
 
-    List<T> findAllQueryDsl(Session session);
+    void delete(K id);
 
-    Optional<T> findByIdCriteria(Session session, K id);
+    void update(E entity);
 
-    Optional<T> findByIdQueryDsl(Session session, K id);
+    Optional<E> findById(K id);
+
+    List<E> findAll();
 }

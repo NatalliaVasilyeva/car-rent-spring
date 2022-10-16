@@ -10,204 +10,263 @@ import com.dmdev.repository.CarRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
+import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_CAR_ID_FOR_DELETE;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_CAR_ID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CarRepositoryTestIT extends IntegrationBaseTest {
 
-    private final CarRepository carRepository = CarRepository.getInstance();
+    private final Session session = createProxySession(sessionFactory);
+    private final CarRepository carRepository = new CarRepository(session);
+
+    @Test
+    void shouldSaveCar() {
+        session.beginTransaction();
+        var model = ExistEntityBuilder.getExistModel();
+        var car = TestEntityBuilder.createCar();
+        model.setCar(car);
+
+        var savedCar = carRepository.save(car);
+
+        assertThat(savedCar).isNotNull();
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldFindByIdCar() {
+        session.beginTransaction();
+        var expectedCar = Optional.of(ExistEntityBuilder.getExistCar());
+
+        var actualCar = carRepository.findById(TEST_EXISTS_CAR_ID);
+
+        assertThat(actualCar).isNotNull();
+        assertEquals(expectedCar, actualCar);
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldUpdateCar() {
+        session.beginTransaction();
+        var carToUpdate = session.find(Car.class, TEST_EXISTS_CAR_ID);
+        var existModel = session.find(Model.class, 1L);
+        carToUpdate.setColor(Color.BLUE);
+        carToUpdate.setYear(2010);
+        carToUpdate.setModel(existModel);
+
+        carRepository.update(carToUpdate);
+        session.evict(carToUpdate);
+
+        var updatedCar = session.find(Car.class, carToUpdate.getId());
+
+        assertThat(updatedCar).isEqualTo(carToUpdate);
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldDeleteCar() {
+        session.beginTransaction();
+
+        carRepository.delete(TEST_CAR_ID_FOR_DELETE);
+
+        assertThat(session.find(Car.class, TEST_CAR_ID_FOR_DELETE)).isNull();
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldFindAllCars() {
+        session.beginTransaction();
+
+        List<Car> cars = carRepository.findAll();
+        assertThat(cars).hasSize(2);
+
+        List<String> carNumbers = cars.stream().map(Car::getCarNumber).collect(toList());
+        assertThat(carNumbers).containsExactlyInAnyOrder(
+                "7865AE-7", "7834AE-7");
+
+        session.getTransaction().rollback();
+    }
 
     @Test
     void shouldReturnAllCarsWithHql() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Car> cars = carRepository.findAllHql(session);
+        session.beginTransaction();
 
-            assertThat(cars).hasSize(2);
+        List<Car> cars = carRepository.findAllHql();
 
-            List<String> brandNames = cars.stream()
-                    .map(Car::getModel)
-                    .map(Model::getBrand)
-                    .map(Brand::getName)
-                    .collect(toList());
+        assertThat(cars).hasSize(2);
 
-            assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
-            session.getTransaction().rollback();
-        }
+        List<String> brandNames = cars.stream()
+                .map(Car::getModel)
+                .map(Model::getBrand)
+                .map(Brand::getName)
+                .collect(toList());
+
+        assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllCarsWithCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Car> cars = carRepository.findAllCriteria(session);
+        session.beginTransaction();
 
-            assertThat(cars).hasSize(2);
+        List<Car> cars = carRepository.findAllCriteria();
 
-            List<String> brandNames = cars.stream()
-                    .map(Car::getModel)
-                    .map(Model::getBrand)
-                    .map(Brand::getName)
-                    .collect(toList());
+        assertThat(cars).hasSize(2);
 
-            assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
-            session.getTransaction().rollback();
-        }
+        List<String> brandNames = cars.stream()
+                .map(Car::getModel)
+                .map(Model::getBrand)
+                .map(Brand::getName)
+                .collect(toList());
+
+        assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllCarsWithQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Car> cars = carRepository.findAllQueryDsl(session);
+        session.beginTransaction();
 
-            assertThat(cars).hasSize(2);
+        List<Car> cars = carRepository.findAllQueryDsl();
 
-            List<String> brandNames = cars.stream()
-                    .map(Car::getModel)
-                    .map(Model::getBrand)
-                    .map(Brand::getName)
-                    .collect(toList());
+        assertThat(cars).hasSize(2);
 
-            assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
-            session.getTransaction().rollback();
-        }
+        List<String> brandNames = cars.stream()
+                .map(Car::getModel)
+                .map(Model::getBrand)
+                .map(Brand::getName)
+                .collect(toList());
+
+        assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCarBYIdWithCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Optional<Car> optionalCar = carRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_CAR_ID);
+        session.beginTransaction();
 
-            assertThat(optionalCar).isNotNull();
-            optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
-            assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
-            session.getTransaction().rollback();
-        }
+        Optional<Car> optionalCar = carRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_CAR_ID);
+
+        assertThat(optionalCar).isNotNull();
+        optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
+        assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCarBYIdWithQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Optional<Car> optionalCar = carRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_CAR_ID);
+        session.beginTransaction();
 
-            assertThat(optionalCar).isNotNull();
-            optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
-            assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
-            session.getTransaction().rollback();
-        }
+        Optional<Car> optionalCar = carRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_ID);
+
+        assertThat(optionalCar).isNotNull();
+        optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
+        assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCarByNumberCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Optional<Car> optionalCar = carRepository.findCarByNumberCriteria(session, "7834AE-7");
+        session.beginTransaction();
 
-            assertThat(optionalCar).isNotNull();
-            optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
-            assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
-            session.getTransaction().rollback();
-        }
+        Optional<Car> optionalCar = carRepository.findCarByNumberCriteria("7834AE-7");
+
+        assertThat(optionalCar).isNotNull();
+        optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
+        assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCarByTransmissionGraph() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Car> cars = carRepository.findCarByTransmissionGraph(session, Transmission.ROBOT);
+        session.beginTransaction();
 
-            assertThat(cars).hasSize(1);
-            assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-            session.getTransaction().rollback();
-        }
+        List<Car> cars = carRepository.findCarByTransmissionGraph(Transmission.ROBOT);
+
+        assertThat(cars).hasSize(1);
+        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCarsByColorAndYearCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            CarFilter carFilter = CarFilter.builder()
-                    .color(Color.RED)
-                    .year(2022)
-                    .build();
-            List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(session, carFilter);
+        session.beginTransaction();
+        CarFilter carFilter = CarFilter.builder()
+                .color(Color.RED)
+                .year(2022)
+                .build();
 
-            assertThat(cars).hasSize(1);
-            assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-            session.getTransaction().rollback();
-        }
+        List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(carFilter);
+
+        assertThat(cars).hasSize(1);
+        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldNotReturnAnyCarsByColorAndYearOrGreateCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            CarFilter carFilter = CarFilter.builder()
-                    .color(Color.RED)
-                    .year(2023)
-                    .build();
-            List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(session, carFilter);
+        session.beginTransaction();
+        CarFilter carFilter = CarFilter.builder()
+                .color(Color.RED)
+                .year(2023)
+                .build();
 
-            assertThat(cars).isEmpty();
-            session.getTransaction().rollback();
-        }
+        List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(carFilter);
+
+        assertThat(cars).isEmpty();
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCarsByColorAndYearOrGreateQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            CarFilter carFilter = CarFilter.builder()
-                    .color(Color.RED)
-                    .year(2022)
-                    .build();
-            List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterQueryDsl(session, carFilter);
+        session.beginTransaction();
+        CarFilter carFilter = CarFilter.builder()
+                .color(Color.RED)
+                .year(2022)
+                .build();
+        List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterQueryDsl(carFilter);
 
-            assertThat(cars).hasSize(1);
-            assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-            session.getTransaction().rollback();
-        }
+        assertThat(cars).hasSize(1);
+        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCarsByBrandModelCategoryYearOrGreaterQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            CarFilter carFilter = CarFilter.builder()
-                    .brandName("mercedes")
-                    .modelName("Benz")
-                    .category("BUSINESS")
-                    .build();
-            List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(session, carFilter);
+        session.beginTransaction();
+        CarFilter carFilter = CarFilter.builder()
+                .brandName("mercedes")
+                .modelName("Benz")
+                .category("BUSINESS")
+                .build();
 
-            assertThat(cars).hasSize(1);
-            assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-            session.getTransaction().rollback();
-        }
+        List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(carFilter);
+
+        assertThat(cars).hasSize(1);
+        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldNotReturnCarsByBrandModelCategoryYearOrGreaterQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            CarFilter carFilter = CarFilter.builder()
-                    .brandName("mercedes")
-                    .modelName("Benz")
-                    .category("dummy")
-                    .build();
-            List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(session, carFilter);
+        session.beginTransaction();
+        CarFilter carFilter = CarFilter.builder()
+                .brandName("mercedes")
+                .modelName("Benz")
+                .category("dummy")
+                .build();
 
-            assertThat(cars).isEmpty();
-            session.getTransaction().rollback();
-        }
+        List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(carFilter);
+
+        assertThat(cars).isEmpty();
+        session.getTransaction().rollback();
     }
 }

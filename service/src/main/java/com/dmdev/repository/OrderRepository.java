@@ -8,8 +8,8 @@ import com.dmdev.domain.model.OrderStatus;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -20,62 +20,56 @@ import static com.dmdev.domain.entity.QCar.car;
 import static com.dmdev.domain.entity.QModel.model;
 import static com.dmdev.domain.entity.QOrder.order;
 
-public class OrderRepository implements Repository<Long, Order> {
-    private static final OrderRepository INSTANCE = new OrderRepository();
+public class OrderRepository extends BaseRepository<Long, Order> {
 
-    public static OrderRepository getInstance() {
-        return INSTANCE;
+    public OrderRepository(EntityManager entityManager) {
+        super(Order.class, entityManager);
     }
 
-    @Override
-    public List<Order> findAllHql(Session session) {
-        return session.createQuery("select o from Order o", Order.class)
-                .list();
+    public List<Order> findAllHql() {
+        return getEntityManager().createQuery("select o from Order o", Order.class)
+                .getResultList();
     }
 
-    @Override
-    public List<Order> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<Order> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Order.class);
         var order = criteria.from(Order.class);
 
         criteria.select(order);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<Order> findAllQueryDsl(Session session) {
-        return new JPAQuery<Order>(session)
+    public List<Order> findAllQueryDsl() {
+        return new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .fetch();
     }
 
-    @Override
-    public Optional<Order> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<Order> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Order.class);
         var order = criteria.from(Order.class);
 
         criteria.select(order)
                 .where(cb.equal(order.get(Order_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<Order> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Order>(session)
+    public Optional<Order> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .where(order.id.eq(id))
                 .fetchOne());
     }
 
-    public List<Order> findOrdersByCarNumberCriteria(Session session, String carNumber) {
-        var cb = session.getCriteriaBuilder();
+    public List<Order> findOrdersByCarNumberCriteria(String carNumber) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Order.class);
         var order = criteria.from(Order.class);
         var car = order.join(Order_.car);
@@ -83,22 +77,22 @@ public class OrderRepository implements Repository<Long, Order> {
         criteria.select(order)
                 .where(cb.equal(car.get(Car_.carNumber), carNumber));
 
-        return session.createQuery(criteria).list();
+        return getEntityManager().createQuery(criteria).getResultList();
     }
 
-    public List<Order> findOrdersByOrderStatusCriteria(Session session, OrderStatus orderStatus) {
-        var cb = session.getCriteriaBuilder();
+    public List<Order> findOrdersByOrderStatusCriteria(OrderStatus orderStatus) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Order.class);
         var order = criteria.from(Order.class);
 
         criteria.select(order)
                 .where(cb.equal(order.get(Order_.orderStatus), orderStatus));
 
-        return session.createQuery(criteria).list();
+        return getEntityManager().createQuery(criteria).getResultList();
     }
 
-    public List<Tuple> findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl(Session session) {
-        return new JPAQuery<Tuple>(session)
+    public List<Tuple> findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl() {
+        return new JPAQuery<Tuple>(getEntityManager())
                 .select(order.date, order.sum.avg())
                 .from(order)
                 .groupBy(order.date)
@@ -106,13 +100,13 @@ public class OrderRepository implements Repository<Long, Order> {
                 .fetch();
     }
 
-    public List<Order> findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(Session session, OrderFilter orderFilter) {
+    public List<Order> findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(OrderFilter orderFilter) {
         var predicates = QPredicate.builder()
                 .add(orderFilter.getModelName(), model.name::eq)
                 .add(orderFilter.getBrandName(), brand.name::eq)
                 .buildAnd();
 
-        return new JPAQuery<Order>(session)
+        return new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .join(order.car, car)
@@ -123,14 +117,14 @@ public class OrderRepository implements Repository<Long, Order> {
                 .fetch();
     }
 
-    public List<Order> findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl(Session session) {
-        return new JPAQuery<Order>(session)
+    public List<Order> findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl() {
+        return new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .join(order.accidents, accident)
                 .groupBy(order.id)
                 .having(accident.damage.avg().gt(
-                        new JPAQuery<BigDecimal>(session)
+                        new JPAQuery<BigDecimal>(getEntityManager())
                                 .select(accident.damage.avg())
                                 .from(accident)
                 ))

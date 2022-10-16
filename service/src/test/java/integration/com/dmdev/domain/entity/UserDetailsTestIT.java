@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserDetailsTestIT extends IntegrationBaseTest {
 
-
     @Test
     void shouldReturnUserDetails() {
         try (Session session = sessionFactory.openSession()) {

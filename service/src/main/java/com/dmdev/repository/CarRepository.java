@@ -8,9 +8,9 @@ import com.dmdev.domain.model.Transmission;
 import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 import org.hibernate.graph.GraphSemantic;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -18,76 +18,70 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QCar.car;
 import static com.dmdev.domain.entity.QModel.model;
 
-public class CarRepository implements Repository<Long, Car> {
-    private static final CarRepository INSTANCE = new CarRepository();
+public class CarRepository extends BaseRepository<Long, Car> {
 
-    public static CarRepository getInstance() {
-        return INSTANCE;
+    public CarRepository(EntityManager entityManager) {
+        super(Car.class, entityManager);
     }
 
-    @Override
-    public List<Car> findAllHql(Session session) {
-        return session.createQuery("select c from Car c", Car.class)
-                .list();
+    public List<Car> findAllHql() {
+        return getEntityManager().createQuery("select c from Car c", Car.class)
+                .getResultList();
     }
 
-    @Override
-    public List<Car> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<Car> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Car.class);
         var car = criteria.from(Car.class);
 
         criteria.select(car);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<Car> findAllQueryDsl(Session session) {
-        return new JPAQuery<Car>(session)
+    public List<Car> findAllQueryDsl() {
+        return new JPAQuery<Car>(getEntityManager())
                 .select(car)
                 .from(car)
                 .fetch();
     }
 
-    @Override
-    public Optional<Car> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<Car> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Car.class);
         var car = criteria.from(Car.class);
 
         criteria.select(car)
                 .where(cb.equal(car.get(Car_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<Car> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Car>(session)
+    public Optional<Car> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Car>(getEntityManager())
                 .select(car)
                 .from(car)
                 .where(car.id.eq(id))
                 .fetchOne());
     }
 
-    public Optional<Car> findCarByNumberCriteria(Session session, String carNumber) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<Car> findCarByNumberCriteria(String carNumber) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Car.class);
         var car = criteria.from(Car.class);
 
         criteria.select(car)
                 .where(cb.equal(car.get(Car_.carNumber), carNumber));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    public List<Car> findCarByTransmissionGraph(Session session, Transmission transmission) {
-        var carGraph = session.createEntityGraph(Car.class);
+    public List<Car> findCarByTransmissionGraph(Transmission transmission) {
+        var carGraph = getEntityManager().createEntityGraph(Car.class);
         carGraph.addAttributeNodes("model");
 
-        return new JPAQuery<Car>(session)
+        return new JPAQuery<Car>(getEntityManager())
                 .select(car)
                 .setHint(GraphSemantic.LOAD.getJpaHintName(), carGraph)
                 .from(car)
@@ -95,8 +89,8 @@ public class CarRepository implements Repository<Long, Car> {
                 .fetch();
     }
 
-    public List<Car> findCarsByColorAndYearOrGreaterCriteria(Session session, CarFilter carFilter) {
-        var cb = session.getCriteriaBuilder();
+    public List<Car> findCarsByColorAndYearOrGreaterCriteria(CarFilter carFilter) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Car.class);
         var car = criteria.from(Car.class);
         Predicate[] predicates = CriteriaPredicate.builder()
@@ -107,11 +101,11 @@ public class CarRepository implements Repository<Long, Car> {
         criteria.select(car)
                 .where(predicates);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    public List<Car> findCarsByColorAndYearOrGreaterQueryDsl(Session session, CarFilter carFilter) {
+    public List<Car> findCarsByColorAndYearOrGreaterQueryDsl(CarFilter carFilter) {
         var predicateYear = QPredicate.builder()
                 .add(carFilter.getYear(), car.year::goe)
                 .buildOr();
@@ -125,14 +119,14 @@ public class CarRepository implements Repository<Long, Car> {
                 .addPredicate(predicateColor)
                 .buildAnd();
 
-        return new JPAQuery<Car>(session)
+        return new JPAQuery<Car>(getEntityManager())
                 .select(car)
                 .from(car)
                 .where(predicateAll)
                 .fetch();
     }
 
-    public List<Car> findCarsByBrandModelCategoryYearOrGreaterQueryDsl(Session session, CarFilter carFilter) {
+    public List<Car> findCarsByBrandModelCategoryYearOrGreaterQueryDsl(CarFilter carFilter) {
         var predicateYear = QPredicate.builder()
                 .add(carFilter.getYear(), car.year::goe)
                 .buildOr();
@@ -148,7 +142,7 @@ public class CarRepository implements Repository<Long, Car> {
                 .addPredicate(predicateOther)
                 .buildAnd();
 
-        return new JPAQuery<CarRentalTime>(session)
+        return new JPAQuery<CarRentalTime>(getEntityManager())
                 .select(car)
                 .from(car)
                 .join(car.model, model)

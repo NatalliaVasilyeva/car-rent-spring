@@ -7,8 +7,8 @@ import com.dmdev.domain.entity.Order_;
 import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -16,62 +16,56 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QCarRentalTime.carRentalTime;
 import static com.dmdev.domain.entity.QOrder.order;
 
-public class CarRentalTimeRepository implements Repository<Long, CarRentalTime> {
-    private static final CarRentalTimeRepository INSTANCE = new CarRentalTimeRepository();
+public class CarRentalTimeRepository extends BaseRepository<Long, CarRentalTime> {
 
-    public static CarRentalTimeRepository getInstance() {
-        return INSTANCE;
+    public CarRentalTimeRepository(EntityManager entityManager) {
+        super(CarRentalTime.class, entityManager);
     }
 
-    @Override
-    public List<CarRentalTime> findAllHql(Session session) {
-        return session.createQuery("select c from CarRentalTime c", CarRentalTime.class)
-                .list();
+    public List<CarRentalTime> findAllHql() {
+        return getEntityManager().createQuery("select c from CarRentalTime c", CarRentalTime.class)
+                .getResultList();
     }
 
-    @Override
-    public List<CarRentalTime> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<CarRentalTime> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(CarRentalTime.class);
         var carRentalTime = criteria.from(CarRentalTime.class);
 
         criteria.select(carRentalTime);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<CarRentalTime> findAllQueryDsl(Session session) {
-        return new JPAQuery<CarRentalTime>(session)
+    public List<CarRentalTime> findAllQueryDsl() {
+        return new JPAQuery<CarRentalTime>(getEntityManager())
                 .select(carRentalTime)
                 .from(carRentalTime)
                 .fetch();
     }
 
-    @Override
-    public Optional<CarRentalTime> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<CarRentalTime> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(CarRentalTime.class);
         var carRentalTime = criteria.from(CarRentalTime.class);
 
         criteria.select(carRentalTime)
                 .where(cb.equal(carRentalTime.get(CarRentalTime_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<CarRentalTime> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<CarRentalTime>(session)
+    public Optional<CarRentalTime> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<CarRentalTime>(getEntityManager())
                 .select(carRentalTime)
                 .from(carRentalTime)
                 .where(carRentalTime.id.eq(id))
                 .fetchOne());
     }
 
-    public Optional<CarRentalTime> findCarRentalTimesByOrderIdCriteria(Session session, Long orderId) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<CarRentalTime> findCarRentalTimesByOrderIdCriteria(Long orderId) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(CarRentalTime.class);
         var carRentalTime = criteria.from(CarRentalTime.class);
         var order = carRentalTime.join(CarRentalTime_.order);
@@ -79,11 +73,11 @@ public class CarRentalTimeRepository implements Repository<Long, CarRentalTime> 
         criteria.select(carRentalTime)
                 .where(cb.equal(order.get(Order_.id), orderId));
 
-        return session.createQuery(criteria).uniqueResultOptional();
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    public Optional<CarRentalTime> findCarRentalTimesByOrderIdQueryDsl(Session session, Long orderId) {
-        return Optional.ofNullable(new JPAQuery<CarRentalTime>(session)
+    public Optional<CarRentalTime> findCarRentalTimesByOrderIdQueryDsl(Long orderId) {
+        return Optional.ofNullable(new JPAQuery<CarRentalTime>(getEntityManager())
                 .select(carRentalTime)
                 .from(carRentalTime)
                 .join(carRentalTime.order, order)
@@ -92,8 +86,8 @@ public class CarRentalTimeRepository implements Repository<Long, CarRentalTime> 
         );
     }
 
-    public List<CarRentalTime> findCarRentalTimesBetweenStartAndRentalDatesCriteria(Session session, CarRentalTimeFilter carRentalTimeFilter) {
-        var cb = session.getCriteriaBuilder();
+    public List<CarRentalTime> findCarRentalTimesBetweenStartAndRentalDatesCriteria(CarRentalTimeFilter carRentalTimeFilter) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(CarRentalTime.class);
         var carRentalTime = criteria.from(CarRentalTime.class);
         Predicate[] predicates = CriteriaPredicate.builder()
@@ -104,11 +98,11 @@ public class CarRentalTimeRepository implements Repository<Long, CarRentalTime> 
         criteria.select(carRentalTime)
                 .where(predicates);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    public List<CarRentalTime> findCarRentalTimesBetweenStartAndRentalDatesQueryDsl(Session session, CarRentalTimeFilter carRentalTimeFilter) {
+    public List<CarRentalTime> findCarRentalTimesBetweenStartAndRentalDatesQueryDsl(CarRentalTimeFilter carRentalTimeFilter) {
         var predicateOrStart = QPredicate.builder()
                 .add(carRentalTimeFilter.getStartRentalDate(), carRentalTime.startRentalDate::goe)
                 .buildOr();
@@ -122,7 +116,7 @@ public class CarRentalTimeRepository implements Repository<Long, CarRentalTime> 
                 .addPredicate(predicateOrEnd)
                 .buildAnd();
 
-        return new JPAQuery<CarRentalTime>(session)
+        return new JPAQuery<CarRentalTime>(getEntityManager())
                 .select(carRentalTime)
                 .from(carRentalTime)
                 .where(predicateAll)
