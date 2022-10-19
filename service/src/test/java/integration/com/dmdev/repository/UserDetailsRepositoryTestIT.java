@@ -64,7 +64,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         var userDetailsToDelete = session.find(UserDetails.class, TEST_USER_DETAILS_ID_FOR_DELETE);
         userDetailsToDelete.getUser().setUserDetails(null);
 
-        userDetailsRepository.delete(TEST_USER_DETAILS_ID_FOR_DELETE);
+        userDetailsRepository.delete(userDetailsToDelete);
 
         assertThat(session.find(UserDetails.class, TEST_USER_DETAILS_ID_FOR_DELETE)).isNull();
         session.getTransaction().rollback();
@@ -80,43 +80,6 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         List<String> names = userDetails.stream().map(UserDetails::getName).collect(toList());
         assertThat(names).containsExactlyInAnyOrder("Ivan", "Petia");
 
-        session.getTransaction().rollback();
-    }
-
-
-    @Test
-    void shouldReturnAllUserDetailsWithHql() {
-        session.beginTransaction();
-
-        List<UserDetails> userDetails = userDetailsRepository.findAllHql();
-        assertThat(userDetails).hasSize(2);
-
-        List<String> names = userDetails.stream().map(UserDetails::getName).collect(toList());
-        assertThat(names).contains("Ivan", "Petia");
-
-        List<String> phones = userDetails.stream()
-                .map(UserDetails::getUserContact)
-                .map(UserContact::getPhone)
-                .collect(toList());
-        assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllUserDetailsWithCriteria() {
-        session.beginTransaction();
-
-        List<UserDetails> userDetails = userDetailsRepository.findAllCriteria();
-        assertThat(userDetails).hasSize(2);
-
-        List<String> names = userDetails.stream().map(UserDetails::getName).collect(toList());
-        assertThat(names).contains("Ivan", "Petia");
-
-        List<String> phones = userDetails.stream()
-                .map(UserDetails::getUserContact)
-                .map(UserContact::getPhone)
-                .collect(toList());
-        assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
         session.getTransaction().rollback();
     }
 
@@ -138,17 +101,6 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         session.getTransaction().rollback();
     }
 
-    @Test
-    void shouldReturnUserDetailByIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<UserDetails> optionalUserDetails = userDetailsRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID);
-
-        assertThat(optionalUserDetails).isNotNull();
-        optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
-        assertThat(optionalUserDetails).isEqualTo(Optional.of(ExistEntityBuilder.getExistUserDetails()));
-        session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnUserDetailByIdWithQueryDsl() {

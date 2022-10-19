@@ -23,22 +23,6 @@ public class ModelRepository extends BaseRepository<Long, Model> {
         super(Model.class, entityManager);
     }
 
-    public List<Model> findAllHql() {
-        return getEntityManager().createQuery("select m from Model m", Model.class)
-                .getResultList();
-    }
-
-    public List<Model> findAllCriteria() {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Model.class);
-        var model = criteria.from(Model.class);
-
-        criteria.select(model);
-
-        return getEntityManager().createQuery(criteria)
-                .getResultList();
-    }
-
     public List<Model> findAllQueryDsl() {
         return new JPAQuery<Model>(getEntityManager())
                 .select(model)
@@ -46,19 +30,8 @@ public class ModelRepository extends BaseRepository<Long, Model> {
                 .fetch();
     }
 
-    public Optional<Model> findByIdCriteria(Long id) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Model.class);
-        var model = criteria.from(Model.class);
-
-        criteria.select(model)
-                .where(cb.equal(model.get(Model_.id), id));
-
-        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
-    }
-
     public Optional<Model> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Model>(getEntityManager())
+        return Optional.of(new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .where(model.id.eq(id))

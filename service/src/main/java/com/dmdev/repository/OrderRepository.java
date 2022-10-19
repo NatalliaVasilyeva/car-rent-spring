@@ -26,22 +26,6 @@ public class OrderRepository extends BaseRepository<Long, Order> {
         super(Order.class, entityManager);
     }
 
-    public List<Order> findAllHql() {
-        return getEntityManager().createQuery("select o from Order o", Order.class)
-                .getResultList();
-    }
-
-    public List<Order> findAllCriteria() {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Order.class);
-        var order = criteria.from(Order.class);
-
-        criteria.select(order);
-
-        return getEntityManager().createQuery(criteria)
-                .getResultList();
-    }
-
     public List<Order> findAllQueryDsl() {
         return new JPAQuery<Order>(getEntityManager())
                 .select(order)
@@ -49,19 +33,8 @@ public class OrderRepository extends BaseRepository<Long, Order> {
                 .fetch();
     }
 
-    public Optional<Order> findByIdCriteria(Long id) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Order.class);
-        var order = criteria.from(Order.class);
-
-        criteria.select(order)
-                .where(cb.equal(order.get(Order_.id), id));
-
-        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
-    }
-
     public Optional<Order> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Order>(getEntityManager())
+        return Optional.of(new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .where(order.id.eq(id))

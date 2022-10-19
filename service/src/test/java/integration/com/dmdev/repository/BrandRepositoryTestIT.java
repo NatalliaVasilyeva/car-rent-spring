@@ -67,8 +67,8 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteBrand() {
         session.beginTransaction();
-
-        brandRepository.delete(TEST_BRAND_ID_FOR_DELETE);
+        Brand brand = session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE);
+        brandRepository.delete(brand);
 
         assertThat(session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE)).isNull();
         session.getTransaction().rollback();
@@ -84,48 +84,6 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         List<String> names = brands.stream().map(Brand::getName).collect(toList());
         assertThat(names).containsExactlyInAnyOrder("audi", "mercedes");
 
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllBrandsWithHql() {
-        session.beginTransaction();
-
-        List<Brand> brands = brandRepository.findAllHql();
-
-        assertThat(brands).hasSize(2);
-
-        List<String> modelNames = brands.stream()
-                .map(Brand::getModels)
-                .flatMap(models ->
-                        models.stream()
-                                .map(Model::getName))
-                .collect(toList());
-
-        modelNames.forEach(System.out::println);
-
-        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllBrandsWithCriteria() {
-        session.beginTransaction();
-
-        List<Brand> brands = brandRepository.findAllCriteria();
-
-        assertThat(brands).hasSize(2);
-
-        List<String> modelNames = brands.stream()
-                .map(Brand::getModels)
-                .flatMap(models ->
-                        models.stream()
-                                .map(Model::getName))
-                .collect(toList());
-
-        modelNames.forEach(System.out::println);
-
-        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
         session.getTransaction().rollback();
     }
 
@@ -151,18 +109,6 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnBrandBYIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Brand> optionalBrand = brandRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_BRAND_ID);
-
-        assertThat(optionalBrand).isNotNull();
-        optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
-        assertThat(optionalBrand).isEqualTo(Optional.of(ExistEntityBuilder.getExistBrand()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnBrandBYIdWithQueryDsl() {
         session.beginTransaction();
 
@@ -171,17 +117,6 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         assertThat(optionalBrand).isNotNull();
         optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
         assertThat(optionalBrand).isEqualTo(Optional.of(ExistEntityBuilder.getExistBrand()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnBrandByNameWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Brand> optionalBrand = brandRepository.findBrandByNameCriteria("audi");
-
-        assertThat(optionalBrand).isNotNull();
-        optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("audi"));
         session.getTransaction().rollback();
     }
 

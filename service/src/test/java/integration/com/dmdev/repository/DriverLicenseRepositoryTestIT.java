@@ -74,7 +74,8 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldDeleteDriverLicense() {
         session.beginTransaction();
 
-        driverLicenseRepository.delete(TEST_DRIVER_LICENSE_ID_FOR_DELETE);
+        DriverLicense driverLicense = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
+        driverLicenseRepository.delete(driverLicense);
 
         assertThat(session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE)).isNull();
         session.getTransaction().rollback();
@@ -89,48 +90,6 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
         List<String> numbers = driverLicenses.stream().map(DriverLicense::getNumber).collect(toList());
         assertThat(numbers).containsExactlyInAnyOrder("AB12345", "AB12346");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllDriverLicensesWithHql() {
-        session.beginTransaction();
-
-        List<DriverLicense> driverLicenses = driverLicenseRepository.findAllHql();
-
-        assertThat(driverLicenses).hasSize(2);
-
-        List<String> driverLicenseNumbers = driverLicenses.stream().map(DriverLicense::getNumber).collect(toList());
-        assertThat(driverLicenseNumbers).contains("AB12345", "AB12346");
-
-        List<String> userEmails = driverLicenses.stream()
-                .map(DriverLicense::getUserDetails)
-                .map(UserDetails::getUser)
-                .map(User::getEmail)
-                .collect(toList());
-
-        assertThat(userEmails).contains("admin@gmail.com", "client@gmail.com");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllDriverLicensesWithCriteria() {
-        session.beginTransaction();
-
-        List<DriverLicense> driverLicenses = driverLicenseRepository.findAllCriteria();
-
-        assertThat(driverLicenses).hasSize(2);
-
-        List<String> driverLicenseNumbers = driverLicenses.stream().map(DriverLicense::getNumber).collect(toList());
-        assertThat(driverLicenseNumbers).contains("AB12345", "AB12346");
-
-        List<String> userEmails = driverLicenses.stream()
-                .map(DriverLicense::getUserDetails)
-                .map(UserDetails::getUser)
-                .map(User::getEmail)
-                .collect(toList());
-
-        assertThat(userEmails).contains("admin@gmail.com", "client@gmail.com");
         session.getTransaction().rollback();
     }
 
@@ -152,18 +111,6 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
                 .collect(toList());
 
         assertThat(userEmails).contains("admin@gmail.com", "client@gmail.com");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnDriverLicenseByIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<DriverLicense> optionalDriverLicense = driverLicenseRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_DRIVER_LICENSE_ID);
-
-        assertThat(optionalDriverLicense).isNotNull();
-        optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId()));
-        assertThat(optionalDriverLicense).isEqualTo(Optional.of(ExistEntityBuilder.getExistDriverLicense()));
         session.getTransaction().rollback();
     }
 
@@ -205,20 +152,6 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnDriverLicensesByIssueAndExpiredDateCriteria() {
-        session.beginTransaction();
-        DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
-                .issueDate(LocalDate.of(2000, 1, 1))
-                .expiredDate(LocalDate.of(2030, 1, 1))
-                .build();
-
-        List<DriverLicense> driverLicenses = driverLicenseRepository.findDriverLicensesByIssueAndExpiredDateCriteria(driverLicenseFilter);
-
-        assertThat(driverLicenses).hasSize(2).contains(ExistEntityBuilder.getExistDriverLicense());
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnDriverLicensesByIssueAndExpiredDateQueryDsl() {
         session.beginTransaction();
         DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
@@ -229,23 +162,6 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
         List<DriverLicense> driverLicenses = driverLicenseRepository.findDriverLicensesByIssueAndExpiredDateQueryDsl(driverLicenseFilter);
 
         assertThat(driverLicenses).hasSize(2).contains(ExistEntityBuilder.getExistDriverLicense());
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnDriverLicenseDtoByExpiredDateOrderBySurnameCriteria() {
-        session.beginTransaction();
-        DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
-                .expiredDate(LocalDate.of(2030, 1, 1))
-                .build();
-
-        List<DriverLicenseDto> driverLicenseDtos = driverLicenseRepository.findDriverLicensesByExpiredDateOrderBySurnameCriteria(driverLicenseFilter);
-
-        assertThat(driverLicenseDtos).hasSize(2);
-        assertThat(driverLicenseDtos.get(0).getNumber()).isEqualTo("AB12345");
-        assertThat(driverLicenseDtos.get(1).getNumber()).isEqualTo("AB12346");
-        assertThat(driverLicenseDtos.get(0).getSurname()).isEqualTo("Ivanov");
-        assertThat(driverLicenseDtos.get(1).getSurname()).isEqualTo("Petrov");
         session.getTransaction().rollback();
     }
 

@@ -84,7 +84,8 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     void shouldDeleteCategory() {
         session.beginTransaction();
 
-        categoryRepository.delete(TEST_CATEGORY_ID_FOR_DELETE);
+        Category category = session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE);
+        categoryRepository.delete(category);
 
         assertThat(session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE)).isNull();
         session.getTransaction().rollback();
@@ -101,48 +102,6 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         assertThat(names).containsExactlyInAnyOrder(
                 "ECONOMY", "BUSINESS");
 
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCategoriesWithHql() {
-        session.beginTransaction();
-
-        List<Category> categories = categoryRepository.findAllHql();
-
-        assertThat(categories).hasSize(2);
-        assertThat(categories.get(0).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-        assertThat(categories.get(1).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-
-        List<String> modelNames = categories.stream()
-                .map(Category::getModels)
-                .flatMap(models ->
-                        models.stream()
-                                .map(Model::getName))
-                .collect(toList());
-
-        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCategoriesWithCriteria() {
-        session.beginTransaction();
-
-        List<Category> categories = categoryRepository.findAllCriteria();
-
-        assertThat(categories).hasSize(2);
-        assertThat(categories.get(0).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-        assertThat(categories.get(1).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-
-        List<String> modelNames = categories.stream()
-                .map(Category::getModels)
-                .flatMap(models ->
-                        models.stream()
-                                .map(Model::getName))
-                .collect(toList());
-
-        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
         session.getTransaction().rollback();
     }
 
@@ -168,18 +127,6 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnCategoryBYIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Category> optionalCategory = categoryRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
-
-        assertThat(optionalCategory).isNotNull();
-        optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));
-        assertThat(optionalCategory).isEqualTo(Optional.of(ExistEntityBuilder.getExistCategory()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnCategoryBYIdWithQueryDsl() {
         session.beginTransaction();
 
@@ -188,17 +135,6 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         assertThat(optionalCategory).isNotNull();
         optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));
         assertThat(optionalCategory).isEqualTo(Optional.of(ExistEntityBuilder.getExistCategory()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCategoriesByPriceWithCriteria() {
-        session.beginTransaction();
-
-        List<Category> categories = categoryRepository.findCategoriesByPriceCriteria(BigDecimal.valueOf(100.00));
-
-        assertThat(categories).hasSize(1);
-        assertThat(categories.get(0).getName()).isEqualTo("BUSINESS");
         session.getTransaction().rollback();
     }
 

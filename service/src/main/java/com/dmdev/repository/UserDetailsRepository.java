@@ -23,22 +23,6 @@ public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
         super(UserDetails.class, entityManager);
     }
 
-    public List<UserDetails> findAllHql() {
-        return getEntityManager().createQuery("select ud from UserDetails ud", UserDetails.class)
-                .getResultList();
-    }
-
-    public List<UserDetails> findAllCriteria() {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDetails.class);
-        var userDetails = criteria.from(UserDetails.class);
-
-        criteria.select(userDetails);
-
-        return getEntityManager().createQuery(criteria)
-                .getResultList();
-    }
-
     public List<UserDetails> findAllQueryDsl() {
         return new JPAQuery<UserDetails>(getEntityManager())
                 .select(userDetails)
@@ -46,19 +30,8 @@ public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
                 .fetch();
     }
 
-    public Optional<UserDetails> findByIdCriteria(Long id) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDetails.class);
-        var userDetails = criteria.from(UserDetails.class);
-
-        criteria.select(userDetails)
-                .where(cb.equal(userDetails.get(UserDetails_.id), id));
-
-        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
-    }
-
     public Optional<UserDetails> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
+        return Optional.of(new JPAQuery<User>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .where(userDetails.id.eq(id))

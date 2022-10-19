@@ -73,8 +73,8 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteAccident() {
         session.beginTransaction();
-
-        accidentRepository.delete(TEST_ACCIDENT_ID_FOR_DELETE);
+        Accident accident = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
+        accidentRepository.delete(accident);
 
         assertThat(session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE)).isNull();
         session.getTransaction().rollback();
@@ -94,38 +94,6 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
         session.getTransaction().rollback();
     }
 
-    @Test
-    void shouldReturnAllAccidentsWithHql() {
-        session.beginTransaction();
-        List<Accident> accidents = accidentRepository.findAllHql();
-
-        List<String> carNumbers = accidents.stream()
-                .map(Accident::getOrder)
-                .map(Order::getCar)
-                .map(Car::getCarNumber)
-                .collect(toList());
-
-        assertThat(accidents).hasSize(2).contains(ExistEntityBuilder.getExistAccident());
-        assertThat(carNumbers).containsExactlyInAnyOrder("7865AE-7", "7834AE-7");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllAccidentsWithCriteria() {
-        session.beginTransaction();
-
-        List<Accident> accidents = accidentRepository.findAllCriteria();
-
-        List<String> carNumbers = accidents.stream()
-                .map(Accident::getOrder)
-                .map(Order::getCar)
-                .map(Car::getCarNumber)
-                .collect(toList());
-
-        assertThat(accidents).hasSize(2).contains(ExistEntityBuilder.getExistAccident());
-        assertThat(carNumbers).containsExactlyInAnyOrder("7865AE-7", "7834AE-7");
-        session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnAllAccidentsWithQueryDsl() {
@@ -144,17 +112,6 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
         session.getTransaction().rollback();
     }
 
-    @Test
-    void shouldReturnAccidentBYIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Accident> optionalCar = accidentRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_ACCIDENT_ID);
-
-        assertThat(optionalCar).isNotNull();
-        optionalCar.ifPresent(accident -> assertThat(accident.getId()).isEqualTo(ExistEntityBuilder.getExistAccident().getId()));
-        assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistAccident()));
-        session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnAccidentBYIdWithQueryDsl() {
@@ -169,17 +126,6 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnAccidentsByAccidentDateCriteria() {
-        session.beginTransaction();
-        LocalDate accidentsDate = LocalDate.of(2022, 9, 3);
-
-        List<Accident> accidents = accidentRepository.findAccidentsByAccidentDateCriteria(accidentsDate);
-
-        assertThat(accidents).hasSize(1).contains(ExistEntityBuilder.getExistAccident());
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnAccidentsByAccidentDateQueryDsl() {
         session.beginTransaction();
         LocalDate accidentsDate = LocalDate.of(2022, 9, 3);
@@ -190,19 +136,6 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
         assertThat(accidents).hasSize(1).contains(ExistEntityBuilder.getExistAccident());
     }
 
-    @Test
-    void shouldReturnAccidentsByCarNumberAndDamageCriteria() {
-        session.beginTransaction();
-        AccidentFilter accidentFilter = AccidentFilter.builder()
-                .carNumber("7834AE-7")
-                .damage(BigDecimal.valueOf(10.05))
-                .build();
-
-        List<Accident> accidents = accidentRepository.findAccidentsByCarNumberAndDamageCriteria(accidentFilter);
-
-        assertThat(accidents).hasSize(1).contains(ExistEntityBuilder.getExistAccident());
-        session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnAccidentsByCarNumberAndDamageQueryDsl() {
@@ -218,16 +151,6 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
         session.getTransaction().rollback();
     }
 
-    @Test
-    void shouldReturnAccidentsByDamageMoreAvgCriteria() {
-        session.beginTransaction();
-
-        List<Accident> accidents = accidentRepository.findAccidentsByDamageMoreAvgCriteria();
-
-        assertThat(accidents).hasSize(1);
-        assertThat(accidents.get(0).getDamage()).isEqualTo(BigDecimal.valueOf(75.50).setScale(2));
-        session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnAccidentsByDamageMoreAvgQueryDsl() {

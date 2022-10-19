@@ -8,10 +8,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Proxy;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.joining;
@@ -55,17 +55,10 @@ public abstract class IntegrationBaseTest {
 
     @SneakyThrows
     private static String loadSqlScript(String filePath) {
-        InputStream inputStream = null;
-        try {
-            inputStream = IntegrationBaseTest.class.getClassLoader().getResourceAsStream(filePath);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
-            return bufferedReader.lines().collect(joining());
-        } catch (Exception exception) {
-            throw new IOException("Exception have appeared while read data from file");
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
+        try (InputStream inputStream = IntegrationBaseTest.class.getClassLoader().getResourceAsStream(filePath);
+             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
+             Stream<String> result = bufferedReader.lines()) {
+            return result.collect(joining());
         }
     }
 }

@@ -98,7 +98,8 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     void shouldDeleteModel() {
         session.beginTransaction();
 
-        modelRepository.delete(TEST_MODEL_ID_FOR_DELETE);
+        Model model = session.find(Model.class, TEST_MODEL_ID_FOR_DELETE);
+        modelRepository.delete(model);
 
         assertThat(session.find(Model.class, TEST_MODEL_ID_FOR_DELETE)).isNull();
         session.getTransaction().rollback();
@@ -117,36 +118,6 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnAllModelsWithHql() {
-        session.beginTransaction();
-
-        List<Model> models = modelRepository.findAllHql();
-        assertThat(models).hasSize(2);
-
-        List<String> modelNames = models.stream().map(Model::getName).collect(toList());
-        assertThat(modelNames).contains("A8", "Benz");
-
-        List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
-        assertThat(brands).contains("audi", "mercedes");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllModelsWithCriteria() {
-        session.beginTransaction();
-
-        List<Model> models = modelRepository.findAllCriteria();
-        assertThat(models).hasSize(2);
-
-        List<String> modelNames = models.stream().map(Model::getName).collect(toList());
-        assertThat(modelNames).contains("A8", "Benz");
-
-        List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
-        assertThat(brands).contains("audi", "mercedes");
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnAllModelsWithQueryDsl() {
         session.beginTransaction();
 
@@ -158,18 +129,6 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
 
         List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
         assertThat(brands).contains("audi", "mercedes");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnModelByIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Model> optionalModel = modelRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_MODEL_ID);
-
-        assertThat(optionalModel).isNotNull();
-        optionalModel.ifPresent(model -> assertThat(model.getId()).isEqualTo(ExistEntityBuilder.getExistModel().getId()));
-        assertThat(optionalModel).isEqualTo(Optional.of(ExistEntityBuilder.getExistModel()));
         session.getTransaction().rollback();
     }
 
