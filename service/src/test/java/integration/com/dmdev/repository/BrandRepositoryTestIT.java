@@ -6,130 +6,193 @@ import com.dmdev.repository.BrandRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
+import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_BRAND_ID_FOR_DELETE;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_BRAND_ID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BrandRepositoryTestIT extends IntegrationBaseTest {
 
-    private final BrandRepository brandRepository = BrandRepository.getInstance();
+    private final Session session = createProxySession(sessionFactory);
+    private final BrandRepository brandRepository = new BrandRepository(session);
+
+    @Test
+    void shouldSaveBrand() {
+        session.beginTransaction();
+        var brandToSave = TestEntityBuilder.createBrand();
+
+        var savedBrand = brandRepository.save(brandToSave);
+
+        assertNotNull(savedBrand.getId());
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldFindByIdBrand() {
+        session.beginTransaction();
+        var expectedBrand = Optional.of(ExistEntityBuilder.getExistBrand());
+
+        var actualBrand = brandRepository.findById(TEST_EXISTS_BRAND_ID);
+
+        assertThat(actualBrand).isNotNull();
+        assertEquals(expectedBrand, actualBrand);
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldUpdateBrand() {
+        session.beginTransaction();
+        var brandToUpdate = session.find(Brand.class, TEST_EXISTS_BRAND_ID);
+        brandToUpdate.setName("pegas");
+
+        brandRepository.update(brandToUpdate);
+        session.evict(brandToUpdate);
+
+        var updatedBrand = session.find(Brand.class, brandToUpdate.getId());
+
+        assertThat(updatedBrand).isEqualTo(brandToUpdate);
+        assertEquals(brandToUpdate.getName(), updatedBrand.getModels().stream().map(Model::getBrand).findFirst().get().getName());
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldDeleteBrand() {
+        session.beginTransaction();
+
+        brandRepository.delete(TEST_BRAND_ID_FOR_DELETE);
+
+        assertThat(session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE)).isNull();
+        session.getTransaction().rollback();
+    }
+
+    @Test
+    void shouldFindAllBrands() {
+        session.beginTransaction();
+
+        List<Brand> brands = brandRepository.findAll();
+        assertThat(brands).hasSize(2);
+
+        List<String> names = brands.stream().map(Brand::getName).collect(toList());
+        assertThat(names).containsExactlyInAnyOrder("audi", "mercedes");
+
+        session.getTransaction().rollback();
+    }
 
     @Test
     void shouldReturnAllBrandsWithHql() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Brand> brands = brandRepository.findAllHQL(session);
-            session.getTransaction().commit();
+        session.beginTransaction();
 
-            assertThat(brands).hasSize(2);
+        List<Brand> brands = brandRepository.findAllHql();
 
-            List<String> modelNames = brands.stream()
-                    .map(Brand::getModels)
-                    .flatMap(models ->
-                            models.stream()
-                                    .map(Model::getName))
-                    .collect(toList());
+        assertThat(brands).hasSize(2);
 
-            modelNames.forEach(System.out::println);
+        List<String> modelNames = brands.stream()
+                .map(Brand::getModels)
+                .flatMap(models ->
+                        models.stream()
+                                .map(Model::getName))
+                .collect(toList());
 
-            assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-        }
+        modelNames.forEach(System.out::println);
+
+        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllBrandsWithCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Brand> brands = brandRepository.findAllCriteria(session);
-            session.getTransaction().commit();
+        session.beginTransaction();
 
-            assertThat(brands).hasSize(2);
+        List<Brand> brands = brandRepository.findAllCriteria();
 
-            List<String> modelNames = brands.stream()
-                    .map(Brand::getModels)
-                    .flatMap(models ->
-                            models.stream()
-                                    .map(Model::getName))
-                    .collect(toList());
+        assertThat(brands).hasSize(2);
 
-            modelNames.forEach(System.out::println);
+        List<String> modelNames = brands.stream()
+                .map(Brand::getModels)
+                .flatMap(models ->
+                        models.stream()
+                                .map(Model::getName))
+                .collect(toList());
 
-            assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-        }
+        modelNames.forEach(System.out::println);
+
+        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllBrandsWithQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Brand> brands = brandRepository.findAllQueryDsl(session);
-            session.getTransaction().commit();
+        session.beginTransaction();
 
-            assertThat(brands).hasSize(2);
+        List<Brand> brands = brandRepository.findAllQueryDsl();
 
-            List<String> modelNames = brands.stream()
-                    .map(Brand::getModels)
-                    .flatMap(models ->
-                            models.stream()
-                                    .map(Model::getName))
-                    .collect(toList());
+        assertThat(brands).hasSize(2);
 
-            modelNames.forEach(System.out::println);
+        List<String> modelNames = brands.stream()
+                .map(Brand::getModels)
+                .flatMap(models ->
+                        models.stream()
+                                .map(Model::getName))
+                .collect(toList());
 
-            assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-        }
+        modelNames.forEach(System.out::println);
+
+        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnBrandBYIdWithCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Optional<Brand> optionalBrand = brandRepository.findByIdCriteria(session, TestEntityIdConst.TEST_EXISTS_BRAND_ID);
-            session.getTransaction().commit();
+        session.beginTransaction();
 
-            assertThat(optionalBrand).isNotNull();
-            optionalBrand.ifPresent(brand -> assertThat(brand).isEqualTo(ExistEntityBuilder.getExistBrand()));
-        }
+        Optional<Brand> optionalBrand = brandRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_BRAND_ID);
+
+        assertThat(optionalBrand).isNotNull();
+        optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
+        assertThat(optionalBrand).isEqualTo(Optional.of(ExistEntityBuilder.getExistBrand()));
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnBrandBYIdWithQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Optional<Brand> optionalBrand = brandRepository.findByIdQueryDsl(session, TestEntityIdConst.TEST_EXISTS_BRAND_ID);
-            session.getTransaction().commit();
+        session.beginTransaction();
 
-            assertThat(optionalBrand).isNotNull();
-            optionalBrand.ifPresent(brand -> assertThat(brand).isEqualTo(ExistEntityBuilder.getExistBrand()));
-        }
+        Optional<Brand> optionalBrand = brandRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_BRAND_ID);
+
+        assertThat(optionalBrand).isNotNull();
+        optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
+        assertThat(optionalBrand).isEqualTo(Optional.of(ExistEntityBuilder.getExistBrand()));
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnBrandByNameWithCriteria() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Optional<Brand> optionalBrand = brandRepository.findBrandByNameCriteria(session, "audi");
-            session.getTransaction().commit();
+        session.beginTransaction();
 
-            assertThat(optionalBrand).isNotNull();
-            optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("audi"));
-        }
+        Optional<Brand> optionalBrand = brandRepository.findBrandByNameCriteria("audi");
+
+        assertThat(optionalBrand).isNotNull();
+        optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("audi"));
+        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnBrandByNameWithQueryDsl() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Optional<Brand> optionalBrand = brandRepository.findBrandByNameQueryDsl(session, "mercedes");
-            session.getTransaction().commit();
+        session.beginTransaction();
 
-            assertThat(optionalBrand).isNotNull();
-            optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("mercedes"));
-        }
+        Optional<Brand> optionalBrand = brandRepository.findBrandByNameQueryDsl("mercedes");
+
+        assertThat(optionalBrand).isNotNull();
+        optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("mercedes"));
+        session.getTransaction().rollback();
     }
 }

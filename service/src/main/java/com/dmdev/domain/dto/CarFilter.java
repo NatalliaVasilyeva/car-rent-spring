@@ -4,6 +4,8 @@ import com.dmdev.domain.model.Color;
 import lombok.Builder;
 import lombok.Value;
 
+import java.math.BigDecimal;
+
 @Value
 @Builder
 public class CarFilter {
@@ -13,7 +15,7 @@ public class CarFilter {
     String brandName;
     String carNumber;
     String category;
-    String price;
+    BigDecimal price;
     boolean repaired;
 
 }

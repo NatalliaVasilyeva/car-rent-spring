@@ -27,9 +27,9 @@ class AccidentTestIT extends IntegrationBaseTest {
             order.setAccident(accident);
 
             var savedAccident = session.save(accident);
-            session.getTransaction().commit();
 
             assertThat(savedAccident).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -60,9 +60,9 @@ class AccidentTestIT extends IntegrationBaseTest {
             session.evict(accidentToUpdate);
 
             var updatedAccident = session.find(Accident.class, accidentToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedAccident).isEqualTo(accidentToUpdate);
+            session.getTransaction().rollback();
         }
     }
 
@@ -73,9 +73,9 @@ class AccidentTestIT extends IntegrationBaseTest {
             var accidentToDelete = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
 
             session.delete(accidentToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(Accident.class, accidentToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

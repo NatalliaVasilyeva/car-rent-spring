@@ -3,80 +3,74 @@ package com.dmdev.repository;
 import com.dmdev.domain.entity.Brand;
 import com.dmdev.domain.entity.Brand_;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
 import static com.dmdev.domain.entity.QBrand.brand;
 
-public class BrandRepository implements Repository<Long, Brand> {
-    private static final BrandRepository INSTANCE = new BrandRepository();
+public class BrandRepository extends BaseRepository<Long, Brand> {
 
-    public static BrandRepository getInstance() {
-        return INSTANCE;
+    public BrandRepository(EntityManager entityManager) {
+        super(Brand.class, entityManager);
     }
 
-    @Override
-    public List<Brand> findAllHQL(Session session) {
-        return session.createQuery("select b from Brand b", Brand.class)
-                .list();
+    public List<Brand> findAllHql() {
+        return getEntityManager().createQuery("select b from Brand b", Brand.class)
+                .getResultList();
     }
 
-    @Override
-    public List<Brand> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<Brand> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Brand.class);
         var brand = criteria.from(Brand.class);
 
         criteria.select(brand);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<Brand> findAllQueryDsl(Session session) {
-        return new JPAQuery<Brand>(session)
+    public List<Brand> findAllQueryDsl() {
+        return new JPAQuery<Brand>(getEntityManager())
                 .select(brand)
                 .from(brand)
                 .fetch();
     }
 
-    @Override
-    public Optional<Brand> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<Brand> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Brand.class);
         var brand = criteria.from(Brand.class);
 
         criteria.select(brand)
                 .where(cb.equal(brand.get(Brand_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<Brand> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Brand>(session)
+    public Optional<Brand> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Brand>(getEntityManager())
                 .select(brand)
                 .from(brand)
                 .where(brand.id.eq(id))
                 .fetchOne());
     }
 
-    public Optional<Brand> findBrandByNameCriteria(Session session, String name) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<Brand> findBrandByNameCriteria(String name) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Brand.class);
         var brand = criteria.from(Brand.class);
 
         criteria.select(brand)
                 .where(cb.equal(brand.get(Brand_.name), name));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    public Optional<Brand> findBrandByNameQueryDsl(Session session, String name) {
-        return Optional.ofNullable(new JPAQuery<Brand>(session)
+    public Optional<Brand> findBrandByNameQueryDsl(String name) {
+        return Optional.ofNullable(new JPAQuery<Brand>(getEntityManager())
                 .select(brand)
                 .from(brand)
                 .where(brand.name.eq(name))

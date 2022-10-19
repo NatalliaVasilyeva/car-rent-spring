@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserDetailsTestIT extends IntegrationBaseTest {
 
-
     @Test
     void shouldReturnUserDetails() {
         try (Session session = sessionFactory.openSession()) {
@@ -43,10 +42,10 @@ class UserDetailsTestIT extends IntegrationBaseTest {
 
             var updatedUserDetails = session.find(UserDetails.class, userDetailsToUpdate.getId());
             var updatedUser = session.find(User.class, userDetailsToUpdate.getUser().getId());
-            session.getTransaction().commit();
 
             assertThat(updatedUserDetails).isEqualTo(userDetailsToUpdate);
             assertThat(updatedUser.getUserDetails()).isEqualTo(updatedUserDetails);
+            session.getTransaction().rollback();
         }
     }
 
@@ -58,9 +57,9 @@ class UserDetailsTestIT extends IntegrationBaseTest {
             userDetailsToDelete.getUser().setUserDetails(null);
 
             session.delete(userDetailsToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(UserDetails.class, userDetailsToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

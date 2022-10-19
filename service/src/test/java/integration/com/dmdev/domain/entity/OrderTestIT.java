@@ -35,9 +35,9 @@ class OrderTestIT extends IntegrationBaseTest {
             carRentalTime.setOrder(orderToSave);
 
             var savedOrder = session.save(orderToSave);
-            session.getTransaction().commit();
 
             assertThat(savedOrder).isNotNull();
+            session.getTransaction().rollback();
         }
     }
 
@@ -56,12 +56,12 @@ class OrderTestIT extends IntegrationBaseTest {
             carRentalTime.setOrder(orderToSave);
 
             session.save(orderToSave);
-            session.getTransaction().commit();
 
             assertThat(orderToSave.getId()).isNotNull();
             assertThat(accidentToSave.getId()).isNotNull();
             assertThat(orderToSave.getAccidents()).contains(accidentToSave);
             assertThat(accidentToSave.getOrder().getId()).isEqualTo(orderToSave.getId());
+            session.getTransaction().rollback();
         }
     }
 
@@ -94,10 +94,10 @@ class OrderTestIT extends IntegrationBaseTest {
             session.clear();
 
             var updatedOrder = session.find(Order.class, orderToUpdate.getId());
-            session.getTransaction().commit();
 
             assertThat(updatedOrder).isEqualTo(orderToUpdate);
             assertThat(updatedOrder.getCarRentalTime().getStartRentalDate()).isEqualTo(startRentalDate);
+            session.getTransaction().rollback();
         }
     }
 
@@ -108,10 +108,10 @@ class OrderTestIT extends IntegrationBaseTest {
             var orderToDelete = session.find(Order.class, TEST_ORDER_ID_FOR_DELETE);
 
             session.delete(orderToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(Order.class, orderToDelete.getId())).isNull();
             assertThat(session.find(CarRentalTime.class, orderToDelete.getCarRentalTime().getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

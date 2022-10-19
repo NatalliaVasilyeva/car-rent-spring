@@ -8,8 +8,8 @@ import com.dmdev.domain.entity.User_;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,62 +17,56 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QUser.user;
 import static com.dmdev.domain.entity.QUserDetails.userDetails;
 
-public class UserDetailsRepository implements Repository<Long, UserDetails> {
-    private static final UserDetailsRepository INSTANCE = new UserDetailsRepository();
+public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
 
-    public static UserDetailsRepository getInstance() {
-        return INSTANCE;
+    public UserDetailsRepository(EntityManager entityManager) {
+        super(UserDetails.class, entityManager);
     }
 
-    @Override
-    public List<UserDetails> findAllHQL(Session session) {
-        return session.createQuery("select ud from UserDetails ud", UserDetails.class)
-                .list();
+    public List<UserDetails> findAllHql() {
+        return getEntityManager().createQuery("select ud from UserDetails ud", UserDetails.class)
+                .getResultList();
     }
 
-    @Override
-    public List<UserDetails> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<UserDetails> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(UserDetails.class);
         var userDetails = criteria.from(UserDetails.class);
 
         criteria.select(userDetails);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<UserDetails> findAllQueryDsl(Session session) {
-        return new JPAQuery<UserDetails>(session)
+    public List<UserDetails> findAllQueryDsl() {
+        return new JPAQuery<UserDetails>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .fetch();
     }
 
-    @Override
-    public Optional<UserDetails> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<UserDetails> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(UserDetails.class);
         var userDetails = criteria.from(UserDetails.class);
 
         criteria.select(userDetails)
                 .where(cb.equal(userDetails.get(UserDetails_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<UserDetails> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<User>(session)
+    public Optional<UserDetails> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .where(userDetails.id.eq(id))
                 .fetchOne());
     }
 
-    public Optional<UserDetails> findUserDetailsByUserIdCriteria(Session session, Long userId) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<UserDetails> findUserDetailsByUserIdCriteria(Long userId) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(UserDetails.class);
         var userDetails = criteria.from(UserDetails.class);
         var user = userDetails.join(UserDetails_.user);
@@ -80,29 +74,29 @@ public class UserDetailsRepository implements Repository<Long, UserDetails> {
         criteria.select(userDetails)
                 .where(cb.equal(user.get(User_.id), userId));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    public List<UserDetails> findUserDetailsByNameAndSurnameQueryDsl(Session session, UserDetailsFilter userDetailsFilter) {
+    public List<UserDetails> findUserDetailsByNameAndSurnameQueryDsl(UserDetailsFilter userDetailsFilter) {
         var predicate = QPredicate.builder()
                 .add(userDetailsFilter.getName(), userDetails.name::eq)
                 .add(userDetailsFilter.getSurname(), userDetails.surname::eq)
                 .buildAnd();
 
-        return new JPAQuery<UserDetails>(session)
+        return new JPAQuery<UserDetails>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .where(predicate)
                 .fetch();
     }
 
-    public List<Tuple> findUsersDetailsTupleByBirthdayOrderedBySurnameAndNameQueryDsl(Session session, LocalDate localDate) {
+    public List<Tuple> findUsersDetailsTupleByBirthdayOrderedBySurnameAndNameQueryDsl(LocalDate localDate) {
         var predicate = QPredicate.builder()
                 .add(localDate.getMonth().getValue(), userDetails.birthday.month().intValue()::eq)
                 .add(localDate.getDayOfMonth(), userDetails.birthday.dayOfMonth()::eq)
                 .buildAnd();
 
-        return new JPAQuery<Tuple>(session)
+        return new JPAQuery<Tuple>(getEntityManager())
                 .select(userDetails.surname, userDetails.name, userDetails.birthday, userDetails.userContact.phone, user.email)
                 .from(userDetails)
                 .join(userDetails.user, user)

@@ -77,6 +77,7 @@ public class TestEntityBuilder {
 
     public static Accident createAccident() {
         return Accident.builder()
+                .order(ExistEntityBuilder.getExistOrder())
                 .damage(BigDecimal.valueOf(99.99))
                 .description("accident test description saved")
                 .accidentDate(LocalDate.of(2022, 9, 18))

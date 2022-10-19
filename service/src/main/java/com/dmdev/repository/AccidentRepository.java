@@ -9,8 +9,8 @@ import com.dmdev.domain.entity.User;
 import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,82 +18,75 @@ import java.util.Optional;
 
 import static com.dmdev.domain.entity.QAccident.accident;
 
-public class AccidentRepository implements Repository<Long, Accident> {
-    private static final AccidentRepository INSTANCE = new AccidentRepository();
+public class AccidentRepository extends BaseRepository<Long, Accident> {
 
-    public static AccidentRepository getInstance() {
-        return INSTANCE;
+    public AccidentRepository(EntityManager entityManager) {
+        super(Accident.class, entityManager);
     }
 
-    @Override
-    public List<Accident> findAllHQL(Session session) {
-        return session.createQuery("select a from Accident a", Accident.class)
-                .list();
+    public List<Accident> findAllHql() {
+        return getEntityManager().createQuery("select a from Accident a", Accident.class)
+                .getResultList();
     }
 
-    @Override
-    public List<Accident> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<Accident> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Accident.class);
         var accident = criteria.from(Accident.class);
 
         criteria.select(accident);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<Accident> findAllQueryDsl(Session session) {
-        return new JPAQuery<Accident>(session)
+    public List<Accident> findAllQueryDsl() {
+        return new JPAQuery<Accident>(getEntityManager())
                 .select(accident)
                 .from(accident)
                 .fetch();
     }
 
-    @Override
-    public Optional<Accident> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<Accident> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Accident.class);
         var accident = criteria.from(Accident.class);
 
         criteria.select(accident)
                 .where(cb.equal(accident.get(Accident_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<Accident> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Accident>(session)
+    public Optional<Accident> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Accident>(getEntityManager())
                 .select(accident)
                 .from(accident)
                 .where(accident.id.eq(id))
                 .fetchOne());
     }
 
-    public List<Accident> findAccidentsByAccidentDateCriteria(Session session, LocalDate accidentDate) {
-        var cb = session.getCriteriaBuilder();
+    public List<Accident> findAccidentsByAccidentDateCriteria(LocalDate accidentDate) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Accident.class);
         var accident = criteria.from(Accident.class);
 
         criteria.select(accident)
                 .where(cb.equal(accident.get(Accident_.accidentDate), accidentDate));
 
-        return session.createQuery(criteria).list();
+        return getEntityManager().createQuery(criteria).getResultList();
     }
 
-    public List<Accident> findAccidentsByAccidentDateQueryDsl(Session session, LocalDate accidentDate) {
-
-        return new JPAQuery<Accident>(session)
+    public List<Accident> findAccidentsByAccidentDateQueryDsl(LocalDate accidentDate) {
+        return new JPAQuery<Accident>(getEntityManager())
                 .select(accident)
                 .from(accident)
                 .where(accident.accidentDate.eq(accidentDate))
                 .fetch();
     }
 
-    public List<Accident> findAccidentsByCarNumberAndDamageCriteria(Session session, AccidentFilter accidentFilter) {
-        var cb = session.getCriteriaBuilder();
+    public List<Accident> findAccidentsByCarNumberAndDamageCriteria(AccidentFilter accidentFilter) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Accident.class);
         var accident = criteria.from(Accident.class);
         Predicate[] predicates = CriteriaPredicate.builder()
@@ -104,14 +97,13 @@ public class AccidentRepository implements Repository<Long, Accident> {
         criteria.select(accident)
                 .where(predicates);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    public List<Accident> findAccidentsByCarNumberAndDamageQueryDsl(Session session, AccidentFilter accidentFilter) {
+    public List<Accident> findAccidentsByCarNumberAndDamageQueryDsl(AccidentFilter accidentFilter) {
         var predicateOr = QPredicate.builder()
-                .add(accidentFilter.getDamage(), accident.damage::eq)
-                .add(accidentFilter.getDamage(), accident.damage::gt)
+                .add(accidentFilter.getDamage(), accident.damage::goe)
                 .buildOr();
 
         var predicateAnd = QPredicate.builder()
@@ -123,15 +115,15 @@ public class AccidentRepository implements Repository<Long, Accident> {
                 .addPredicate(predicateAnd)
                 .buildAnd();
 
-        return new JPAQuery<User>(session)
+        return new JPAQuery<User>(getEntityManager())
                 .select(accident)
                 .from(accident)
                 .where(predicateAll)
                 .fetch();
     }
 
-    public List<Accident> findAccidentsByDamageMoreAvgCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<Accident> findAccidentsByDamageMoreAvgCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Accident.class);
         var accident = criteria.from(Accident.class);
         var subquery = criteria.subquery(Double.class);
@@ -142,14 +134,14 @@ public class AccidentRepository implements Repository<Long, Accident> {
                         subquery.select(cb.avg(subqueryDamage.get(Accident_.damage)))))
                 .orderBy(cb.desc(accident.get(Accident_.damage)));
 
-        return session.createQuery(criteria).list();
+        return getEntityManager().createQuery(criteria).getResultList();
     }
 
-    public List<Accident> findAccidentsByDamageMoreAvgQueryDsl(Session session) {
-        return new JPAQuery<User>(session)
+    public List<Accident> findAccidentsByDamageMoreAvgQueryDsl() {
+        return new JPAQuery<User>(getEntityManager())
                 .select(accident)
                 .from(accident)
-                .where(accident.damage.gt(new JPAQuery<Double>(session)
+                .where(accident.damage.gt(new JPAQuery<Double>(getEntityManager())
                         .select(accident.damage.avg())
                         .from(accident)))
                 .orderBy(accident.damage.desc())

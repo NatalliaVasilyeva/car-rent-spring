@@ -41,10 +41,10 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
 
             var updatedCarRentalTime = session.find(CarRentalTime.class, carRentalTimeToUpdate.getId());
             var updatedOrder = session.find(Order.class, carRentalTimeToUpdate.getOrder().getId());
-            session.getTransaction().commit();
 
             assertThat(updatedCarRentalTime).isEqualTo(carRentalTimeToUpdate);
             assertThat(updatedOrder.getCarRentalTime()).isEqualTo(updatedCarRentalTime);
+            session.getTransaction().rollback();
         }
     }
 
@@ -56,9 +56,9 @@ class CarRentalTimeTestIT extends IntegrationBaseTest {
             carRentalTimeToDelete.getOrder().setCarRentalTime(null);
 
             session.delete(carRentalTimeToDelete);
-            session.getTransaction().commit();
 
             assertThat(session.find(CarRentalTime.class, carRentalTimeToDelete.getId())).isNull();
+            session.getTransaction().rollback();
         }
     }
 }

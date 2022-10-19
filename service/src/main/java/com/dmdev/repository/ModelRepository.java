@@ -7,8 +7,8 @@ import com.dmdev.domain.entity.Model_;
 import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -17,62 +17,56 @@ import static com.dmdev.domain.entity.QBrand.brand;
 import static com.dmdev.domain.entity.QCategory.category;
 import static com.dmdev.domain.entity.QModel.model;
 
-public class ModelRepository implements Repository<Long, Model> {
-    private static final ModelRepository INSTANCE = new ModelRepository();
+public class ModelRepository extends BaseRepository<Long, Model> {
 
-    public static ModelRepository getInstance() {
-        return INSTANCE;
+    public ModelRepository(EntityManager entityManager) {
+        super(Model.class, entityManager);
     }
 
-    @Override
-    public List<Model> findAllHQL(Session session) {
-        return session.createQuery("select m from Model m", Model.class)
-                .list();
+    public List<Model> findAllHql() {
+        return getEntityManager().createQuery("select m from Model m", Model.class)
+                .getResultList();
     }
 
-    @Override
-    public List<Model> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<Model> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Model.class);
         var model = criteria.from(Model.class);
 
         criteria.select(model);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<Model> findAllQueryDsl(Session session) {
-        return new JPAQuery<Model>(session)
+    public List<Model> findAllQueryDsl() {
+        return new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .fetch();
     }
 
-    @Override
-    public Optional<Model> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<Model> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Model.class);
         var model = criteria.from(Model.class);
 
         criteria.select(model)
                 .where(cb.equal(model.get(Model_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<Model> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Model>(session)
+    public Optional<Model> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .where(model.id.eq(id))
                 .fetchOne());
     }
 
-    public List<Model> findModelsByModelAndBrandNameCriteria(Session session, ModelFilter modelFilter) {
-        var cb = session.getCriteriaBuilder();
+    public List<Model> findModelsByModelAndBrandNameCriteria(ModelFilter modelFilter) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(Model.class);
         var model = criteria.from(Model.class);
         var brand = model.join(Model_.brand);
@@ -84,19 +78,19 @@ public class ModelRepository implements Repository<Long, Model> {
         criteria.select(model)
                 .where(predicates);
 
-        return session
+        return getEntityManager()
                 .createQuery(criteria)
-                .list();
+                .getResultList();
     }
 
-    public List<Model> findModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl(Session session, ModelFilter modelFilter) {
+    public List<Model> findModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl(ModelFilter modelFilter) {
         var predicate = QPredicate.builder()
                 .add(modelFilter.getBrandName(), brand.name::eq)
                 .add(modelFilter.getTransmission(), model.transmission::eq)
                 .add(modelFilter.getEngineType(), model.engineType::eq)
                 .buildAnd();
 
-        return new JPAQuery<Model>(session)
+        return new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .join(model.brand, brand)
@@ -105,13 +99,13 @@ public class ModelRepository implements Repository<Long, Model> {
                 .fetch();
     }
 
-    public List<Model> findModelsByBrandAndCategoryOrderByBrandQueryDsl(Session session, ModelFilter modelFilter) {
+    public List<Model> findModelsByBrandAndCategoryOrderByBrandQueryDsl(ModelFilter modelFilter) {
         var predicate = QPredicate.builder()
                 .add(modelFilter.getBrandName(), brand.name::eq)
                 .add(modelFilter.getCategoryName(), category.name::eq)
                 .buildOr();
 
-        return new JPAQuery<Model>(session)
+        return new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .join(model.brand, brand)

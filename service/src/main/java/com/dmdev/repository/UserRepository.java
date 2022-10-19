@@ -10,8 +10,8 @@ import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -19,62 +19,56 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QUser.user;
 import static com.dmdev.domain.entity.QUserDetails.userDetails;
 
-public class UserRepository implements Repository<Long, User> {
-    private static final UserRepository INSTANCE = new UserRepository();
+public class UserRepository extends BaseRepository<Long, User> {
 
-    public static UserRepository getInstance() {
-        return INSTANCE;
+    public UserRepository(EntityManager entityManager) {
+        super(User.class, entityManager);
     }
 
-    @Override
-    public List<User> findAllHQL(Session session) {
-        return session.createQuery("select u from User u", User.class)
-                .list();
+    public List<User> findAllHql() {
+        return getEntityManager().createQuery("select u from User u", User.class)
+                .getResultList();
     }
 
-    @Override
-    public List<User> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<User> findAllCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(User.class);
         var user = criteria.from(User.class);
 
         criteria.select(user);
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    @Override
-    public List<User> findAllQueryDsl(Session session) {
-        return new JPAQuery<User>(session)
+    public List<User> findAllQueryDsl() {
+        return new JPAQuery<User>(getEntityManager())
                 .select(user)
                 .from(user)
                 .fetch();
     }
 
-    @Override
-    public Optional<User> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<User> findByIdCriteria(Long id) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(User.class);
         var user = criteria.from(User.class);
 
         criteria.select(user)
                 .where(cb.equal(user.get(User_.id), id));
 
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
+        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
     }
 
-    @Override
-    public Optional<User> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<User>(session)
+    public Optional<User> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
                 .select(user)
                 .from(user)
                 .where(user.id.eq(id))
                 .fetchOne());
     }
 
-    public Optional<User> findUsersByEmailAndPasswordCriteria(Session session, UserFilter userFilter) {
-        var cb = session.getCriteriaBuilder();
+    public Optional<User> findUsersByEmailAndPasswordCriteria(UserFilter userFilter) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(User.class);
         var user = criteria.from(User.class);
         Predicate[] predicates = CriteriaPredicate.builder()
@@ -85,16 +79,16 @@ public class UserRepository implements Repository<Long, User> {
         criteria.select(user)
                 .where(predicates);
 
-        return session.createQuery(criteria)
-                .uniqueResultOptional();
+        return Optional.ofNullable(getEntityManager().createQuery(criteria)
+                .getSingleResult());
     }
 
-    public Optional<User> findUsersByEmailAndPasswordQueryDsl(Session session, UserFilter userFilter) {
+    public Optional<User> findUsersByEmailAndPasswordQueryDsl(UserFilter userFilter) {
         var predicate = QPredicate.builder()
                 .add(userFilter.getEmail(), user.email::eq)
                 .add(userFilter.getPassword(), user.password::eq)
                 .buildAnd();
-        return Optional.ofNullable(new JPAQuery<User>(session)
+        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
                 .select(user)
                 .from(user)
                 .where(predicate)
@@ -102,28 +96,28 @@ public class UserRepository implements Repository<Long, User> {
         );
     }
 
-    public List<User> findUsersByBirthdayCriteria(Session session, UserFilter userFilter) {
-        var cb = session.getCriteriaBuilder();
+    public List<User> findUsersByBirthdayCriteria(UserFilter userFilter) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(User.class);
         var user = criteria.from(User.class);
 
         criteria.select(user)
                 .where(cb.equal(user.get(User_.userDetails).get(UserDetails_.birthday), userFilter.getBirthday()));
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    public List<User> findUsersByBirthdayQueryDsl(Session session, UserFilter userFilter) {
-        return new JPAQuery<User>(session)
+    public List<User> findUsersByBirthdayQueryDsl(UserFilter userFilter) {
+        return new JPAQuery<User>(getEntityManager())
                 .select(user)
                 .from(user)
                 .where(user.userDetails.birthday.eq(userFilter.getBirthday()))
                 .fetch();
     }
 
-    public List<UserDto> findUsersWithShortDataOrderedByEmailCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
+    public List<UserDto> findUsersWithShortDataOrderedByEmailCriteria() {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(UserDto.class);
         var user = criteria.from(User.class);
         var userDetails = user.join(User_.userDetails);
@@ -140,12 +134,12 @@ public class UserRepository implements Repository<Long, User> {
                 )
                 .orderBy(cb.asc(user.get(User_.email)));
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    public List<Tuple> findUsersTupleWithShortDataOrderedByEmailQueryDsl(Session session) {
-        return new JPAQuery<Tuple>(session)
+    public List<Tuple> findUsersTupleWithShortDataOrderedByEmailQueryDsl() {
+        return new JPAQuery<Tuple>(getEntityManager())
                 .select(user.email, userDetails.name,
                         userDetails.surname, userDetails.birthday,
                         userDetails.userContact.phone, userDetails.userContact.address)
@@ -155,8 +149,8 @@ public class UserRepository implements Repository<Long, User> {
                 .fetch();
     }
 
-    public List<UserDto> findUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailCriteria(Session session, UserFilter userFilter) {
-        var cb = session.getCriteriaBuilder();
+    public List<UserDto> findUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailCriteria(UserFilter userFilter) {
+        var cb = getEntityManager().getCriteriaBuilder();
         var criteria = cb.createQuery(UserDto.class);
         var user = criteria.from(User.class);
         var userDetails = user.join(User_.userDetails);
@@ -180,11 +174,11 @@ public class UserRepository implements Repository<Long, User> {
                 .where(predicates)
                 .orderBy(cb.asc(user.get(User_.email)));
 
-        return session.createQuery(criteria)
-                .list();
+        return getEntityManager().createQuery(criteria)
+                .getResultList();
     }
 
-    public List<Tuple> findUsersTupleByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl(Session session, UserFilter userFilter) {
+    public List<Tuple> findUsersTupleByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl(UserFilter userFilter) {
         var predicateOr = QPredicate.builder()
                 .add(userFilter.getName(), user.userDetails.name::eq)
                 .add(userFilter.getSurname(), user.userDetails.surname::eq)
@@ -198,7 +192,7 @@ public class UserRepository implements Repository<Long, User> {
                 .addPredicate(predicateOr)
                 .addPredicate(predicateAnd);
 
-        return new JPAQuery<Tuple>(session)
+        return new JPAQuery<Tuple>(getEntityManager())
                 .select(user.email, userDetails.name,
                         userDetails.surname, userDetails.birthday,
                         userDetails.userContact.phone, userDetails.userContact.address)
