@@ -4,6 +4,7 @@ import com.dmdev.domain.dto.CarRentalTimeFilter;
 import com.dmdev.domain.entity.CarRentalTime;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QCarRentalTime.carRentalTime;
 import static com.dmdev.domain.entity.QOrder.order;
 
+@Repository
 public class CarRentalTimeRepository extends BaseRepository<Long, CarRentalTime> {
 
     public CarRentalTimeRepository(EntityManager entityManager) {

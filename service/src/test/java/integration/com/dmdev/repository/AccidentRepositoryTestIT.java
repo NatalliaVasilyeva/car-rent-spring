@@ -5,6 +5,7 @@ import com.dmdev.domain.entity.Accident;
 import com.dmdev.domain.entity.Car;
 import com.dmdev.domain.entity.Order;
 import com.dmdev.repository.AccidentRepository;
+import com.dmdev.repository.OrderRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
@@ -27,8 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AccidentRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final AccidentRepository accidentRepository = new AccidentRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final AccidentRepository accidentRepository = context.getBean(AccidentRepository.class);
+
+    private final OrderRepository orderRepository = context.getBean(OrderRepository.class);
 
     @Test
     void shouldSaveAccident() {
@@ -56,8 +59,8 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateAccident() {
         session.beginTransaction();
-        var accidentToUpdate = session.find(Accident.class, TEST_EXISTS_ACCIDENT_ID);
-        var existOrder = session.find(Order.class, TEST_EXISTS_ORDER_ID);
+        var accidentToUpdate = accidentRepository.findById(TEST_EXISTS_ACCIDENT_ID).get();
+        var existOrder = orderRepository.findById(TEST_EXISTS_ORDER_ID).get();
         accidentToUpdate.setDamage(BigDecimal.valueOf(3456.76));
         accidentToUpdate.setDescription("test description");
         accidentToUpdate.setOrder(existOrder);
@@ -65,7 +68,7 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
         accidentRepository.update(accidentToUpdate);
         session.evict(accidentToUpdate);
 
-        var updatedAccident = session.find(Accident.class, accidentToUpdate.getId());
+        var updatedAccident = accidentRepository.findById(accidentToUpdate.getId()).get();
         assertThat(updatedAccident).isEqualTo(accidentToUpdate);
         session.getTransaction().rollback();
     }
@@ -73,10 +76,10 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteAccident() {
         session.beginTransaction();
-        Accident accident = session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE);
-        accidentRepository.delete(accident);
+        var accident = accidentRepository.findById(TEST_ACCIDENT_ID_FOR_DELETE);
+        accident.ifPresent(acc -> accidentRepository.delete(acc));
 
-        assertThat(session.find(Accident.class, TEST_ACCIDENT_ID_FOR_DELETE)).isNull();
+        assertThat(accidentRepository.findById(TEST_ACCIDENT_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -117,7 +120,7 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnAccidentBYIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Accident> optionalCar = accidentRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_ID);
+        var optionalCar = accidentRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_ID);
 
         assertThat(optionalCar).isNotNull();
         optionalCar.ifPresent(accident -> assertThat(accident.getId()).isEqualTo(ExistEntityBuilder.getExistAccident().getId()));
@@ -128,7 +131,7 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnAccidentsByAccidentDateQueryDsl() {
         session.beginTransaction();
-        LocalDate accidentsDate = LocalDate.of(2022, 9, 3);
+        var accidentsDate = LocalDate.of(2022, 9, 3);
 
         List<Accident> accidents = accidentRepository.findAccidentsByAccidentDateQueryDsl(accidentsDate);
         session.getTransaction().rollback();
@@ -140,7 +143,7 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnAccidentsByCarNumberAndDamageQueryDsl() {
         session.beginTransaction();
-        AccidentFilter accidentFilter = AccidentFilter.builder()
+        var accidentFilter = AccidentFilter.builder()
                 .carNumber("7834AE-7")
                 .damage(BigDecimal.valueOf(10.05))
                 .build();

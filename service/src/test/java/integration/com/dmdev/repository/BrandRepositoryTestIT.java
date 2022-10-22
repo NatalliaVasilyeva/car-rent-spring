@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BrandRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final BrandRepository brandRepository = new BrandRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final  BrandRepository brandRepository = context.getBean(BrandRepository.class);
 
     @Test
     void shouldSaveBrand() {
@@ -51,13 +51,13 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateBrand() {
         session.beginTransaction();
-        var brandToUpdate = session.find(Brand.class, TEST_EXISTS_BRAND_ID);
+        var brandToUpdate = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
         brandToUpdate.setName("pegas");
 
         brandRepository.update(brandToUpdate);
         session.evict(brandToUpdate);
 
-        var updatedBrand = session.find(Brand.class, brandToUpdate.getId());
+        var updatedBrand = brandRepository.findById(brandToUpdate.getId()).get();
 
         assertThat(updatedBrand).isEqualTo(brandToUpdate);
         assertEquals(brandToUpdate.getName(), updatedBrand.getModels().stream().map(Model::getBrand).findFirst().get().getName());
@@ -67,10 +67,10 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteBrand() {
         session.beginTransaction();
-        Brand brand = session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE);
-        brandRepository.delete(brand);
+        var brand = brandRepository.findById(TEST_BRAND_ID_FOR_DELETE);
+        brand.ifPresent(br -> brandRepository.delete(br));
 
-        assertThat(session.find(Brand.class, TEST_BRAND_ID_FOR_DELETE)).isNull();
+        assertThat(brandRepository.findById(TEST_BRAND_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -112,7 +112,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnBrandBYIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Brand> optionalBrand = brandRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_BRAND_ID);
+        var optionalBrand = brandRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_BRAND_ID);
 
         assertThat(optionalBrand).isNotNull();
         optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
@@ -124,7 +124,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnBrandByNameWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Brand> optionalBrand = brandRepository.findBrandByNameQueryDsl("mercedes");
+        var optionalBrand = brandRepository.findBrandByNameQueryDsl("mercedes");
 
         assertThat(optionalBrand).isNotNull();
         optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("mercedes"));

@@ -26,12 +26,8 @@ public class TestEntityIdConst {
     public static final Long TEST_EXISTS_MODEL_ID = 2L;
     public static final Long TEST_MODEL_ID_FOR_DELETE = 1L;
 
-    public static final Long TEST_CREATE_ORDER_ID = 3L;
     public static final Long TEST_EXISTS_ORDER_ID = 2L;
     public static final Long TEST_ORDER_ID_FOR_DELETE = 1L;
-
-    public static final Long TEST_EXISTS_PRICE_ID = 2L;
-    public static final Long TEST_PRICE_ID_FOR_DELETE = 1L;
 
     public static final Long TEST_EXISTS_USER_ID = 2L;
     public static final Long TEST_USER_ID_FOR_DELETE = 1L;

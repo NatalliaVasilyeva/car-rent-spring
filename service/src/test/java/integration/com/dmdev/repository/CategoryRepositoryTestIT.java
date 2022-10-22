@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CategoryRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final CategoryRepository categoryRepository = new CategoryRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final CategoryRepository categoryRepository = context.getBean(CategoryRepository.class);
 
     @Test
     void shouldCreateCategory() {
@@ -67,14 +67,14 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateCategory() {
         session.beginTransaction();
-        var categoryToUpdate = session.find(Category.class, TEST_EXISTS_CATEGORY_ID);
+        var categoryToUpdate = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         categoryToUpdate.setPrice(BigDecimal.valueOf(90.00));
         categoryToUpdate.setName("test_name");
 
         categoryRepository.update(categoryToUpdate);
         session.evict(categoryToUpdate);
 
-        var updatedCategory = session.find(Category.class, categoryToUpdate.getId());
+        var updatedCategory = categoryRepository.findById(categoryToUpdate.getId()).get();
 
         assertThat(updatedCategory).isEqualTo(categoryToUpdate);
         session.getTransaction().rollback();
@@ -84,10 +84,10 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     void shouldDeleteCategory() {
         session.beginTransaction();
 
-        Category category = session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE);
-        categoryRepository.delete(category);
+        var category = categoryRepository.findById(TEST_CATEGORY_ID_FOR_DELETE);
+        category.ifPresent(ct -> categoryRepository.delete(ct));
 
-        assertThat(session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE)).isNull();
+        assertThat(categoryRepository.findById(TEST_CATEGORY_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -130,7 +130,7 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnCategoryBYIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Category> optionalCategory = categoryRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
+        var optionalCategory = categoryRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
 
         assertThat(optionalCategory).isNotNull();
         optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));

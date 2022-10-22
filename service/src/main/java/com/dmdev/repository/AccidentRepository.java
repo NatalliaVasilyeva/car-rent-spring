@@ -5,6 +5,7 @@ import com.dmdev.domain.entity.Accident;
 import com.dmdev.domain.entity.User;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -13,6 +14,8 @@ import java.util.Optional;
 
 import static com.dmdev.domain.entity.QAccident.accident;
 
+
+@Repository
 public class AccidentRepository extends BaseRepository<Long, Accident> {
 
     public AccidentRepository(EntityManager entityManager) {

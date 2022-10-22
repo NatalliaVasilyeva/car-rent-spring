@@ -1,11 +1,11 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.domain.dto.DriverLicenseDto;
 import com.dmdev.domain.dto.DriverLicenseFilter;
 import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.domain.entity.User;
 import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.repository.DriverLicenseRepository;
+import com.dmdev.repository.UserDetailsRepository;
 import com.querydsl.core.Tuple;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
@@ -27,13 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final DriverLicenseRepository driverLicenseRepository = new DriverLicenseRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final DriverLicenseRepository driverLicenseRepository = context.getBean(DriverLicenseRepository.class);
+    private final UserDetailsRepository userDetailsRepository = context.getBean(UserDetailsRepository.class);
 
     @Test
     void shouldSaveDriverLicense() {
         session.beginTransaction();
-        var userDetails = session.find(UserDetails.class, TEST_EXISTS_USER_DETAILS_ID);
+        var userDetails = userDetailsRepository.findById(TEST_EXISTS_USER_DETAILS_ID).get();
         var driverLicenceToSave = TestEntityBuilder.createDriverLicense();
         userDetails.setDriverLicense(driverLicenceToSave);
 
@@ -58,13 +59,13 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateDriverLicense() {
         session.beginTransaction();
-        var driverLicenseToUpdate = session.find(DriverLicense.class, TEST_EXISTS_DRIVER_LICENSE_ID);
+        var driverLicenseToUpdate = driverLicenseRepository.findById(TEST_EXISTS_DRIVER_LICENSE_ID).get();
         driverLicenseToUpdate.setNumber("dn36632");
 
         driverLicenseRepository.update(driverLicenseToUpdate);
         session.evict(driverLicenseToUpdate);
 
-        var updatedDriverLicense = session.find(DriverLicense.class, driverLicenseToUpdate.getId());
+        var updatedDriverLicense = driverLicenseRepository.findById(driverLicenseToUpdate.getId()).get();
 
         assertThat(updatedDriverLicense).isEqualTo(driverLicenseToUpdate);
         session.getTransaction().rollback();
@@ -74,10 +75,10 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldDeleteDriverLicense() {
         session.beginTransaction();
 
-        DriverLicense driverLicense = session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE);
-        driverLicenseRepository.delete(driverLicense);
+        var driverLicense = driverLicenseRepository.findById(TEST_DRIVER_LICENSE_ID_FOR_DELETE);
+        driverLicense.ifPresent(dl -> driverLicenseRepository.delete(dl));
 
-        assertThat(session.find(DriverLicense.class, TEST_DRIVER_LICENSE_ID_FOR_DELETE)).isNull();
+        assertThat(driverLicenseRepository.findById(TEST_DRIVER_LICENSE_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -118,7 +119,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnDriverLicenseBIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<DriverLicense> optionalDriverLicense = driverLicenseRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_DRIVER_LICENSE_ID);
+        var optionalDriverLicense = driverLicenseRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_DRIVER_LICENSE_ID);
 
         assertThat(optionalDriverLicense).isNotNull();
         optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId()));
@@ -130,7 +131,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnDriverLicenseByNumberCriteria() {
         session.beginTransaction();
 
-        Optional<DriverLicense> optionalDriverLicense = driverLicenseRepository.findDriverLicenseByNumberCriteria("AB12346");
+        var optionalDriverLicense = driverLicenseRepository.findDriverLicenseByNumberCriteria("AB12346");
 
         assertThat(optionalDriverLicense).isNotNull();
         optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId()));
@@ -141,7 +142,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldNotReturnDriverLicenseByExpiredDateOrLessCriteria() {
         session.beginTransaction();
-        DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
+        var driverLicenseFilter = DriverLicenseFilter.builder()
                 .expiredDate(LocalDate.now().minusDays(1L))
                 .build();
 
@@ -154,7 +155,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnDriverLicensesByIssueAndExpiredDateQueryDsl() {
         session.beginTransaction();
-        DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
+        var driverLicenseFilter = DriverLicenseFilter.builder()
                 .issueDate(LocalDate.of(2000, 1, 1))
                 .expiredDate(LocalDate.of(2030, 1, 1))
                 .build();
@@ -168,7 +169,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnDriverLicenseTupleByExpiredDateOrderBySurnameQueryDsl() {
         session.beginTransaction();
-        DriverLicenseFilter driverLicenseFilter = DriverLicenseFilter.builder()
+        var driverLicenseFilter = DriverLicenseFilter.builder()
                 .expiredDate(LocalDate.of(2025, 1, 1))
                 .build();
 

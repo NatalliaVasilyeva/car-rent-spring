@@ -9,6 +9,7 @@ import com.dmdev.domain.entity.User_;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QUser.user;
 import static com.dmdev.domain.entity.QUserDetails.userDetails;
 
+@Repository
 public class UserRepository extends BaseRepository<Long, User> {
 
     public UserRepository(EntityManager entityManager) {
@@ -43,7 +45,7 @@ public class UserRepository extends BaseRepository<Long, User> {
                 .add(userFilter.getEmail(), user.email::eq)
                 .add(userFilter.getPassword(), user.password::eq)
                 .buildAnd();
-        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
+        return Optional.of(new JPAQuery<User>(getEntityManager())
                 .select(user)
                 .from(user)
                 .where(predicate)

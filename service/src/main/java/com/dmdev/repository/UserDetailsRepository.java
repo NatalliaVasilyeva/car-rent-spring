@@ -8,6 +8,7 @@ import com.dmdev.domain.entity.User_;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QUser.user;
 import static com.dmdev.domain.entity.QUserDetails.userDetails;
 
+@Repository
 public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
 
     public UserDetailsRepository(EntityManager entityManager) {

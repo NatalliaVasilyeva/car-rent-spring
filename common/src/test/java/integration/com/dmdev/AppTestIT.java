@@ -7,12 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Integration test for simple App.
  */
-public class AppTestIT {
+class AppTestIT {
     /**
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue() {
+    void shouldAnswerWithTrue() {
         assertTrue(true);
     }
 }

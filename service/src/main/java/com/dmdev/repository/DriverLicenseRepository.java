@@ -6,6 +6,7 @@ import com.dmdev.domain.entity.DriverLicense_;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QDriverLicense.driverLicense;
 import static com.dmdev.domain.entity.QUserDetails.userDetails;
 
+@Repository
 public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense> {
 
     public DriverLicenseRepository(EntityManager entityManager) {

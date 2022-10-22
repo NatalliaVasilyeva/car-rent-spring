@@ -4,9 +4,10 @@ import com.dmdev.domain.dto.OrderFilter;
 import com.dmdev.domain.entity.Accident;
 import com.dmdev.domain.entity.Car;
 import com.dmdev.domain.entity.Order;
-import com.dmdev.domain.entity.User;
 import com.dmdev.domain.model.OrderStatus;
+import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.OrderRepository;
+import com.dmdev.repository.UserRepository;
 import com.querydsl.core.Tuple;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
@@ -31,14 +32,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OrderRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final OrderRepository orderRepository = new OrderRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final OrderRepository orderRepository = context.getBean(OrderRepository.class);
+    private final UserRepository userRepository = context.getBean(UserRepository.class);
+    private final CarRepository carRepository = context.getBean(CarRepository.class);
 
     @Test
     void shouldSaveOrder() {
         session.beginTransaction();
-        var user = session.get(User.class, TEST_EXISTS_USER_ID);
-        var car = session.get(Car.class, TEST_EXISTS_CAR_ID);
+        var user = userRepository.findById(TEST_EXISTS_USER_ID).get();
+        var car = carRepository.findById(TEST_EXISTS_CAR_ID).get();
         var orderToSave = TestEntityBuilder.createOrder();
         orderToSave.setUser(user);
         orderToSave.setCar(car);
@@ -54,8 +57,8 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldCreateOrderWithNotExistsAccidents() {
         session.beginTransaction();
-        var user = session.get(User.class, TEST_EXISTS_USER_ID);
-        var car = session.get(Car.class, TEST_EXISTS_CAR_ID);
+        var user = userRepository.findById(TEST_EXISTS_USER_ID).get();
+        var car = carRepository.findById(TEST_EXISTS_CAR_ID).get();
         var accidentToSave = TestEntityBuilder.createAccident();
         var orderToSave = TestEntityBuilder.createOrder();
         orderToSave.setUser(user);
@@ -90,7 +93,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     void shouldUpdateOrder() {
         session.beginTransaction();
         var startRentalDate = LocalDateTime.of(2022, 10, 11, 13, 0);
-        var orderToUpdate = session.find(Order.class, TEST_EXISTS_ORDER_ID);
+        var orderToUpdate = orderRepository.findById(TEST_EXISTS_ORDER_ID).get();
         var carRentalTime = orderToUpdate.getCarRentalTime();
         carRentalTime.setStartRentalDate(startRentalDate);
         orderToUpdate.setInsurance(false);
@@ -99,7 +102,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         orderRepository.update(orderToUpdate);
         session.clear();
 
-        var updatedOrder = session.find(Order.class, orderToUpdate.getId());
+        var updatedOrder = orderRepository.findById(orderToUpdate.getId()).get();
 
         assertThat(updatedOrder).isEqualTo(orderToUpdate);
         assertThat(updatedOrder.getCarRentalTime().getStartRentalDate()).isEqualTo(startRentalDate);
@@ -109,11 +112,11 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteOrder() {
         session.beginTransaction();
+        var order = orderRepository.findById(TEST_ORDER_ID_FOR_DELETE);
 
-        Order order = session.find(Order.class, TEST_ORDER_ID_FOR_DELETE);
-        orderRepository.delete(order);
+        order.ifPresent(or -> orderRepository.delete(or));
 
-        assertThat(session.find(Order.class, TEST_ORDER_ID_FOR_DELETE)).isNull();
+        assertThat(orderRepository.findById(TEST_ORDER_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -151,7 +154,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnOrderByIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Order> optionalOrder = orderRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_ORDER_ID);
+        var optionalOrder = orderRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_ORDER_ID);
 
         assertThat(optionalOrder).isNotNull();
         optionalOrder.ifPresent(order -> assertThat(order.getId()).isEqualTo(ExistEntityBuilder.getExistOrder().getId()));
@@ -184,7 +187,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnOrdersByBrandNameAndModelNameOrderByDateQueryDsl() {
         session.beginTransaction();
-        OrderFilter orderFilter = OrderFilter.builder()
+        var orderFilter = OrderFilter.builder()
                 .brandName("mercedes")
                 .modelName("Benz")
                 .build();

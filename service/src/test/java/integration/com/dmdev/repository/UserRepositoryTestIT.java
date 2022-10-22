@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final UserRepository userRepository = new UserRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final UserRepository userRepository = context.getBean(UserRepository.class);
 
     @Test
     void shouldSaveUserWithoutUserDetails() {
@@ -68,7 +68,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateUser() {
         session.beginTransaction();
-        var userToUpdate = session.find(User.class, TEST_EXISTS_USER_ID);
+        var userToUpdate = userRepository.findById(TEST_EXISTS_USER_ID).get();
         var userDetails = userToUpdate.getUserDetails();
         userToUpdate.setPassword("8967562");
         userDetails.setUser(userToUpdate);
@@ -76,7 +76,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         userRepository.update(userToUpdate);
         session.clear();
 
-        var updatedUser = session.find(User.class, userToUpdate.getId());
+        var updatedUser = userRepository.findById(userToUpdate.getId()).get();
 
         assertThat(updatedUser).isEqualTo(userToUpdate);
         session.getTransaction().rollback();
@@ -85,11 +85,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteUser() {
         session.beginTransaction();
+        var user = userRepository.findById(TEST_USER_ID_FOR_DELETE);
 
-        User user = session.find(User.class, TEST_USER_ID_FOR_DELETE);
-        userRepository.delete(user);
+        user.ifPresent(u -> userRepository.delete(u));
 
-        assertThat(session.find(User.class, TEST_USER_ID_FOR_DELETE)).isNull();
+        assertThat(userRepository.findById(TEST_USER_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -128,7 +128,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnUsersByIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<User> optionalUser = userRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_USER_ID);
+        var optionalUser = userRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_USER_ID);
 
         assertThat(optionalUser).isNotNull();
         optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
@@ -139,12 +139,12 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnUserByEmailAndPasswordQueryDsl() {
         session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
+        var userFilter = UserFilter.builder()
                 .email("client@gmail.com")
                 .password("VasilechekBel123!")
                 .build();
 
-        Optional<User> optionalUser = userRepository.findUsersByEmailAndPasswordQueryDsl(userFilter);
+        var optionalUser = userRepository.findUsersByEmailAndPasswordQueryDsl(userFilter);
 
         assertThat(optionalUser).isNotNull();
         optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
@@ -155,7 +155,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnUserByBirthdayQueryDsl() {
         session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
+        var userFilter = UserFilter.builder()
                 .birthday(LocalDate.of(1989, 3, 12))
                 .build();
 
@@ -186,7 +186,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl() {
         session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
+        var userFilter = UserFilter.builder()
                 .name("Ivan")
                 .surname("Petrov")
                 .birthday(LocalDate.of(1989, 3, 12))

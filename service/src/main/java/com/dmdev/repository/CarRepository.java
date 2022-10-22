@@ -8,6 +8,7 @@ import com.dmdev.domain.model.Transmission;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.graph.GraphSemantic;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QCar.car;
 import static com.dmdev.domain.entity.QModel.model;
 
+@Repository
 public class CarRepository extends BaseRepository<Long, Car> {
 
     public CarRepository(EntityManager entityManager) {

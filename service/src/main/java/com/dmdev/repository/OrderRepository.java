@@ -8,6 +8,7 @@ import com.dmdev.domain.model.OrderStatus;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import static com.dmdev.domain.entity.QCar.car;
 import static com.dmdev.domain.entity.QModel.model;
 import static com.dmdev.domain.entity.QOrder.order;
 
+@Repository
 public class OrderRepository extends BaseRepository<Long, Order> {
 
     public OrderRepository(EntityManager entityManager) {

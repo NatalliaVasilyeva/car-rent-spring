@@ -2,6 +2,7 @@ package com.dmdev.repository;
 
 import com.dmdev.domain.entity.Brand;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 import static com.dmdev.domain.entity.QBrand.brand;
 
+@Repository
 public class BrandRepository extends BaseRepository<Long, Brand> {
 
     public BrandRepository(EntityManager entityManager) {

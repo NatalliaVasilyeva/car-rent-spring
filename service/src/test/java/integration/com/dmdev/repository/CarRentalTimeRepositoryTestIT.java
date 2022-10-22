@@ -4,16 +4,13 @@ package integration.com.dmdev.repository;
 import com.dmdev.domain.dto.CarRentalTimeFilter;
 import com.dmdev.domain.entity.CarRentalTime;
 import com.dmdev.domain.entity.Order;
-import com.dmdev.repository.BrandRepository;
 import com.dmdev.repository.CarRentalTimeRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Proxy;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CarRentalTimeRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final CarRentalTimeRepository carRentalTimeRepository = new CarRentalTimeRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final CarRentalTimeRepository carRentalTimeRepository = context.getBean(CarRentalTimeRepository.class);
 
     @Test
     void shouldFindByIdCarRentalTime() {
@@ -44,7 +41,7 @@ class CarRentalTimeRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateCarRentalTime() {
         session.beginTransaction();
-        var carRentalTimeToUpdate = session.find(CarRentalTime.class, TEST_EXISTS_CAR_RENTAL_TIME_ID);
+        var carRentalTimeToUpdate = carRentalTimeRepository.findById(TEST_EXISTS_CAR_RENTAL_TIME_ID).get();
         carRentalTimeToUpdate.setEndRentalDate(LocalDateTime.of(2022, 11, 9, 10, 0));
 
         carRentalTimeRepository.update(carRentalTimeToUpdate);
@@ -61,12 +58,12 @@ class CarRentalTimeRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteCarRentalTime() {
         session.beginTransaction();
-        var carRentalTimeToDelete = session.find(CarRentalTime.class, TEST_CAR_RENTAL_TIME_ID_FOR_DELETE);
-        carRentalTimeToDelete.getOrder().setCarRentalTime(null);
+        var carRentalTimeToDelete = carRentalTimeRepository.findById(TEST_CAR_RENTAL_TIME_ID_FOR_DELETE);
 
-        carRentalTimeRepository.delete(carRentalTimeToDelete);
+        carRentalTimeToDelete.ifPresent(crt -> crt.getOrder().setCarRentalTime(null));
+        carRentalTimeToDelete.ifPresent(crt -> carRentalTimeRepository.delete(crt));
 
-        assertThat(session.find(CarRentalTime.class, TEST_CAR_RENTAL_TIME_ID_FOR_DELETE)).isNull();
+        assertThat(carRentalTimeRepository.findById(TEST_CAR_RENTAL_TIME_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -111,7 +108,7 @@ class CarRentalTimeRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnCarRentalTimeBYIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<CarRentalTime> optionalCarRentalTime = carRentalTimeRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_RENTAL_TIME_ID);
+        var optionalCarRentalTime = carRentalTimeRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_RENTAL_TIME_ID);
 
         assertThat(optionalCarRentalTime).isNotNull();
         optionalCarRentalTime.ifPresent(carRentalTime -> assertThat(carRentalTime.getId()).isEqualTo(ExistEntityBuilder.getExistCarRentalTime().getId()));
@@ -123,7 +120,7 @@ class CarRentalTimeRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnCarRentalTimeByOrderIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<CarRentalTime> optionalCarRentalTime = carRentalTimeRepository.findCarRentalTimesByOrderIdQueryDsl(TestEntityIdConst.TEST_EXISTS_ORDER_ID);
+        var optionalCarRentalTime = carRentalTimeRepository.findCarRentalTimesByOrderIdQueryDsl(TestEntityIdConst.TEST_EXISTS_ORDER_ID);
 
         assertThat(optionalCarRentalTime).isNotNull();
         optionalCarRentalTime.ifPresent(carRentalTime -> assertThat(carRentalTime.getId()).isEqualTo(ExistEntityBuilder.getExistCarRentalTime().getId()));
@@ -135,7 +132,7 @@ class CarRentalTimeRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnCarRentalTimesBetweenStartAndRentalDatesQueryDsl() {
         session.beginTransaction();
-        CarRentalTimeFilter carRentalTimeFilter = CarRentalTimeFilter.builder()
+        var carRentalTimeFilter = CarRentalTimeFilter.builder()
                 .startRentalDate(LocalDateTime.of(2022, 7, 2, 0, 0, 0))
                 .endRentalDate(LocalDateTime.of(2022, 9, 4, 23, 59, 0))
                 .build();

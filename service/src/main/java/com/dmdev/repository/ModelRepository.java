@@ -7,6 +7,7 @@ import com.dmdev.domain.entity.Model_;
 import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
@@ -17,6 +18,7 @@ import static com.dmdev.domain.entity.QBrand.brand;
 import static com.dmdev.domain.entity.QCategory.category;
 import static com.dmdev.domain.entity.QModel.model;
 
+@Repository
 public class ModelRepository extends BaseRepository<Long, Model> {
 
     public ModelRepository(EntityManager entityManager) {

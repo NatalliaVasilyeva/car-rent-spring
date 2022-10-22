@@ -4,6 +4,7 @@ import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.Category_;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 import static com.dmdev.domain.entity.QCategory.category;
 
+@Repository
 public class CategoryRepository extends BaseRepository<Long, Category> {
 
     public CategoryRepository(EntityManager entityManager) {
