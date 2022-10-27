@@ -120,5 +120,4 @@ public class TestEntityBuilder {
                 .phone("+375 29 678 98 66")
                 .build();
     }
-
 }
