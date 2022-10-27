@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CategoryRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final CategoryRepository categoryRepository = new CategoryRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final CategoryRepository categoryRepository = context.getBean(CategoryRepository.class);
 
     @Test
     void shouldCreateCategory() {
@@ -67,14 +67,14 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateCategory() {
         session.beginTransaction();
-        var categoryToUpdate = session.find(Category.class, TEST_EXISTS_CATEGORY_ID);
+        var categoryToUpdate = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         categoryToUpdate.setPrice(BigDecimal.valueOf(90.00));
         categoryToUpdate.setName("test_name");
 
         categoryRepository.update(categoryToUpdate);
         session.evict(categoryToUpdate);
 
-        var updatedCategory = session.find(Category.class, categoryToUpdate.getId());
+        var updatedCategory = categoryRepository.findById(categoryToUpdate.getId()).get();
 
         assertThat(updatedCategory).isEqualTo(categoryToUpdate);
         session.getTransaction().rollback();
@@ -84,9 +84,10 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     void shouldDeleteCategory() {
         session.beginTransaction();
 
-        categoryRepository.delete(TEST_CATEGORY_ID_FOR_DELETE);
+        var category = categoryRepository.findById(TEST_CATEGORY_ID_FOR_DELETE);
+        category.ifPresent(ct -> categoryRepository.delete(ct));
 
-        assertThat(session.find(Category.class, TEST_CATEGORY_ID_FOR_DELETE)).isNull();
+        assertThat(categoryRepository.findById(TEST_CATEGORY_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -101,48 +102,6 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         assertThat(names).containsExactlyInAnyOrder(
                 "ECONOMY", "BUSINESS");
 
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCategoriesWithHql() {
-        session.beginTransaction();
-
-        List<Category> categories = categoryRepository.findAllHql();
-
-        assertThat(categories).hasSize(2);
-        assertThat(categories.get(0).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-        assertThat(categories.get(1).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-
-        List<String> modelNames = categories.stream()
-                .map(Category::getModels)
-                .flatMap(models ->
-                        models.stream()
-                                .map(Model::getName))
-                .collect(toList());
-
-        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCategoriesWithCriteria() {
-        session.beginTransaction();
-
-        List<Category> categories = categoryRepository.findAllCriteria();
-
-        assertThat(categories).hasSize(2);
-        assertThat(categories.get(0).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-        assertThat(categories.get(1).getPrice()).isIn(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
-
-        List<String> modelNames = categories.stream()
-                .map(Category::getModels)
-                .flatMap(models ->
-                        models.stream()
-                                .map(Model::getName))
-                .collect(toList());
-
-        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
         session.getTransaction().rollback();
     }
 
@@ -168,37 +127,14 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnCategoryBYIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Category> optionalCategory = categoryRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
-
-        assertThat(optionalCategory).isNotNull();
-        optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));
-        assertThat(optionalCategory).isEqualTo(Optional.of(ExistEntityBuilder.getExistCategory()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnCategoryBYIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Category> optionalCategory = categoryRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
+        var optionalCategory = categoryRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
 
         assertThat(optionalCategory).isNotNull();
         optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));
         assertThat(optionalCategory).isEqualTo(Optional.of(ExistEntityBuilder.getExistCategory()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCategoriesByPriceWithCriteria() {
-        session.beginTransaction();
-
-        List<Category> categories = categoryRepository.findCategoriesByPriceCriteria(BigDecimal.valueOf(100.00));
-
-        assertThat(categories).hasSize(1);
-        assertThat(categories.get(0).getName()).isEqualTo("BUSINESS");
         session.getTransaction().rollback();
     }
 

@@ -1,10 +1,10 @@
 package integration.com.dmdev.repository;
 
 import com.dmdev.domain.dto.UserDetailsFilter;
-import com.dmdev.domain.entity.User;
 import com.dmdev.domain.entity.UserContact;
 import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.repository.UserDetailsRepository;
+import com.dmdev.repository.UserRepository;
 import com.querydsl.core.Tuple;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
@@ -25,8 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final UserDetailsRepository userDetailsRepository = new UserDetailsRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final UserDetailsRepository userDetailsRepository = context.getBean(UserDetailsRepository.class);
+    private final UserRepository userRepository = context.getBean(UserRepository.class);
 
     @Test
     void shouldFindByIdUserDetails() {
@@ -44,14 +45,14 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
     void shouldUpdateUserDetails() {
         session.beginTransaction();
         var userContact = TestEntityBuilder.createUserContact();
-        var userDetailsToUpdate = session.find(UserDetails.class, TEST_EXISTS_USER_DETAILS_ID);
+        var userDetailsToUpdate = userDetailsRepository.findById(TEST_EXISTS_USER_DETAILS_ID).get();
         userDetailsToUpdate.setUserContact(userContact);
 
         userDetailsRepository.update(userDetailsToUpdate);
         session.clear();
 
-        var updatedUserDetails = session.find(UserDetails.class, userDetailsToUpdate.getId());
-        var updatedUser = session.find(User.class, userDetailsToUpdate.getUser().getId());
+        var updatedUserDetails = userDetailsRepository.findById(userDetailsToUpdate.getId()).get();
+        var updatedUser = userRepository.findById(userDetailsToUpdate.getUser().getId()).get();
 
         assertThat(updatedUserDetails).isEqualTo(userDetailsToUpdate);
         assertThat(updatedUser.getUserDetails()).isEqualTo(updatedUserDetails);
@@ -61,12 +62,12 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteUserDetails() {
         session.beginTransaction();
-        var userDetailsToDelete = session.find(UserDetails.class, TEST_USER_DETAILS_ID_FOR_DELETE);
-        userDetailsToDelete.getUser().setUserDetails(null);
+        var userDetailsToDelete = userDetailsRepository.findById(TEST_USER_DETAILS_ID_FOR_DELETE);
+        userDetailsToDelete.ifPresent(u -> u.getUser().setUserDetails(null));
 
-        userDetailsRepository.delete(TEST_USER_DETAILS_ID_FOR_DELETE);
+        userDetailsToDelete.ifPresent(u -> userDetailsRepository.delete(u));
 
-        assertThat(session.find(UserDetails.class, TEST_USER_DETAILS_ID_FOR_DELETE)).isNull();
+        assertThat(userDetailsRepository.findById(TEST_USER_DETAILS_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -80,43 +81,6 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         List<String> names = userDetails.stream().map(UserDetails::getName).collect(toList());
         assertThat(names).containsExactlyInAnyOrder("Ivan", "Petia");
 
-        session.getTransaction().rollback();
-    }
-
-
-    @Test
-    void shouldReturnAllUserDetailsWithHql() {
-        session.beginTransaction();
-
-        List<UserDetails> userDetails = userDetailsRepository.findAllHql();
-        assertThat(userDetails).hasSize(2);
-
-        List<String> names = userDetails.stream().map(UserDetails::getName).collect(toList());
-        assertThat(names).contains("Ivan", "Petia");
-
-        List<String> phones = userDetails.stream()
-                .map(UserDetails::getUserContact)
-                .map(UserContact::getPhone)
-                .collect(toList());
-        assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllUserDetailsWithCriteria() {
-        session.beginTransaction();
-
-        List<UserDetails> userDetails = userDetailsRepository.findAllCriteria();
-        assertThat(userDetails).hasSize(2);
-
-        List<String> names = userDetails.stream().map(UserDetails::getName).collect(toList());
-        assertThat(names).contains("Ivan", "Petia");
-
-        List<String> phones = userDetails.stream()
-                .map(UserDetails::getUserContact)
-                .map(UserContact::getPhone)
-                .collect(toList());
-        assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
         session.getTransaction().rollback();
     }
 
@@ -138,23 +102,12 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         session.getTransaction().rollback();
     }
 
-    @Test
-    void shouldReturnUserDetailByIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<UserDetails> optionalUserDetails = userDetailsRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID);
-
-        assertThat(optionalUserDetails).isNotNull();
-        optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
-        assertThat(optionalUserDetails).isEqualTo(Optional.of(ExistEntityBuilder.getExistUserDetails()));
-        session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnUserDetailByIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<UserDetails> optionalUserDetails = userDetailsRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID);
+        var optionalUserDetails = userDetailsRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID);
 
         assertThat(optionalUserDetails).isNotNull();
         optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
@@ -166,7 +119,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnUserDetailsByUserIdWithCriteria() {
         session.beginTransaction();
 
-        Optional<UserDetails> optionalUserDetails = userDetailsRepository.findUserDetailsByUserIdCriteria(TestEntityIdConst.TEST_EXISTS_USER_ID);
+        var optionalUserDetails = userDetailsRepository.findUserDetailsByUserIdCriteria(TestEntityIdConst.TEST_EXISTS_USER_ID);
 
         assertThat(optionalUserDetails).isNotNull();
         optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
@@ -177,7 +130,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnUserDetailsByNameAndSurnameQueryDsl() {
         session.beginTransaction();
-        UserDetailsFilter userDetailsFilter = UserDetailsFilter.builder()
+        var userDetailsFilter = UserDetailsFilter.builder()
                 .name("Petia")
                 .surname("Petrov")
                 .build();

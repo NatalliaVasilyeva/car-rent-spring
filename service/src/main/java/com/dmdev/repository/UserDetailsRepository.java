@@ -8,6 +8,7 @@ import com.dmdev.domain.entity.User_;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -17,26 +18,11 @@ import java.util.Optional;
 import static com.dmdev.domain.entity.QUser.user;
 import static com.dmdev.domain.entity.QUserDetails.userDetails;
 
+@Repository
 public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
 
     public UserDetailsRepository(EntityManager entityManager) {
         super(UserDetails.class, entityManager);
-    }
-
-    public List<UserDetails> findAllHql() {
-        return getEntityManager().createQuery("select ud from UserDetails ud", UserDetails.class)
-                .getResultList();
-    }
-
-    public List<UserDetails> findAllCriteria() {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDetails.class);
-        var userDetails = criteria.from(UserDetails.class);
-
-        criteria.select(userDetails);
-
-        return getEntityManager().createQuery(criteria)
-                .getResultList();
     }
 
     public List<UserDetails> findAllQueryDsl() {
@@ -46,19 +32,8 @@ public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
                 .fetch();
     }
 
-    public Optional<UserDetails> findByIdCriteria(Long id) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDetails.class);
-        var userDetails = criteria.from(UserDetails.class);
-
-        criteria.select(userDetails)
-                .where(cb.equal(userDetails.get(UserDetails_.id), id));
-
-        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
-    }
-
     public Optional<UserDetails> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
+        return Optional.of(new JPAQuery<User>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .where(userDetails.id.eq(id))

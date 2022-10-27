@@ -7,6 +7,7 @@ import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.Transmission;
 import com.dmdev.repository.CarRepository;
+import com.dmdev.repository.ModelRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
@@ -25,8 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CarRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final CarRepository carRepository = new CarRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final CarRepository carRepository = context.getBean(CarRepository.class);
+    private final ModelRepository modelRepository = context.getBean(ModelRepository.class);
 
     @Test
     void shouldSaveCar() {
@@ -56,8 +58,8 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateCar() {
         session.beginTransaction();
-        var carToUpdate = session.find(Car.class, TEST_EXISTS_CAR_ID);
-        var existModel = session.find(Model.class, 1L);
+        var carToUpdate = carRepository.findById(TEST_EXISTS_CAR_ID).get();
+        var existModel = modelRepository.findById(1L).get();
         carToUpdate.setColor(Color.BLUE);
         carToUpdate.setYear(2010);
         carToUpdate.setModel(existModel);
@@ -65,7 +67,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         carRepository.update(carToUpdate);
         session.evict(carToUpdate);
 
-        var updatedCar = session.find(Car.class, carToUpdate.getId());
+        var updatedCar = carRepository.findById(carToUpdate.getId()).get();
 
         assertThat(updatedCar).isEqualTo(carToUpdate);
         session.getTransaction().rollback();
@@ -74,10 +76,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteCar() {
         session.beginTransaction();
+        var car = carRepository.findById(TEST_CAR_ID_FOR_DELETE);
+        car.ifPresent(cr -> carRepository.delete(cr));
 
-        carRepository.delete(TEST_CAR_ID_FOR_DELETE);
-
-        assertThat(session.find(Car.class, TEST_CAR_ID_FOR_DELETE)).isNull();
+        assertThat(carRepository.findById(TEST_CAR_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -92,42 +94,6 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         assertThat(carNumbers).containsExactlyInAnyOrder(
                 "7865AE-7", "7834AE-7");
 
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCarsWithHql() {
-        session.beginTransaction();
-
-        List<Car> cars = carRepository.findAllHql();
-
-        assertThat(cars).hasSize(2);
-
-        List<String> brandNames = cars.stream()
-                .map(Car::getModel)
-                .map(Model::getBrand)
-                .map(Brand::getName)
-                .collect(toList());
-
-        assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllCarsWithCriteria() {
-        session.beginTransaction();
-
-        List<Car> cars = carRepository.findAllCriteria();
-
-        assertThat(cars).hasSize(2);
-
-        List<String> brandNames = cars.stream()
-                .map(Car::getModel)
-                .map(Model::getBrand)
-                .map(Brand::getName)
-                .collect(toList());
-
-        assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
         session.getTransaction().rollback();
     }
 
@@ -150,22 +116,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnCarBYIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Car> optionalCar = carRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_CAR_ID);
-
-        assertThat(optionalCar).isNotNull();
-        optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
-        assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnCarBYIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Car> optionalCar = carRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_ID);
+        var optionalCar = carRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_ID);
 
         assertThat(optionalCar).isNotNull();
         optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
@@ -177,7 +131,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnCarByNumberCriteria() {
         session.beginTransaction();
 
-        Optional<Car> optionalCar = carRepository.findCarByNumberCriteria("7834AE-7");
+        var optionalCar = carRepository.findCarByNumberCriteria("7834AE-7");
 
         assertThat(optionalCar).isNotNull();
         optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
@@ -197,38 +151,9 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnCarsByColorAndYearCriteria() {
-        session.beginTransaction();
-        CarFilter carFilter = CarFilter.builder()
-                .color(Color.RED)
-                .year(2022)
-                .build();
-
-        List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(carFilter);
-
-        assertThat(cars).hasSize(1);
-        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldNotReturnAnyCarsByColorAndYearOrGreateCriteria() {
-        session.beginTransaction();
-        CarFilter carFilter = CarFilter.builder()
-                .color(Color.RED)
-                .year(2023)
-                .build();
-
-        List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterCriteria(carFilter);
-
-        assertThat(cars).isEmpty();
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnCarsByColorAndYearOrGreateQueryDsl() {
         session.beginTransaction();
-        CarFilter carFilter = CarFilter.builder()
+        var carFilter = CarFilter.builder()
                 .color(Color.RED)
                 .year(2022)
                 .build();
@@ -242,7 +167,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnCarsByBrandModelCategoryYearOrGreaterQueryDsl() {
         session.beginTransaction();
-        CarFilter carFilter = CarFilter.builder()
+        var carFilter = CarFilter.builder()
                 .brandName("mercedes")
                 .modelName("Benz")
                 .category("BUSINESS")
@@ -258,7 +183,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldNotReturnCarsByBrandModelCategoryYearOrGreaterQueryDsl() {
         session.beginTransaction();
-        CarFilter carFilter = CarFilter.builder()
+        var carFilter = CarFilter.builder()
                 .brandName("mercedes")
                 .modelName("Benz")
                 .category("dummy")

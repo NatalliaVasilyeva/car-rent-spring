@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final UserRepository userRepository = new UserRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final UserRepository userRepository = context.getBean(UserRepository.class);
 
     @Test
     void shouldSaveUserWithoutUserDetails() {
@@ -68,7 +68,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateUser() {
         session.beginTransaction();
-        var userToUpdate = session.find(User.class, TEST_EXISTS_USER_ID);
+        var userToUpdate = userRepository.findById(TEST_EXISTS_USER_ID).get();
         var userDetails = userToUpdate.getUserDetails();
         userToUpdate.setPassword("8967562");
         userDetails.setUser(userToUpdate);
@@ -76,7 +76,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         userRepository.update(userToUpdate);
         session.clear();
 
-        var updatedUser = session.find(User.class, userToUpdate.getId());
+        var updatedUser = userRepository.findById(userToUpdate.getId()).get();
 
         assertThat(updatedUser).isEqualTo(userToUpdate);
         session.getTransaction().rollback();
@@ -85,10 +85,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteUser() {
         session.beginTransaction();
+        var user = userRepository.findById(TEST_USER_ID_FOR_DELETE);
 
-        userRepository.delete(TEST_USER_ID_FOR_DELETE);
+        user.ifPresent(u -> userRepository.delete(u));
 
-        assertThat(session.find(User.class, TEST_USER_ID_FOR_DELETE)).isNull();
+        assertThat(userRepository.findById(TEST_USER_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -102,42 +103,6 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         List<String> emails = users.stream().map(User::getEmail).collect(toList());
         assertThat(emails).containsExactlyInAnyOrder("admin@gmail.com", "client@gmail.com");
 
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllUsersWithHql() {
-        session.beginTransaction();
-
-        List<User> users = userRepository.findAllHql();
-        assertThat(users).hasSize(2);
-
-        List<String> emails = users.stream().map(User::getEmail).collect(toList());
-        assertThat(emails).contains("admin@gmail.com", "client@gmail.com");
-
-        List<LocalDate> birthdays = users.stream()
-                .map(User::getUserDetails)
-                .map(UserDetails::getBirthday)
-                .collect(toList());
-        assertThat(birthdays).contains(LocalDate.of(1989, 3, 12), LocalDate.of(1986, 7, 2));
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllUsersWithCriteria() {
-        session.beginTransaction();
-
-        List<User> users = userRepository.findAllCriteria();
-        assertThat(users).hasSize(2);
-
-        List<String> emails = users.stream().map(User::getEmail).collect(toList());
-        assertThat(emails).contains("admin@gmail.com", "client@gmail.com");
-
-        List<LocalDate> birthdays = users.stream()
-                .map(User::getUserDetails)
-                .map(UserDetails::getBirthday)
-                .collect(toList());
-        assertThat(birthdays).contains(LocalDate.of(1989, 3, 12), LocalDate.of(1986, 7, 2));
         session.getTransaction().rollback();
     }
 
@@ -160,38 +125,10 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnUserByIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<User> optionalUser = userRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_USER_ID);
-
-        assertThat(optionalUser).isNotNull();
-        optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
-        assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnUsersByIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<User> optionalUser = userRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_USER_ID);
-
-        assertThat(optionalUser).isNotNull();
-        optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
-        assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnUserByEmailAndPasswordCriteria() {
-        session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
-                .email("client@gmail.com")
-                .password("VasilechekBel123!")
-                .build();
-
-        Optional<User> optionalUser = userRepository.findUsersByEmailAndPasswordCriteria(userFilter);
+        var optionalUser = userRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_USER_ID);
 
         assertThat(optionalUser).isNotNull();
         optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
@@ -202,12 +139,12 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnUserByEmailAndPasswordQueryDsl() {
         session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
+        var userFilter = UserFilter.builder()
                 .email("client@gmail.com")
                 .password("VasilechekBel123!")
                 .build();
 
-        Optional<User> optionalUser = userRepository.findUsersByEmailAndPasswordQueryDsl(userFilter);
+        var optionalUser = userRepository.findUsersByEmailAndPasswordQueryDsl(userFilter);
 
         assertThat(optionalUser).isNotNull();
         optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
@@ -216,24 +153,9 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnUserByBirthdayCriteria() {
-        session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
-                .birthday(LocalDate.of(1989, 3, 12))
-                .build();
-
-        List<User> users = userRepository.findUsersByBirthdayCriteria(userFilter);
-
-        assertThat(users).hasSize(1);
-        assertThat(users.get(0).getUserDetails().getName()).isEqualTo("Petia");
-        assertThat(users.get(0).getUserDetails().getSurname()).isEqualTo("Petrov");
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnUserByBirthdayQueryDsl() {
         session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
+        var userFilter = UserFilter.builder()
                 .birthday(LocalDate.of(1989, 3, 12))
                 .build();
 
@@ -260,61 +182,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         session.getTransaction().rollback();
     }
 
-    @Test
-    void shouldReturnUsersWithShortDataOrderedByEmailQueryDsl() {
-        session.beginTransaction();
-
-        List<Tuple> users = userRepository.findUsersTupleWithShortDataOrderedByEmailQueryDsl();
-        assertThat(users).hasSize(2);
-
-        List<String> emails = users.stream().map(r -> r.get(0, String.class)).collect(toList());
-        assertThat(emails).contains("admin@gmail.com", "client@gmail.com");
-
-        List<String> names = users.stream().map(r -> r.get(1, String.class)).collect(toList());
-        assertThat(names).contains("Ivan", "Petia");
-
-        List<String> phones = users.stream().map(r -> r.get(4, String.class)).collect(toList());
-        assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailCriteria() {
-        session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
-                .name("Ivan")
-                .surname("Petrov")
-                .birthday(LocalDate.of(1989, 3, 12))
-                .build();
-
-        List<UserDto> users = userRepository.findUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailCriteria(userFilter);
-
-        assertThat(users).hasSize(1);
-        assertThat(users.get(0).getName()).isEqualTo("Petia");
-        assertThat(users.get(0).getPhone()).isEqualTo("+375 29 124 56 79");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnUsersWithShortDataByNameOrSurnameOrderedByEmailCriteria() {
-        session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
-                .name("Ivan")
-                .surname("Petrov")
-                .build();
-
-        List<UserDto> users = userRepository.findUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailCriteria(userFilter);
-
-        assertThat(users).hasSize(2);
-        assertThat(users.get(0).getEmail()).isEqualTo("admin@gmail.com");
-        assertThat(users.get(1).getEmail()).isEqualTo("client@gmail.com");
-        session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl() {
         session.beginTransaction();
-        UserFilter userFilter = UserFilter.builder()
+        var userFilter = UserFilter.builder()
                 .name("Ivan")
                 .surname("Petrov")
                 .birthday(LocalDate.of(1989, 3, 12))

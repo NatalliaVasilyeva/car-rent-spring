@@ -2,10 +2,11 @@ package integration.com.dmdev.repository;
 
 import com.dmdev.domain.dto.ModelFilter;
 import com.dmdev.domain.entity.Brand;
-import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.Transmission;
+import com.dmdev.repository.BrandRepository;
+import com.dmdev.repository.CategoryRepository;
 import com.dmdev.repository.ModelRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
@@ -27,14 +28,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ModelRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final ModelRepository modelRepository = new ModelRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final ModelRepository modelRepository = context.getBean(ModelRepository.class);
+    private final BrandRepository brandRepository = context.getBean(BrandRepository.class);
+    private final CategoryRepository categoryRepository = context.getBean(CategoryRepository.class);
 
     @Test
     void shouldSaveModel() {
         session.beginTransaction();
-        var brand = session.get(Brand.class, TEST_EXISTS_BRAND_ID);
-        var category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
+        var brand = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
+        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         var modelToSave = TestEntityBuilder.createModel();
         brand.setModel(modelToSave);
         category.setModel(modelToSave);
@@ -48,8 +51,8 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldCreateModelWithNotExistsCar() {
         session.beginTransaction();
-        var brand = session.get(Brand.class, TEST_EXISTS_BRAND_ID);
-        var category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
+        var brand = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
+        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         var carToSave = TestEntityBuilder.createCar();
         var modelToSave = TestEntityBuilder.createModel();
         modelToSave.setCar(carToSave);
@@ -80,15 +83,15 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateModel() {
         session.beginTransaction();
-        var modelToUpdate = session.find(Model.class, TEST_EXISTS_MODEL_ID);
-        var category = session.get(Category.class, TEST_EXISTS_CATEGORY_ID);
+        var modelToUpdate = modelRepository.findById(TEST_EXISTS_MODEL_ID).get();
+        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         modelToUpdate.setEngineType(EngineType.ELECTRIC);
         modelToUpdate.setCategory(category);
 
         modelRepository.update(modelToUpdate);
         session.evict(modelToUpdate);
 
-        var updatedModel = session.find(Model.class, modelToUpdate.getId());
+        var updatedModel = modelRepository.findById(modelToUpdate.getId()).get();
 
         assertThat(updatedModel).isEqualTo(modelToUpdate);
         session.getTransaction().rollback();
@@ -98,9 +101,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     void shouldDeleteModel() {
         session.beginTransaction();
 
-        modelRepository.delete(TEST_MODEL_ID_FOR_DELETE);
+        var model = modelRepository.findById(TEST_MODEL_ID_FOR_DELETE);
+        model.ifPresent(md -> modelRepository.delete(md));
 
-        assertThat(session.find(Model.class, TEST_MODEL_ID_FOR_DELETE)).isNull();
+        assertThat(modelRepository.findById(TEST_MODEL_ID_FOR_DELETE)).isEmpty();
         session.getTransaction().rollback();
     }
 
@@ -113,36 +117,6 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
 
         List<String> names = models.stream().map(Model::getName).collect(toList());
         assertThat(names).containsExactlyInAnyOrder("A8", "Benz");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllModelsWithHql() {
-        session.beginTransaction();
-
-        List<Model> models = modelRepository.findAllHql();
-        assertThat(models).hasSize(2);
-
-        List<String> modelNames = models.stream().map(Model::getName).collect(toList());
-        assertThat(modelNames).contains("A8", "Benz");
-
-        List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
-        assertThat(brands).contains("audi", "mercedes");
-        session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnAllModelsWithCriteria() {
-        session.beginTransaction();
-
-        List<Model> models = modelRepository.findAllCriteria();
-        assertThat(models).hasSize(2);
-
-        List<String> modelNames = models.stream().map(Model::getName).collect(toList());
-        assertThat(modelNames).contains("A8", "Benz");
-
-        List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
-        assertThat(brands).contains("audi", "mercedes");
         session.getTransaction().rollback();
     }
 
@@ -162,22 +136,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnModelByIdWithCriteria() {
-        session.beginTransaction();
-
-        Optional<Model> optionalModel = modelRepository.findByIdCriteria(TestEntityIdConst.TEST_EXISTS_MODEL_ID);
-
-        assertThat(optionalModel).isNotNull();
-        optionalModel.ifPresent(model -> assertThat(model.getId()).isEqualTo(ExistEntityBuilder.getExistModel().getId()));
-        assertThat(optionalModel).isEqualTo(Optional.of(ExistEntityBuilder.getExistModel()));
-        session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnModelByIdWithQueryDsl() {
         session.beginTransaction();
 
-        Optional<Model> optionalModel = modelRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_MODEL_ID);
+        var optionalModel = modelRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_MODEL_ID);
 
         assertThat(optionalModel).isNotNull();
         optionalModel.ifPresent(model -> assertThat(model.getId()).isEqualTo(ExistEntityBuilder.getExistModel().getId()));
@@ -188,7 +150,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnModelsByModelAndBrandNameCriteria() {
         session.beginTransaction();
-        ModelFilter modelFilter = ModelFilter.builder()
+        var modelFilter = ModelFilter.builder()
                 .brandName("mercedes")
                 .name("Benz")
                 .build();
@@ -203,7 +165,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl() {
         session.beginTransaction();
-        ModelFilter modelFilter = ModelFilter.builder()
+        var modelFilter = ModelFilter.builder()
                 .brandName("mercedes")
                 .transmission(Transmission.ROBOT)
                 .engineType(EngineType.FUEL)
@@ -219,7 +181,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldNotReturnModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl() {
         session.beginTransaction();
-        ModelFilter modelFilter = ModelFilter.builder()
+        var modelFilter = ModelFilter.builder()
                 .brandName("mercedes")
                 .transmission(Transmission.ROBOT)
                 .engineType(EngineType.DIESEL)
@@ -234,7 +196,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnModelsByBrandAndCategoryOrderByBrandQueryDsl() {
         session.beginTransaction();
-        ModelFilter modelFilter = ModelFilter.builder()
+        var modelFilter = ModelFilter.builder()
                 .brandName("mercedes")
                 .categoryName("BUSINESS")
                 .build();

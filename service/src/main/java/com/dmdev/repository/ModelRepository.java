@@ -7,6 +7,7 @@ import com.dmdev.domain.entity.Model_;
 import com.dmdev.utils.predicate.CriteriaPredicate;
 import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
@@ -17,26 +18,11 @@ import static com.dmdev.domain.entity.QBrand.brand;
 import static com.dmdev.domain.entity.QCategory.category;
 import static com.dmdev.domain.entity.QModel.model;
 
+@Repository
 public class ModelRepository extends BaseRepository<Long, Model> {
 
     public ModelRepository(EntityManager entityManager) {
         super(Model.class, entityManager);
-    }
-
-    public List<Model> findAllHql() {
-        return getEntityManager().createQuery("select m from Model m", Model.class)
-                .getResultList();
-    }
-
-    public List<Model> findAllCriteria() {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Model.class);
-        var model = criteria.from(Model.class);
-
-        criteria.select(model);
-
-        return getEntityManager().createQuery(criteria)
-                .getResultList();
     }
 
     public List<Model> findAllQueryDsl() {
@@ -46,19 +32,8 @@ public class ModelRepository extends BaseRepository<Long, Model> {
                 .fetch();
     }
 
-    public Optional<Model> findByIdCriteria(Long id) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Model.class);
-        var model = criteria.from(Model.class);
-
-        criteria.select(model)
-                .where(cb.equal(model.get(Model_.id), id));
-
-        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
-    }
-
     public Optional<Model> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Model>(getEntityManager())
+        return Optional.of(new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .where(model.id.eq(id))
