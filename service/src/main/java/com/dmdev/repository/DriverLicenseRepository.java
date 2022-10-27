@@ -8,7 +8,6 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +17,8 @@ import static com.dmdev.domain.entity.QUserDetails.userDetails;
 @Repository
 public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense> {
 
-    public DriverLicenseRepository(EntityManager entityManager) {
-        super(DriverLicense.class, entityManager);
+    public DriverLicenseRepository() {
+        super(DriverLicense.class);
     }
 
     public List<DriverLicense> findAllQueryDsl() {
@@ -30,7 +29,7 @@ public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense>
     }
 
     public Optional<DriverLicense> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<DriverLicense>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<DriverLicense>(getEntityManager())
                 .select(driverLicense)
                 .from(driverLicense)
                 .where(driverLicense.id.eq(id))

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class QPredicate {
     private final List<Predicate> predicates = new ArrayList<>();

@@ -10,7 +10,6 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +23,8 @@ import static com.dmdev.domain.entity.QOrder.order;
 @Repository
 public class OrderRepository extends BaseRepository<Long, Order> {
 
-    public OrderRepository(EntityManager entityManager) {
-        super(Order.class, entityManager);
+    public OrderRepository() {
+        super(Order.class);
     }
 
     public List<Order> findAllQueryDsl() {
@@ -36,7 +35,7 @@ public class OrderRepository extends BaseRepository<Long, Order> {
     }
 
     public Optional<Order> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<Order>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .where(order.id.eq(id))

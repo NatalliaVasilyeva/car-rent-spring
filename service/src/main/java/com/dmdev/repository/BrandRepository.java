@@ -4,7 +4,6 @@ import com.dmdev.domain.entity.Brand;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,8 +12,8 @@ import static com.dmdev.domain.entity.QBrand.brand;
 @Repository
 public class BrandRepository extends BaseRepository<Long, Brand> {
 
-    public BrandRepository(EntityManager entityManager) {
-        super(Brand.class, entityManager);
+    public BrandRepository() {
+        super(Brand.class);
     }
 
     public List<Brand> findAllQueryDsl() {
@@ -25,7 +24,7 @@ public class BrandRepository extends BaseRepository<Long, Brand> {
     }
 
     public Optional<Brand> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<Brand>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<Brand>(getEntityManager())
                 .select(brand)
                 .from(brand)
                 .where(brand.id.eq(id))
@@ -33,7 +32,7 @@ public class BrandRepository extends BaseRepository<Long, Brand> {
     }
 
     public Optional<Brand> findBrandByNameQueryDsl(String name) {
-        return Optional.of(new JPAQuery<Brand>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<Brand>(getEntityManager())
                 .select(brand)
                 .from(brand)
                 .where(brand.name.eq(name))

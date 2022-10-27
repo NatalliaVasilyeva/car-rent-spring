@@ -11,5 +11,4 @@ public class DriverLicenseFilter {
     LocalDate issueDate;
     LocalDate expiredDate;
     String phone;
-
 }
