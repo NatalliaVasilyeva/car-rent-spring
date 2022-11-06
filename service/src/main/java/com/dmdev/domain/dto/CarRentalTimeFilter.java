@@ -11,5 +11,4 @@ public class CarRentalTimeFilter {
     Long orderId;
     LocalDateTime startRentalDate;
     LocalDateTime endRentalDate;
-
 }

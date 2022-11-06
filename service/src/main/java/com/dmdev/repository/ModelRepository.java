@@ -9,7 +9,6 @@ import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +20,8 @@ import static com.dmdev.domain.entity.QModel.model;
 @Repository
 public class ModelRepository extends BaseRepository<Long, Model> {
 
-    public ModelRepository(EntityManager entityManager) {
-        super(Model.class, entityManager);
+    public ModelRepository() {
+        super(Model.class);
     }
 
     public List<Model> findAllQueryDsl() {
@@ -33,7 +32,7 @@ public class ModelRepository extends BaseRepository<Long, Model> {
     }
 
     public Optional<Model> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<Model>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .where(model.id.eq(id))

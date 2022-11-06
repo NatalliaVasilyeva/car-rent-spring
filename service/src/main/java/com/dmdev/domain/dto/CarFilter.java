@@ -17,5 +17,4 @@ public class CarFilter {
     String category;
     BigDecimal price;
     boolean repaired;
-
 }

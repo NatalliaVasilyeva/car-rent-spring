@@ -7,8 +7,8 @@ import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
-import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,24 +21,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CategoryRepositoryTestIT extends IntegrationBaseTest {
-
-    private final Session session = context.getBean(Session.class);
-    private final CategoryRepository categoryRepository = context.getBean(CategoryRepository.class);
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Test
     void shouldCreateCategory() {
-        session.beginTransaction();
         var categoryToSave = TestEntityBuilder.createCategory();
 
         var savedCategory = categoryRepository.save(categoryToSave);
 
         assertThat(savedCategory).isNotNull();
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldCreateCategoryWithNotExistsModel() {
-        session.beginTransaction();
         var modelToSave = TestEntityBuilder.createModel();
         var categoryToSave = TestEntityBuilder.createCategory();
         categoryToSave.setModel(modelToSave);
@@ -49,66 +45,52 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
         assertThat(modelToSave.getId()).isNotNull();
         assertThat(categoryToSave.getModels()).contains(modelToSave);
         assertThat(modelToSave.getCategory().getId()).isEqualTo(categoryToSave.getId());
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldFindByIdCategory() {
-        session.beginTransaction();
         var expectedCategory = Optional.of(ExistEntityBuilder.getExistCategory());
 
         var actualCategory = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID);
 
         assertThat(actualCategory).isNotNull();
         assertEquals(expectedCategory, actualCategory);
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldUpdateCategory() {
-        session.beginTransaction();
         var categoryToUpdate = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         categoryToUpdate.setPrice(BigDecimal.valueOf(90.00));
         categoryToUpdate.setName("test_name");
 
         categoryRepository.update(categoryToUpdate);
-        session.evict(categoryToUpdate);
 
         var updatedCategory = categoryRepository.findById(categoryToUpdate.getId()).get();
 
         assertThat(updatedCategory).isEqualTo(categoryToUpdate);
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldDeleteCategory() {
-        session.beginTransaction();
-
         var category = categoryRepository.findById(TEST_CATEGORY_ID_FOR_DELETE);
+
         category.ifPresent(ct -> categoryRepository.delete(ct));
 
         assertThat(categoryRepository.findById(TEST_CATEGORY_ID_FOR_DELETE)).isEmpty();
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldFindAllAccidents() {
-        session.beginTransaction();
-
         List<Category> categories = categoryRepository.findAll();
         assertThat(categories).hasSize(2);
 
         List<String> names = categories.stream().map(Category::getName).collect(toList());
         assertThat(names).containsExactlyInAnyOrder(
                 "ECONOMY", "BUSINESS");
-
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllCategoriesWithQueryDsl() {
-        session.beginTransaction();
-
         List<Category> categories = categoryRepository.findAllQueryDsl();
 
         assertThat(categories).hasSize(2);
@@ -123,50 +105,37 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
                 .collect(toList());
 
         assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnCategoryBYIdWithQueryDsl() {
-        session.beginTransaction();
-
         var optionalCategory = categoryRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CATEGORY_ID);
 
         assertThat(optionalCategory).isNotNull();
         optionalCategory.ifPresent(category -> assertThat(category.getId()).isEqualTo(ExistEntityBuilder.getExistCategory().getId()));
         assertThat(optionalCategory).isEqualTo(Optional.of(ExistEntityBuilder.getExistCategory()));
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllCategoriesByPriceWithQueryDsl() {
-        session.beginTransaction();
-
         List<Category> categories = categoryRepository.findCategoriesByPriceQueryDsl(BigDecimal.valueOf(100.00));
 
         assertThat(categories).hasSize(1);
         assertThat(categories.get(0).getName()).isEqualTo("BUSINESS");
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllCategoriesByPriceLessThanOrEqWithQueryDsl() {
-        session.beginTransaction();
-
         List<Category> categories = categoryRepository.findCategoriesByPriceLessThanQueryDsl(BigDecimal.valueOf(100.00));
 
         assertThat(categories).hasSize(2).contains(ExistEntityBuilder.getExistCategory());
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllCategoriesByNameCriterial() {
-        session.beginTransaction();
-
         List<Category> categories = categoryRepository.findCategoriesByNameCriteria("BUSINESS");
 
         assertThat(categories).hasSize(1);
         assertThat(categories.get(0)).isEqualTo(ExistEntityBuilder.getExistCategory());
-        session.getTransaction().rollback();
     }
 }

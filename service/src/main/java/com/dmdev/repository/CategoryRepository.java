@@ -6,7 +6,6 @@ import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +15,8 @@ import static com.dmdev.domain.entity.QCategory.category;
 @Repository
 public class CategoryRepository extends BaseRepository<Long, Category> {
 
-    public CategoryRepository(EntityManager entityManager) {
-        super(Category.class, entityManager);
+    public CategoryRepository() {
+        super(Category.class);
     }
 
     public List<Category> findAllQueryDsl() {
@@ -28,7 +27,7 @@ public class CategoryRepository extends BaseRepository<Long, Category> {
     }
 
     public Optional<Category> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<Category>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<Category>(getEntityManager())
                 .select(category)
                 .from(category)
                 .where(category.id.eq(id))

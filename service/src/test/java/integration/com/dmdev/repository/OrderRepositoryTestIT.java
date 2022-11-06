@@ -13,8 +13,8 @@ import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
-import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,14 +32,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OrderRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = context.getBean(Session.class);
-    private final OrderRepository orderRepository = context.getBean(OrderRepository.class);
-    private final UserRepository userRepository = context.getBean(UserRepository.class);
-    private final CarRepository carRepository = context.getBean(CarRepository.class);
+    @Autowired
+    private OrderRepository orderRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CarRepository carRepository;
     @Test
     void shouldSaveOrder() {
-        session.beginTransaction();
         var user = userRepository.findById(TEST_EXISTS_USER_ID).get();
         var car = carRepository.findById(TEST_EXISTS_CAR_ID).get();
         var orderToSave = TestEntityBuilder.createOrder();
@@ -51,12 +53,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         var savedOrder = orderRepository.save(orderToSave);
 
         assertThat(savedOrder).isNotNull();
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldCreateOrderWithNotExistsAccidents() {
-        session.beginTransaction();
         var user = userRepository.findById(TEST_EXISTS_USER_ID).get();
         var car = carRepository.findById(TEST_EXISTS_CAR_ID).get();
         var accidentToSave = TestEntityBuilder.createAccident();
@@ -73,25 +73,21 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         assertThat(accidentToSave.getId()).isNotNull();
         assertThat(orderToSave.getAccidents()).contains(accidentToSave);
         assertThat(accidentToSave.getOrder().getId()).isEqualTo(orderToSave.getId());
-        session.getTransaction().rollback();
     }
 
 
     @Test
     void shouldFindByIdOrder() {
-        session.beginTransaction();
         var expectedOrder = Optional.of(ExistEntityBuilder.getExistOrder());
 
         var actualOrder = orderRepository.findById(TEST_EXISTS_ORDER_ID);
 
         assertThat(actualOrder).isNotNull();
         assertEquals(expectedOrder, actualOrder);
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldUpdateOrder() {
-        session.beginTransaction();
         var startRentalDate = LocalDateTime.of(2022, 10, 11, 13, 0);
         var orderToUpdate = orderRepository.findById(TEST_EXISTS_ORDER_ID).get();
         var carRentalTime = orderToUpdate.getCarRentalTime();
@@ -100,42 +96,33 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         carRentalTime.setOrder(orderToUpdate);
 
         orderRepository.update(orderToUpdate);
-        session.clear();
 
         var updatedOrder = orderRepository.findById(orderToUpdate.getId()).get();
 
         assertThat(updatedOrder).isEqualTo(orderToUpdate);
         assertThat(updatedOrder.getCarRentalTime().getStartRentalDate()).isEqualTo(startRentalDate);
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldDeleteOrder() {
-        session.beginTransaction();
         var order = orderRepository.findById(TEST_ORDER_ID_FOR_DELETE);
 
         order.ifPresent(or -> orderRepository.delete(or));
 
         assertThat(orderRepository.findById(TEST_ORDER_ID_FOR_DELETE)).isEmpty();
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldFindAllOrders() {
-        session.beginTransaction();
-
         List<Order> orders = orderRepository.findAll();
         assertThat(orders).hasSize(2);
 
         List<String> passports = orders.stream().map(Order::getPassport).collect(toList());
         assertThat(passports).containsExactlyInAnyOrder("MP1234567", "MP1234589");
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnAllOrdersWithQueryDsl() {
-        session.beginTransaction();
-
         List<Order> orders = orderRepository.findAllQueryDsl();
         assertThat(orders).hasSize(2);
 
@@ -147,46 +134,35 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                 .map(Car::getCarNumber)
                 .collect(toList());
         assertThat(carsNumber).contains("7865AE-7", "7834AE-7");
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnOrderByIdWithQueryDsl() {
-        session.beginTransaction();
-
         var optionalOrder = orderRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_ORDER_ID);
 
         assertThat(optionalOrder).isNotNull();
         optionalOrder.ifPresent(order -> assertThat(order.getId()).isEqualTo(ExistEntityBuilder.getExistOrder().getId()));
         assertThat(optionalOrder).isEqualTo(Optional.of(ExistEntityBuilder.getExistOrder()));
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnOrdersByCarNumberCriteria() {
-        session.beginTransaction();
-
         List<Order> orders = orderRepository.findOrdersByCarNumberCriteria("7834AE-7");
 
         assertThat(orders).hasSize(1);
         assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnOrdersOrderStatusCriteria() {
-        session.beginTransaction();
-
         List<Order> orders = orderRepository.findOrdersByOrderStatusCriteria(OrderStatus.PAYED);
 
         assertThat(orders).hasSize(1);
         assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnOrdersByBrandNameAndModelNameOrderByDateQueryDsl() {
-        session.beginTransaction();
         var orderFilter = OrderFilter.builder()
                 .brandName("mercedes")
                 .modelName("Benz")
@@ -196,13 +172,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
 
         assertThat(orders).hasSize(1);
         assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnOrdersWhereAccidentsSumMoreThanAvgOrderByDateQueryDsl() {
-        session.beginTransaction();
-
         List<Order> orders = orderRepository.findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl();
 
         assertThat(orders).hasSize(1);
@@ -212,18 +185,14 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                 .map(Accident::getDamage)
                 .collect(toList()))
                 .contains(BigDecimal.valueOf(75.50).setScale(2));
-        session.getTransaction().rollback();
     }
 
     @Test
     void shouldReturnTuplesWithAvgSumAndDateOrderByDateQueryDsl() {
-        session.beginTransaction();
-
         List<Tuple> orders = orderRepository.findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl();
 
         assertThat(orders).hasSize(2);
         List<LocalDate> dates = orders.stream().map(r -> r.get(0, LocalDate.class)).collect(toList());
         assertThat(dates).containsAll(List.of(LocalDate.of(2022, 7, 2), LocalDate.of(2022, 7, 1)));
-        session.getTransaction().rollback();
     }
 }

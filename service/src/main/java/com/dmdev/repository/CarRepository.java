@@ -10,7 +10,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.graph.GraphSemantic;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +19,8 @@ import static com.dmdev.domain.entity.QModel.model;
 @Repository
 public class CarRepository extends BaseRepository<Long, Car> {
 
-    public CarRepository(EntityManager entityManager) {
-        super(Car.class, entityManager);
+    public CarRepository() {
+        super(Car.class);
     }
 
     public List<Car> findAllQueryDsl() {
@@ -32,7 +31,7 @@ public class CarRepository extends BaseRepository<Long, Car> {
     }
 
     public Optional<Car> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<Car>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<Car>(getEntityManager())
                 .select(car)
                 .from(car)
                 .where(car.id.eq(id))

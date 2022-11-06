@@ -1,6 +1,5 @@
 package com.dmdev.utils.predicate;
 
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;

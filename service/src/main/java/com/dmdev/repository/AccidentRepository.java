@@ -7,19 +7,17 @@ import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static com.dmdev.domain.entity.QAccident.accident;
 
-
 @Repository
 public class AccidentRepository extends BaseRepository<Long, Accident> {
 
-    public AccidentRepository(EntityManager entityManager) {
-        super(Accident.class, entityManager);
+    public AccidentRepository() {
+        super(Accident.class);
     }
 
     public List<Accident> findAllQueryDsl() {
@@ -30,7 +28,7 @@ public class AccidentRepository extends BaseRepository<Long, Accident> {
     }
 
     public Optional<Accident> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<Accident>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<Accident>(getEntityManager())
                 .select(accident)
                 .from(accident)
                 .where(accident.id.eq(id))

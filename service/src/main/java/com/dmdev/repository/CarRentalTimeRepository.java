@@ -6,7 +6,6 @@ import com.dmdev.utils.predicate.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,8 +15,8 @@ import static com.dmdev.domain.entity.QOrder.order;
 @Repository
 public class CarRentalTimeRepository extends BaseRepository<Long, CarRentalTime> {
 
-    public CarRentalTimeRepository(EntityManager entityManager) {
-        super(CarRentalTime.class, entityManager);
+    public CarRentalTimeRepository() {
+        super(CarRentalTime.class);
     }
 
     public List<CarRentalTime> findAllQueryDsl() {
@@ -28,7 +27,7 @@ public class CarRentalTimeRepository extends BaseRepository<Long, CarRentalTime>
     }
 
     public Optional<CarRentalTime> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<CarRentalTime>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<CarRentalTime>(getEntityManager())
                 .select(carRentalTime)
                 .from(carRentalTime)
                 .where(carRentalTime.id.eq(id))
@@ -36,7 +35,7 @@ public class CarRentalTimeRepository extends BaseRepository<Long, CarRentalTime>
     }
 
     public Optional<CarRentalTime> findCarRentalTimesByOrderIdQueryDsl(Long orderId) {
-        return Optional.of(new JPAQuery<CarRentalTime>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<CarRentalTime>(getEntityManager())
                 .select(carRentalTime)
                 .from(carRentalTime)
                 .join(carRentalTime.order, order)

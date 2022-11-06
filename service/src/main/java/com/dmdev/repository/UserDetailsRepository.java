@@ -10,7 +10,6 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +20,8 @@ import static com.dmdev.domain.entity.QUserDetails.userDetails;
 @Repository
 public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
 
-    public UserDetailsRepository(EntityManager entityManager) {
-        super(UserDetails.class, entityManager);
+    public UserDetailsRepository() {
+        super(UserDetails.class);
     }
 
     public List<UserDetails> findAllQueryDsl() {
@@ -33,7 +32,7 @@ public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
     }
 
     public Optional<UserDetails> findByIdQueryDsl(Long id) {
-        return Optional.of(new JPAQuery<User>(getEntityManager())
+        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .where(userDetails.id.eq(id))
