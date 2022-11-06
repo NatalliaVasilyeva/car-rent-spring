@@ -1,108 +1,58 @@
 package com.dmdev.repository;
 
-import com.dmdev.domain.dto.OrderFilter;
-import com.dmdev.domain.entity.Car_;
 import com.dmdev.domain.entity.Order;
-import com.dmdev.domain.entity.Order_;
 import com.dmdev.domain.model.OrderStatus;
-import com.dmdev.utils.predicate.QPredicate;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
+import com.dmdev.domain.projection.OrderFullView;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-import static com.dmdev.domain.entity.QAccident.accident;
-import static com.dmdev.domain.entity.QBrand.brand;
-import static com.dmdev.domain.entity.QCar.car;
-import static com.dmdev.domain.entity.QModel.model;
-import static com.dmdev.domain.entity.QOrder.order;
+public interface OrderRepository extends JpaRepository<Order, Long>, QuerydslPredicateExecutor<Order> {
 
-@Repository
-public class OrderRepository extends BaseRepository<Long, Order> {
+    @Query(value = "SELECT o " +
+            "FROM Order o " +
+            "JOIN fetch o.car c " +
+            "WHERE c.carNumber  = :carNumber")
+    List<Order> findAllByCarNumber(@Param("carNumber") String carNumber);
 
-    public OrderRepository() {
-        super(Order.class);
-    }
+    @Query(value = "SELECT o " +
+            "FROM Order o " +
+            "JOIN fetch o.car c " +
+            "WHERE c.id  = :carId")
+    List<Order> findAllByCarId(@Param("carId") Long carId);
 
-    public List<Order> findAllQueryDsl() {
-        return new JPAQuery<Order>(getEntityManager())
-                .select(order)
-                .from(order)
-                .fetch();
-    }
+    List<Order> findAllByOrderStatus(OrderStatus orderStatus);
 
-    public Optional<Order> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Order>(getEntityManager())
-                .select(order)
-                .from(order)
-                .where(order.id.eq(id))
-                .fetchOne());
-    }
+    @Query(value = "SELECT o " +
+            "FROM Order o " +
+            "JOIN fetch o.user u " +
+            "WHERE u.id  = :userId")
+    List<Order> findAllByUserId(@Param("userId") Long userId);
 
-    public List<Order> findOrdersByCarNumberCriteria(String carNumber) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Order.class);
-        var order = criteria.from(Order.class);
-        var car = order.join(Order_.car);
+    List<Order> findAllByDateBetween(LocalDate start, LocalDate end);
 
-        criteria.select(order)
-                .where(cb.equal(car.get(Car_.carNumber), carNumber));
+    List<Order> findAllByDate(LocalDate date);
 
-        return getEntityManager().createQuery(criteria).getResultList();
-    }
+    @Query(value = "SELECT o " +
+            "FROM Order o " +
+            "WHERE o.accidents.size > 0")
+    List<Order> findAllWithAccidents();
 
-    public List<Order> findOrdersByOrderStatusCriteria(OrderStatus orderStatus) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Order.class);
-        var order = criteria.from(Order.class);
 
-        criteria.select(order)
-                .where(cb.equal(order.get(Order_.orderStatus), orderStatus));
-
-        return getEntityManager().createQuery(criteria).getResultList();
-    }
-
-    public List<Tuple> findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl() {
-        return new JPAQuery<Tuple>(getEntityManager())
-                .select(order.date, order.sum.avg())
-                .from(order)
-                .groupBy(order.date)
-                .orderBy(order.date.asc())
-                .fetch();
-    }
-
-    public List<Order> findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(OrderFilter orderFilter) {
-        var predicates = QPredicate.builder()
-                .add(orderFilter.getModelName(), model.name::eq)
-                .add(orderFilter.getBrandName(), brand.name::eq)
-                .buildAnd();
-
-        return new JPAQuery<Order>(getEntityManager())
-                .select(order)
-                .from(order)
-                .join(order.car, car)
-                .join(car.model, model)
-                .join(model.brand, brand)
-                .where(predicates)
-                .orderBy(order.date.asc())
-                .fetch();
-    }
-
-    public List<Order> findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl() {
-        return new JPAQuery<Order>(getEntityManager())
-                .select(order)
-                .from(order)
-                .join(order.accidents, accident)
-                .groupBy(order.id)
-                .having(accident.damage.avg().gt(
-                        new JPAQuery<BigDecimal>(getEntityManager())
-                                .select(accident.damage.avg())
-                                .from(accident)
-                ))
-                .orderBy(order.date.asc())
-                .fetch();
-    }
+    @Query(value = "SELECT o.id as id, o.date as date, o.insurance as insurance, o.orderStatus as orderStatus, " +
+            "o.sum as sum, crt.startRentalDate as startRentalDate, crt.endRentalDate as endRentalDate, " +
+            "c.carNumber as carNumber, m.name as modelName, b.name as brandName, " +
+            "ud.name as firstname, ud.surname as surname, ud.userContact.phone as phone,  CASE WHEN o.accidents.size > 0 THEN true ELSE false END " +
+            "FROM Order o " +
+            "JOIN o.carRentalTime crt " +
+            "JOIN o.car c " +
+            "JOIN o.user u " +
+            "JOIN u.userDetails ud " +
+            "JOIN c.model m " +
+            "JOIN m.brand b ")
+    List<OrderFullView> findAllFullView();
 }

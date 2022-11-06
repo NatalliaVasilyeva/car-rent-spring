@@ -2,14 +2,17 @@ package integration.com.dmdev.repository;
 
 import com.dmdev.domain.entity.Brand;
 import com.dmdev.domain.entity.Model;
+import com.dmdev.domain.projection.BrandFullView;
+import com.dmdev.domain.projection.CategoryView;
+import com.dmdev.domain.projection.ModelView;
 import com.dmdev.repository.BrandRepository;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +28,12 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     @Autowired
     private BrandRepository brandRepository;
 
+
     @Test
     void shouldSaveBrand() {
         var brandToSave = TestEntityBuilder.createBrand();
 
-        var savedBrand = brandRepository.save(brandToSave);
+        var savedBrand = brandRepository.saveAndFlush(brandToSave);
 
         assertNotNull(savedBrand.getId());
     }
@@ -49,7 +53,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         var brandToUpdate = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
         brandToUpdate.setName("pegas");
 
-        brandRepository.update(brandToUpdate);
+        brandRepository.saveAndFlush(brandToUpdate);
 
         var updatedBrand = brandRepository.findById(brandToUpdate.getId()).get();
         assertThat(updatedBrand).isEqualTo(brandToUpdate);
@@ -75,38 +79,75 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnAllBrandsWithQueryDsl() {
-        List<Brand> brands = brandRepository.findAllQueryDsl();
+    void shouldFindByName() {
+        var expectedBrand = Optional.of(ExistEntityBuilder.getExistBrand());
+        var actualBrand = brandRepository.findByNameIgnoringCase("mercedes");
+        assertThat(actualBrand).isPresent();
+        assertEquals(expectedBrand, actualBrand);
+    }
 
+    @Test
+    void shouldFindByNameIn() {
+        var expectedBrand = ExistEntityBuilder.getExistBrand();
+        List<Brand> actualBrands = brandRepository.findByNameIn(List.of("mercedes"));
+        assertThat(actualBrands).hasSize(1);
+        assertEquals(expectedBrand, actualBrands.get(0));
+    }
+
+    @Test
+    void shouldFindByNameWithGraph() {
+        var expectedBrand = Optional.of(ExistEntityBuilder.getExistBrand());
+        var actualBrand = brandRepository.findByName("mercedes");
+        assertThat(actualBrand).isPresent();
+        assertEquals(expectedBrand, actualBrand);
+    }
+
+    @Test
+    void shouldFindAllBrandFullView() {
+        List<BrandFullView> brands = brandRepository.findAllFull();
         assertThat(brands).hasSize(2);
 
-        List<String> modelNames = brands.stream()
-                .map(Brand::getModels)
-                .flatMap(models ->
-                        models.stream()
-                                .map(Model::getName))
+        List<BigDecimal> prices = brands.stream()
+                .map(BrandFullView::getModels)
+                .flatMap(model -> model.stream().map(ModelView::getCategory))
+                .map(CategoryView::getPrice)
+                .collect(toList());
+        assertThat(prices).hasSize(2).containsExactlyInAnyOrder(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
+    }
+
+    @Test
+    void shouldFindByIdBrandFullView() {
+        BrandFullView brand = brandRepository.findByIdAllFull(TEST_EXISTS_BRAND_ID).get();
+
+        assertThat(brand.getName()).isEqualTo("mercedes");
+        assertThat(brand.getModels()).hasSize(1);
+        assertThat(brand.getModels().get(0).getCategory().getPrice()).isEqualTo(BigDecimal.valueOf(100.00).setScale(2));
+    }
+
+    @Test
+    void shouldFindAllByNameBrandFullView() {
+        List<BrandFullView> brands = brandRepository.findByNameAllFull("mercedes");
+
+        List<BigDecimal> prices = brands.stream()
+                .map(BrandFullView::getModels)
+                .flatMap(model -> model.stream().map(ModelView::getCategory))
+                .map(CategoryView::getPrice)
+                .collect(toList());
+        assertThat(prices).hasSize(1).containsExactlyInAnyOrder(BigDecimal.valueOf(100.00).setScale(2));
+    }
+
+    @Test
+    void shouldFindAllByNameInBrandFullView() {
+        List<BrandFullView> actualBrands = brandRepository.findByNameAllFullInIgnoringCase(List.of("mercedes", "reno"));
+
+        assertThat(actualBrands).hasSize(1);
+
+        List<BigDecimal> prices = actualBrands.stream()
+                .map(BrandFullView::getModels)
+                .flatMap(model -> model.stream().map(ModelView::getCategory))
+                .map(CategoryView::getPrice)
                 .collect(toList());
 
-        modelNames.forEach(System.out::println);
-
-        assertThat(modelNames).containsExactlyInAnyOrder("A8", "Benz");
-    }
-
-    @Test
-    void shouldReturnBrandBYIdWithQueryDsl() {
-
-        var optionalBrand = brandRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_BRAND_ID);
-
-        assertThat(optionalBrand).isNotNull();
-        optionalBrand.ifPresent(brand -> assertThat(brand.getId()).isEqualTo(ExistEntityBuilder.getExistBrand().getId()));
-        assertThat(optionalBrand).isEqualTo(Optional.of(ExistEntityBuilder.getExistBrand()));
-    }
-
-    @Test
-    void shouldReturnBrandByNameWithQueryDsl() {
-        var optionalBrand = brandRepository.findBrandByNameQueryDsl("mercedes");
-
-        assertThat(optionalBrand).isNotNull();
-        optionalBrand.ifPresent(brand -> assertThat(brand.getName()).isEqualTo("mercedes"));
+        assertThat(prices).hasSize(1).containsExactlyInAnyOrder(BigDecimal.valueOf(100.00).setScale(2));
     }
 }

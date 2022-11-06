@@ -31,7 +31,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = {"brand", "category", "cars"})
 @Builder
 @Entity
-public class Model implements BaseEntity<Long> {
+public class Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

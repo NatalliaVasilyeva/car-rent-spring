@@ -1,20 +1,20 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.domain.dto.CarFilter;
-import com.dmdev.domain.entity.Brand;
+import com.dmdev.domain.dto.filterdto.CarFilter;
 import com.dmdev.domain.entity.Car;
-import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.Transmission;
 import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.ModelRepository;
+import com.dmdev.utils.predicate.CarPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +23,8 @@ import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_CAR_ID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CarRepositoryTestIT extends IntegrationBaseTest {
 
@@ -32,13 +34,16 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     @Autowired
     private ModelRepository modelRepository;
 
+    @Autowired
+    private CarPredicateBuilder carPredicateBuilder;
+
     @Test
     void shouldSaveCar() {
         var model = ExistEntityBuilder.getExistModel();
         var car = TestEntityBuilder.createCar();
         model.setCar(car);
 
-        var savedCar = carRepository.save(car);
+        var savedCar = carRepository.saveAndFlush(car);
 
         assertThat(savedCar).isNotNull();
     }
@@ -61,7 +66,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         carToUpdate.setYear(2010);
         carToUpdate.setModel(existModel);
 
-        carRepository.update(carToUpdate);
+        carRepository.saveAndFlush(carToUpdate);
 
         var updatedCar = carRepository.findById(carToUpdate.getId()).get();
 
@@ -86,24 +91,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                 "7865AE-7", "7834AE-7");
     }
 
-    @Test
-    void shouldReturnAllCarsWithQueryDsl() {
-        List<Car> cars = carRepository.findAllQueryDsl();
-
-        assertThat(cars).hasSize(2);
-
-        List<String> brandNames = cars.stream()
-                .map(Car::getModel)
-                .map(Model::getBrand)
-                .map(Brand::getName)
-                .collect(toList());
-
-        assertThat(brandNames).containsExactlyInAnyOrder("audi", "mercedes");
-    }
 
     @Test
-    void shouldReturnCarBYIdWithQueryDsl() {
-        var optionalCar = carRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_CAR_ID);
+    void shouldReturnCarByNumber() {
+        var optionalCar = carRepository.findByCarNumber("7834AE-7");
 
         assertThat(optionalCar).isNotNull();
         optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
@@ -111,59 +102,110 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnCarByNumberCriteria() {
-        var optionalCar = carRepository.findCarByNumberCriteria("7834AE-7");
+    void shouldReturnCarByNumberLike() {
+        var cars = carRepository.findByCarNumberContainingIgnoreCase("834ae-7");
 
-        assertThat(optionalCar).isNotNull();
-        optionalCar.ifPresent(car -> assertThat(car.getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId()));
-        assertThat(optionalCar).isEqualTo(Optional.of(ExistEntityBuilder.getExistCar()));
+        assertThat(cars).hasSize(1);
+        assertThat(cars.get(0).getId()).isEqualTo(ExistEntityBuilder.getExistCar().getId());
+        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
     }
 
     @Test
-    void shouldReturnCarByTransmissionGraph() {
-        List<Car> cars = carRepository.findCarByTransmissionGraph(Transmission.ROBOT);
+    void shouldReturnCarByTransmission() {
+        List<Car> cars = carRepository.findByTransmissionIgnoreCase(Transmission.ROBOT);
 
         assertThat(cars).hasSize(1);
         assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
     }
 
     @Test
-    void shouldReturnCarsByColorAndYearOrGreateQueryDsl() {
+    void shouldReturnCarsByColorAndYearOrGreate() {
 
         var carFilter = CarFilter.builder()
                 .color(Color.RED)
                 .year(2022)
                 .build();
-        List<Car> cars = carRepository.findCarsByColorAndYearOrGreaterQueryDsl(carFilter);
+
+        List<Car> cars = IterableUtils.toList(carRepository.findAll(carPredicateBuilder.build(carFilter)));
 
         assertThat(cars).hasSize(1);
         assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
     }
 
     @Test
-    void shouldReturnCarsByBrandModelCategoryYearOrGreaterQueryDsl() {
+    void shouldReturnCarsByBrandModelCategoryYearOrGreater() {
         var carFilter = CarFilter.builder()
-                .brandName("mercedes")
-                .modelName("Benz")
-                .category("BUSINESS")
+                .brandNames(List.of("mercedes"))
+                .modelNames(List.of("Benz"))
+                .categoryName("BUSINESS")
                 .build();
 
-        List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(carFilter);
+        List<Car> cars = IterableUtils.toList(carRepository.findAll(carPredicateBuilder.build(carFilter)));
 
         assertThat(cars).hasSize(1);
         assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
     }
 
     @Test
-    void shouldNotReturnCarsByBrandModelCategoryYearOrGreaterQueryDsl() {
+    void shouldNotReturnCarsByBrandModelCategoryYearOrGreater() {
         var carFilter = CarFilter.builder()
-                .brandName("mercedes")
-                .modelName("Benz")
-                .category("dummy")
+                .brandNames(List.of("mercedes"))
+                .modelNames(List.of("Benz"))
+                .categoryName("dummy")
                 .build();
 
-        List<Car> cars = carRepository.findCarsByBrandModelCategoryYearOrGreaterQueryDsl(carFilter);
+        List<Car> cars = IterableUtils.toList(carRepository.findAll(carPredicateBuilder.build(carFilter)));
 
         assertThat(cars).isEmpty();
+    }
+
+    @Test
+    void shouldReturnCarsWithAccidents() {
+        List<Car> cars = carRepository.findAllWithAccidents();
+
+        assertThat(cars).hasSize(2);
+
+        List<String> carNumbers = cars.stream().map(Car::getCarNumber).collect(toList());
+        assertThat(carNumbers).containsExactlyInAnyOrder(
+                "7865AE-7", "7834AE-7");
+    }
+
+    @Test
+    void shouldReturnCarsWithoutAccidents() {
+        List<Car> cars = carRepository.findAllWithoutAccidents();
+
+        assertThat(cars).isEmpty();
+    }
+
+    @Test
+    void shouldReturnAllAvailableCars() {
+        List<Car> cars = carRepository.findAllAvailable();
+
+        assertThat(cars).hasSize(2);
+
+        List<String> carNumbers = cars.stream().map(Car::getCarNumber).collect(toList());
+        assertThat(carNumbers).containsExactlyInAnyOrder(
+                "7865AE-7", "7834AE-7");
+    }
+
+    @Test
+    void shouldReturnAllCarsUnderRepaired() {
+        List<Car> cars = carRepository.findAllUnderRepair();
+
+        assertThat(cars).isEmpty();
+    }
+
+    @Test
+    void shouldReturnIfCarNotAvailableForNecessaryDates() {
+        var result = carRepository.isCarAvailable(TEST_EXISTS_CAR_ID, LocalDate.of(2022, 9, 3), LocalDate.of(2022, 9, 5));
+
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnIfCarAvailableForNecessaryDates() {
+        var result = carRepository.isCarAvailable(TEST_EXISTS_CAR_ID, LocalDate.of(2022, 9, 5), LocalDate.of(2022, 9, 10));
+
+        assertTrue(result);
     }
 }

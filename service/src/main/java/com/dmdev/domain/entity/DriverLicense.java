@@ -24,7 +24,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = "number")
 @Builder
 @Entity
-public class DriverLicense implements BaseEntity<Long> {
+public class DriverLicense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

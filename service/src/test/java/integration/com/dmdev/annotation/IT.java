@@ -1,4 +1,4 @@
-package com.dmdev.annotation;
+package integration.com.dmdev.annotation;
 
 
 import com.dmdev.CarRentApplication;

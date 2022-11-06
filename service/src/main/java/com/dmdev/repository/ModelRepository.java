@@ -1,91 +1,26 @@
 package com.dmdev.repository;
 
-import com.dmdev.domain.dto.ModelFilter;
-import com.dmdev.domain.entity.Brand_;
 import com.dmdev.domain.entity.Model;
-import com.dmdev.domain.entity.Model_;
-import com.dmdev.utils.predicate.CriteriaPredicate;
-import com.dmdev.utils.predicate.QPredicate;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
-import javax.persistence.criteria.Predicate;
 import java.util.List;
-import java.util.Optional;
 
-import static com.dmdev.domain.entity.QBrand.brand;
-import static com.dmdev.domain.entity.QCategory.category;
-import static com.dmdev.domain.entity.QModel.model;
+public interface ModelRepository extends JpaRepository<Model, Long>, QuerydslPredicateExecutor<Model> {
 
-@Repository
-public class ModelRepository extends BaseRepository<Long, Model> {
+    List<Model> findModelsByName(String name);
 
-    public ModelRepository() {
-        super(Model.class);
-    }
+    @Query(value = "SELECT m " +
+            "FROM Model m " +
+            "JOIN fetch m.brand b " +
+            "WHERE lower(b.name) = lower(:name)")
+    List<Model> findModelsByBrandName(@Param("name") String brandName);
 
-    public List<Model> findAllQueryDsl() {
-        return new JPAQuery<Model>(getEntityManager())
-                .select(model)
-                .from(model)
-                .fetch();
-    }
-
-    public Optional<Model> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Model>(getEntityManager())
-                .select(model)
-                .from(model)
-                .where(model.id.eq(id))
-                .fetchOne());
-    }
-
-    public List<Model> findModelsByModelAndBrandNameCriteria(ModelFilter modelFilter) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Model.class);
-        var model = criteria.from(Model.class);
-        var brand = model.join(Model_.brand);
-        Predicate[] predicates = CriteriaPredicate.builder()
-                .add(modelFilter.getBrandName(), br -> cb.equal(brand.get(Brand_.name), br))
-                .add(modelFilter.getName(), mod -> cb.equal(model.get(Model_.name), mod))
-                .getPredicates();
-
-        criteria.select(model)
-                .where(predicates);
-
-        return getEntityManager()
-                .createQuery(criteria)
-                .getResultList();
-    }
-
-    public List<Model> findModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl(ModelFilter modelFilter) {
-        var predicate = QPredicate.builder()
-                .add(modelFilter.getBrandName(), brand.name::eq)
-                .add(modelFilter.getTransmission(), model.transmission::eq)
-                .add(modelFilter.getEngineType(), model.engineType::eq)
-                .buildAnd();
-
-        return new JPAQuery<Model>(getEntityManager())
-                .select(model)
-                .from(model)
-                .join(model.brand, brand)
-                .where(predicate)
-                .orderBy(brand.name.asc())
-                .fetch();
-    }
-
-    public List<Model> findModelsByBrandAndCategoryOrderByBrandQueryDsl(ModelFilter modelFilter) {
-        var predicate = QPredicate.builder()
-                .add(modelFilter.getBrandName(), brand.name::eq)
-                .add(modelFilter.getCategoryName(), category.name::eq)
-                .buildOr();
-
-        return new JPAQuery<Model>(getEntityManager())
-                .select(model)
-                .from(model)
-                .join(model.brand, brand)
-                .join(model.category, category)
-                .where(predicate)
-                .orderBy(brand.name.asc())
-                .fetch();
-    }
+    @Query(value = "SELECT m " +
+            "FROM Model m " +
+            "JOIN fetch m.brand b " +
+            "WHERE b.id = :id")
+    List<Model> findModelsByBrandId(@Param("id") Long brandId);
 }

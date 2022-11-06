@@ -1,16 +1,28 @@
-package com.dmdev.domain.dto;
+package com.dmdev.domain.dto.filterdto;
 
+import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.Transmission;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
+
 @Value
 @Builder
-public class ModelFilter {
-    String brandName;
+public class CarFilter {
+
+    Color color;
+
+    Integer year;
+
+    List<String> modelNames;
+
+    List<String> brandNames;
+
     String categoryName;
-    String name;
+
     Transmission transmission;
+
     EngineType engineType;
 }

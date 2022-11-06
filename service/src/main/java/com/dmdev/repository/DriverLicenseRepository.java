@@ -1,99 +1,35 @@
 package com.dmdev.repository;
 
-import com.dmdev.domain.dto.DriverLicenseFilter;
 import com.dmdev.domain.entity.DriverLicense;
-import com.dmdev.domain.entity.DriverLicense_;
-import com.dmdev.utils.predicate.QPredicate;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
+import com.dmdev.domain.projection.DriverLicenseFullView;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dmdev.domain.entity.QDriverLicense.driverLicense;
-import static com.dmdev.domain.entity.QUserDetails.userDetails;
+public interface DriverLicenseRepository extends JpaRepository<DriverLicense, Long>, QuerydslPredicateExecutor<DriverLicense> {
 
-@Repository
-public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense> {
+    Optional<DriverLicense> findByNumberContainingIgnoreCase(String number);
 
-    public DriverLicenseRepository() {
-        super(DriverLicense.class);
-    }
+    @Query(value = "SELECT dl " +
+            "FROM DriverLicense dl " +
+            "JOIN fetch dl.userDetails ud " +
+            "JOIN fetch ud.user u " +
+            "WHERE u.id  = :id ")
+    Optional<DriverLicense> findByUserId(@Param("id") Long userId);
 
-    public List<DriverLicense> findAllQueryDsl() {
-        return new JPAQuery<DriverLicense>(getEntityManager())
-                .select(driverLicense)
-                .from(driverLicense)
-                .fetch();
-    }
+    List<DriverLicense> findByExpiredDateLessThanEqual(LocalDate expiredDate);
 
-    public Optional<DriverLicense> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<DriverLicense>(getEntityManager())
-                .select(driverLicense)
-                .from(driverLicense)
-                .where(driverLicense.id.eq(id))
-                .fetchOne());
-    }
 
-    public Optional<DriverLicense> findDriverLicenseByNumberCriteria(String driverLicenseNumber) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicense.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-
-        criteria.select(driverLicense)
-                .where(cb.equal(driverLicense.get(DriverLicense_.number), driverLicenseNumber));
-
-        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
-    }
-
-    public List<DriverLicense> findDriverLicenseByExpiredDateOrLessCriteria(DriverLicenseFilter driverLicenseFilter) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicense.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-
-        criteria.select(driverLicense)
-                .where(cb.lessThanOrEqualTo(driverLicense.get(DriverLicense_.expiredDate), driverLicenseFilter.getExpiredDate()));
-
-        return getEntityManager().createQuery(criteria)
-                .getResultList();
-    }
-
-    public List<DriverLicense> findDriverLicensesByIssueAndExpiredDateQueryDsl(DriverLicenseFilter driverLicenseFilter) {
-        var predicateIssueDte = QPredicate.builder()
-                .add(driverLicenseFilter.getIssueDate(), driverLicense.issueDate::goe)
-                .buildOr();
-
-        var predicateExpiredDate = QPredicate.builder()
-                .add(driverLicenseFilter.getExpiredDate(), driverLicense.expiredDate::loe)
-                .buildOr();
-
-        var predicateAll = QPredicate.builder()
-                .addPredicate(predicateIssueDte)
-                .addPredicate(predicateExpiredDate)
-                .buildAnd();
-
-        return new JPAQuery<DriverLicense>(getEntityManager())
-                .select(driverLicense)
-                .from(driverLicense)
-                .where(predicateAll)
-                .fetch();
-    }
-
-    public List<Tuple> findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(DriverLicenseFilter driverLicenseFilter) {
-        var predicate = QPredicate.builder()
-                .add(driverLicenseFilter.getExpiredDate(), driverLicense.expiredDate::loe)
-                .buildOr();
-
-        return new JPAQuery<Tuple>(getEntityManager())
-                .select(userDetails.name, userDetails.surname,
-                        userDetails.userContact.phone,
-                        driverLicense.number, driverLicense.issueDate,
-                        driverLicense.expiredDate)
-                .from(driverLicense)
-                .join(driverLicense.userDetails, userDetails)
-                .where(predicate)
-                .orderBy(userDetails.surname.asc())
-                .fetch();
-    }
+    @Query(value = "SELECT dl.id as id, dl.number as number, dl.issueDate as issueDate, dl.expiredDate as expiredDate, " +
+            "ud.name as firstname, ud.surname as lastname, ud.userContact.phone as phone " +
+            "FROM DriverLicense dl " +
+            "JOIN dl.userDetails ud " +
+            "WHERE dl.issueDate >= :issueDate AND dl.expiredDate <= :expiredDate " +
+            "ORDER BY ud.surname ASC ")
+    List<DriverLicenseFullView> findDriverLicensesFullViewByIssueAndExpiredDate(@Param("issueDate") LocalDate issueDate, @Param("expiredDate") LocalDate expiredDate);
 }

@@ -24,7 +24,7 @@ import java.util.Set;
 @EqualsAndHashCode(of = "name")
 @Builder
 @Entity
-public class Brand implements BaseEntity<Long> {
+public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

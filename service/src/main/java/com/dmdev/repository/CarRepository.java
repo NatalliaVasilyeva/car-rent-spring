@@ -1,110 +1,58 @@
 package com.dmdev.repository;
 
-import com.dmdev.domain.dto.CarFilter;
 import com.dmdev.domain.entity.Car;
-import com.dmdev.domain.entity.CarRentalTime;
-import com.dmdev.domain.entity.Car_;
 import com.dmdev.domain.model.Transmission;
-import com.dmdev.utils.predicate.QPredicate;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.graph.GraphSemantic;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dmdev.domain.entity.QCar.car;
-import static com.dmdev.domain.entity.QModel.model;
+public interface CarRepository extends JpaRepository<Car, Long>, QuerydslPredicateExecutor<Car> {
 
-@Repository
-public class CarRepository extends BaseRepository<Long, Car> {
+    Optional<Car> findByCarNumber(String carNumber);
 
-    public CarRepository() {
-        super(Car.class);
-    }
+    List<Car> findByCarNumberContainingIgnoreCase(String carNumber);
 
-    public List<Car> findAllQueryDsl() {
-        return new JPAQuery<Car>(getEntityManager())
-                .select(car)
-                .from(car)
-                .fetch();
-    }
+    @EntityGraph(attributePaths = {"model"})
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "JOIN fetch c.model m " +
+            "WHERE m.transmission = :transmission ")
+    List<Car> findByTransmissionIgnoreCase(@Param("transmission") Transmission transmission);
 
-    public Optional<Car> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Car>(getEntityManager())
-                .select(car)
-                .from(car)
-                .where(car.id.eq(id))
-                .fetchOne());
-    }
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "JOIN fetch c.orders o " +
+            "JOIN fetch o.accidents a " +
+            "WHERE o.accidents.size > 0 ")
+    List<Car> findAllWithAccidents();
 
-    public Optional<Car> findCarByNumberCriteria(String carNumber) {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(Car.class);
-        var car = criteria.from(Car.class);
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "JOIN fetch c.orders o " +
+            "JOIN fetch o.accidents a " +
+            "WHERE o.accidents.size = 0 ")
+    List<Car> findAllWithoutAccidents();
 
-        criteria.select(car)
-                .where(cb.equal(car.get(Car_.carNumber), carNumber));
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "WHERE c.repaired = false")
+    List<Car> findAllAvailable();
 
-        return Optional.ofNullable(getEntityManager().createQuery(criteria).getSingleResult());
-    }
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "WHERE c.repaired = true")
+    List<Car> findAllUnderRepair();
 
-    public List<Car> findCarByTransmissionGraph(Transmission transmission) {
-        var carGraph = getEntityManager().createEntityGraph(Car.class);
-        carGraph.addAttributeNodes("model");
-
-        return new JPAQuery<Car>(getEntityManager())
-                .select(car)
-                .setHint(GraphSemantic.LOAD.getJpaHintName(), carGraph)
-                .from(car)
-                .where(car.model.transmission.eq(transmission))
-                .fetch();
-    }
-
-    public List<Car> findCarsByColorAndYearOrGreaterQueryDsl(CarFilter carFilter) {
-        var predicateYear = QPredicate.builder()
-                .add(carFilter.getYear(), car.year::goe)
-                .buildOr();
-
-        var predicateColor = QPredicate.builder()
-                .add(carFilter.getColor(), car.color::eq)
-                .buildAnd();
-
-        var predicateAll = QPredicate.builder()
-                .addPredicate(predicateYear)
-                .addPredicate(predicateColor)
-                .buildAnd();
-
-        return new JPAQuery<Car>(getEntityManager())
-                .select(car)
-                .from(car)
-                .where(predicateAll)
-                .fetch();
-    }
-
-    public List<Car> findCarsByBrandModelCategoryYearOrGreaterQueryDsl(CarFilter carFilter) {
-        var predicateYear = QPredicate.builder()
-                .add(carFilter.getYear(), car.year::goe)
-                .buildOr();
-
-        var predicateOther = QPredicate.builder()
-                .add(carFilter.getBrandName(), car.model.brand.name::eq)
-                .add(carFilter.getModelName(), car.model.name::eq)
-                .add(carFilter.getCategory(), car.model.category.name::eq)
-                .buildAnd();
-
-        var predicateAll = QPredicate.builder()
-                .addPredicate(predicateYear)
-                .addPredicate(predicateOther)
-                .buildAnd();
-
-        return new JPAQuery<CarRentalTime>(getEntityManager())
-                .select(car)
-                .from(car)
-                .join(car.model, model)
-                .join(model.brand)
-                .join(model.category)
-                .where(predicateAll)
-                .fetch();
-    }
+    @Query(value = "SELECT count(o.id) = 0 " +
+            "FROM orders o " +
+            "JOIN car c on o.car_id = c.id " +
+            "WHERE c.id = :id AND o.id IN (SELECT order_id FROM car_rental_time crt WHERE crt.start_rental_date <= :endDate AND " +
+            "crt.end_rental_date >= :startDate)", nativeQuery = true)
+    boolean isCarAvailable(@Param("id") Long id, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

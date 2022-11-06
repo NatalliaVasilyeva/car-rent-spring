@@ -1,19 +1,20 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.domain.dto.ModelFilter;
-import com.dmdev.domain.entity.Brand;
+import com.dmdev.domain.dto.filterdto.ModelFilter;
 import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.Transmission;
 import com.dmdev.repository.BrandRepository;
 import com.dmdev.repository.CategoryRepository;
 import com.dmdev.repository.ModelRepository;
+import com.dmdev.utils.predicate.ModelPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,8 +37,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    ModelRepositoryTestIT() {
-    }
+
+    @Autowired
+    private ModelPredicateBuilder modelPredicateBuilder;
+
     @Test
     void shouldSaveModel() {
         var brand = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
@@ -46,7 +49,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         brand.setModel(modelToSave);
         category.setModel(modelToSave);
 
-        var savedModel = modelRepository.save(modelToSave);
+        var savedModel = modelRepository.saveAndFlush(modelToSave);
 
         assertThat(savedModel).isNotNull();
     }
@@ -61,7 +64,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         brand.setModel(modelToSave);
         category.setModel(modelToSave);
 
-        modelRepository.save(modelToSave);
+        modelRepository.saveAndFlush(modelToSave);
 
         assertThat(modelToSave.getId()).isNotNull();
         assertThat(carToSave.getId()).isNotNull();
@@ -86,7 +89,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         modelToUpdate.setEngineType(EngineType.ELECTRIC);
         modelToUpdate.setCategory(category);
 
-        modelRepository.update(modelToUpdate);
+        modelRepository.saveAndFlush(modelToUpdate);
 
         var updatedModel = modelRepository.findById(modelToUpdate.getId()).get();
 
@@ -112,74 +115,84 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnAllModelsWithQueryDsl() {
-        List<Model> models = modelRepository.findAllQueryDsl();
-        assertThat(models).hasSize(2);
+    void shouldFindAllModelsByName() {
+        List<Model> models = modelRepository.findModelsByName("Benz");
+        assertThat(models).hasSize(1);
 
-        List<String> modelNames = models.stream().map(Model::getName).collect(toList());
-        assertThat(modelNames).contains("A8", "Benz");
-
-        List<String> brands = models.stream().map(Model::getBrand).map(Brand::getName).collect(toList());
-        assertThat(brands).contains("audi", "mercedes");
+        assertThat(models.get(0).getBrand().getName()).isEqualTo("mercedes");
+        assertThat(models.get(0).getTransmission()).isEqualTo(Transmission.ROBOT);
     }
 
     @Test
-    void shouldReturnModelByIdWithQueryDsl() {
-        var optionalModel = modelRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_MODEL_ID);
+    void shouldFindAllModelsByBrandName() {
+        List<Model> models = modelRepository.findModelsByBrandName("mercedes");
+        assertThat(models).hasSize(1);
 
-        assertThat(optionalModel).isNotNull();
-        optionalModel.ifPresent(model -> assertThat(model.getId()).isEqualTo(ExistEntityBuilder.getExistModel().getId()));
-        assertThat(optionalModel).isEqualTo(Optional.of(ExistEntityBuilder.getExistModel()));
+        assertThat(models.get(0).getName()).isEqualTo("Benz");
+        assertThat(models.get(0).getTransmission()).isEqualTo(Transmission.ROBOT);
     }
 
     @Test
-    void shouldReturnModelsByModelAndBrandNameCriteria() {
+    void shouldFindAllModelsByBrandId() {
+        List<Model> models = modelRepository.findModelsByBrandId(TEST_EXISTS_BRAND_ID);
+        assertThat(models).hasSize(1);
+
+        assertThat(models.get(0).getName()).isEqualTo("Benz");
+        assertThat(models.get(0).getTransmission()).isEqualTo(Transmission.ROBOT);
+    }
+
+
+    @Test
+    void shouldReturnModelsByFilterWithModelAndBrandName() {
         var modelFilter = ModelFilter.builder()
-                .brandName("mercedes")
-                .name("Benz")
+                .brands(List.of("mercedes"))
+                .models(List.of("Benz"))
                 .build();
 
-        List<Model> models = modelRepository.findModelsByModelAndBrandNameCriteria(modelFilter);
+        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter)));
 
         assertThat(models).hasSize(1);
         assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
     }
 
     @Test
-    void shouldReturnModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl() {
+    void shouldReturnModelsByFilterWithBrandTransmissionEngineTypeOrderByBrand() {
         var modelFilter = ModelFilter.builder()
-                .brandName("mercedes")
+                .brands(List.of("mercedes"))
                 .transmission(Transmission.ROBOT)
                 .engineType(EngineType.FUEL)
                 .build();
 
-        List<Model> models = modelRepository.findModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl(modelFilter);
+        Sort sort = Sort.by("brand").descending();
+        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort));
 
         assertThat(models).hasSize(1);
         assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
     }
 
     @Test
-    void shouldNotReturnModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl() {
+    void shouldNotReturnModelsByByFilterWithBrandTransmissionEngineTypeOrderByBrand() {
         var modelFilter = ModelFilter.builder()
-                .brandName("mercedes")
+                .brands(List.of("mercedes"))
                 .transmission(Transmission.ROBOT)
                 .engineType(EngineType.DIESEL)
                 .build();
 
-        List<Model> models = modelRepository.findModelsByBrandTransmissionEngineTypeOrderByBrandQueryDsl(modelFilter);
+        Sort sort = Sort.by("brand").descending();
+        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort));
 
         assertThat(models).isEmpty();
     }
 
     @Test
-    void shouldReturnModelsByBrandAndCategoryOrderByBrandQueryDsl() {
+    void shouldReturnModelsByBrandAndCategoryOrderByBrand() {
         var modelFilter = ModelFilter.builder()
-                .brandName("mercedes")
-                .categoryName("BUSINESS")
+                .brands(List.of("mercedes"))
+                .categories(List.of("BUSINESS"))
                 .build();
 
-        List<Model> models = modelRepository.findModelsByBrandAndCategoryOrderByBrandQueryDsl(modelFilter);
+        Sort sort = Sort.by("brand").descending();
+        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort));
 
         assertThat(models).hasSize(1);
         assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());

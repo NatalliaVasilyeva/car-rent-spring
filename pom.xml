@@ -31,8 +31,6 @@
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <!-- db -->
-        <liquibase-core.version>4.15.0</liquibase-core.version>
         <!-- others -->
         <validation-api.version>2.0.1.Final</validation-api.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -56,13 +54,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- db -->
-            <dependency>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-core</artifactId>
-                <version>${liquibase-core.version}</version>
-            </dependency>
-            <!-- /db -->
             <!-- others -->
             <dependency>
                 <groupId>javax.validation</groupId>
@@ -80,6 +71,14 @@
                 <version>1.3.2</version>
             </dependency>
             <!-- /others -->
+            <!-- db -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>1.17.3</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- db -->
         </dependencies>
     </dependencyManagement>
 

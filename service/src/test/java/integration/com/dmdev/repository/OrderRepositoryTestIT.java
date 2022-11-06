@@ -1,22 +1,20 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.domain.dto.OrderFilter;
-import com.dmdev.domain.entity.Accident;
-import com.dmdev.domain.entity.Car;
+import com.dmdev.domain.dto.filterdto.OrderFilter;
 import com.dmdev.domain.entity.Order;
 import com.dmdev.domain.model.OrderStatus;
+import com.dmdev.domain.projection.OrderFullView;
 import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.OrderRepository;
 import com.dmdev.repository.UserRepository;
-import com.querydsl.core.Tuple;
+import com.dmdev.utils.predicate.OrderPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +38,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
 
     @Autowired
     private CarRepository carRepository;
+
+    @Autowired
+    private OrderPredicateBuilder orderPredicateBuilder;
+
     @Test
     void shouldSaveOrder() {
         var user = userRepository.findById(TEST_EXISTS_USER_ID).get();
@@ -95,7 +97,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         orderToUpdate.setInsurance(false);
         carRentalTime.setOrder(orderToUpdate);
 
-        orderRepository.update(orderToUpdate);
+        orderRepository.save(orderToUpdate);
 
         var updatedOrder = orderRepository.findById(orderToUpdate.getId()).get();
 
@@ -121,78 +123,80 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         assertThat(passports).containsExactlyInAnyOrder("MP1234567", "MP1234589");
     }
 
-    @Test
-    void shouldReturnAllOrdersWithQueryDsl() {
-        List<Order> orders = orderRepository.findAllQueryDsl();
-        assertThat(orders).hasSize(2);
-
-        List<LocalDate> ordersData = orders.stream().map(Order::getDate).collect(toList());
-        assertThat(ordersData).contains(LocalDate.of(2022, 7, 1), LocalDate.of(2022, 7, 2));
-
-        List<String> carsNumber = orders.stream()
-                .map(Order::getCar)
-                .map(Car::getCarNumber)
-                .collect(toList());
-        assertThat(carsNumber).contains("7865AE-7", "7834AE-7");
-    }
 
     @Test
-    void shouldReturnOrderByIdWithQueryDsl() {
-        var optionalOrder = orderRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_ORDER_ID);
-
-        assertThat(optionalOrder).isNotNull();
-        optionalOrder.ifPresent(order -> assertThat(order.getId()).isEqualTo(ExistEntityBuilder.getExistOrder().getId()));
-        assertThat(optionalOrder).isEqualTo(Optional.of(ExistEntityBuilder.getExistOrder()));
-    }
-
-    @Test
-    void shouldReturnOrdersByCarNumberCriteria() {
-        List<Order> orders = orderRepository.findOrdersByCarNumberCriteria("7834AE-7");
+    void shouldReturnOrdersByCarNumber() {
+        List<Order> orders = orderRepository.findAllByCarNumber("7834AE-7");
 
         assertThat(orders).hasSize(1);
         assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
     }
 
     @Test
-    void shouldReturnOrdersOrderStatusCriteria() {
-        List<Order> orders = orderRepository.findOrdersByOrderStatusCriteria(OrderStatus.PAYED);
+    void shouldReturnOrdersByCarId() {
+        List<Order> orders = orderRepository.findAllByCarId(TEST_EXISTS_CAR_ID);
 
         assertThat(orders).hasSize(1);
         assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
     }
 
     @Test
-    void shouldReturnOrdersByBrandNameAndModelNameOrderByDateQueryDsl() {
+    void shouldReturnOrdersByUserId() {
+        List<Order> orders = orderRepository.findAllByUserId(TEST_EXISTS_USER_ID);
+
+        assertThat(orders).hasSize(1);
+        assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+    }
+
+    @Test
+    void shouldReturnOrdersByDates() {
+        List<Order> orders = orderRepository.findAllByDateBetween(LocalDate.of(2021, 5, 10), LocalDate.of(2021, 12, 10));
+
+        assertThat(orders).isEmpty();
+    }
+
+    @Test
+    void shouldReturnOrdersByDate() {
+        List<Order> orders = orderRepository.findAllByDate(LocalDate.of(2022, 7, 2));
+
+        assertThat(orders).hasSize(1);
+        assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+    }
+
+    @Test
+    void shouldReturnOrdersWithAccidents() {
+        List<Order> orders = orderRepository.findAllWithAccidents();
+
+        assertThat(orders).hasSize(2).contains(ExistEntityBuilder.getExistOrder());
+    }
+
+    @Test
+    void shouldReturnOrdersOrderStatus() {
+        List<Order> orders = orderRepository.findAllByOrderStatus(OrderStatus.PAYED);
+
+        assertThat(orders).hasSize(1);
+        assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+    }
+
+    @Test
+    void shouldReturnOrdersByFilterWithStatusAndCarNumber() {
         var orderFilter = OrderFilter.builder()
-                .brandName("mercedes")
-                .modelName("Benz")
+                .orderStatus(OrderStatus.PAYED)
+                .carNumber("7834AE-7")
                 .build();
 
-        List<Order> orders = orderRepository.findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(orderFilter);
+        List<Order> orders = IterableUtils.toList(orderRepository.findAll(orderPredicateBuilder.build(orderFilter)));
 
         assertThat(orders).hasSize(1);
         assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
     }
 
     @Test
-    void shouldReturnOrdersWhereAccidentsSumMoreThanAvgOrderByDateQueryDsl() {
-        List<Order> orders = orderRepository.findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl();
-
-        assertThat(orders).hasSize(1);
-        assertThat(orders.get(0)
-                .getAccidents()
-                .stream()
-                .map(Accident::getDamage)
-                .collect(toList()))
-                .contains(BigDecimal.valueOf(75.50).setScale(2));
-    }
-
-    @Test
-    void shouldReturnTuplesWithAvgSumAndDateOrderByDateQueryDsl() {
-        List<Tuple> orders = orderRepository.findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl();
-
+    void shouldFindAllOrdersFullView() {
+        List<OrderFullView> orders = orderRepository.findAllFullView();
         assertThat(orders).hasSize(2);
-        List<LocalDate> dates = orders.stream().map(r -> r.get(0, LocalDate.class)).collect(toList());
-        assertThat(dates).containsAll(List.of(LocalDate.of(2022, 7, 2), LocalDate.of(2022, 7, 1)));
+
+        List<OrderStatus> orderStatuses = orders.stream().map(OrderFullView::getOrderStatus).collect(toList());
+        assertThat(orderStatuses).containsExactlyInAnyOrder(OrderStatus.PAYED, OrderStatus.CONFIRMATION_WAIT);
     }
 }
