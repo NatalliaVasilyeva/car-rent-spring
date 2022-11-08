@@ -2,15 +2,15 @@ package integration.com.dmdev;
 
 import integration.com.dmdev.annotation.IT;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 @IT
-@TestPropertySource(locations = "/application-test.yaml")
-@Sql(scripts = "/insert_data.sql")
+@ActiveProfiles("test")
+@Sql("/insert_data.sql")
 public abstract class IntegrationBaseTest {
 
     private static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:14.5")

@@ -12,8 +12,6 @@ spring:
       hbm2ddl.auto: update
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
       physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-database:
-  defaultSchemaName: ${car_rent.default-schema}
 logging:
   level:
     root: DEBUG

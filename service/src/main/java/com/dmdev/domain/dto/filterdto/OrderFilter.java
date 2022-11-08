@@ -11,12 +11,8 @@ import java.math.BigDecimal;
 public class OrderFilter {
 
     String userFirstName;
-
     String userLastName;
-
     String carNumber;
-
     OrderStatus orderStatus;
-
     BigDecimal sum;
 }

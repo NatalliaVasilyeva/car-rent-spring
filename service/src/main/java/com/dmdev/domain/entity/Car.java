@@ -30,7 +30,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "vin")
 @Builder
 @Entity
-public class Car {
+public class Car implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

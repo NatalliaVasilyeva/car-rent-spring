@@ -10,7 +10,6 @@ import com.querydsl.core.types.Predicate;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
-import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import static com.dmdev.domain.entity.QUser.user;
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_USER_ID;
@@ -180,11 +180,11 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                 .birthday(LocalDate.of(1989, 3, 12))
                 .build();
 
-        List<User> users = IterableUtils.toList(userRepository.findAll(userPredicateBuilder.build(userFilter)));
+        Iterable<User> users = userRepository.findAll(userPredicateBuilder.build(userFilter));
 
         assertThat(users).hasSize(1);
-        assertThat(users.get(0).getUserDetails().getName()).isEqualTo("Petia");
-        assertThat(users.get(0).getUserDetails().getSurname()).isEqualTo("Petrov");
+        assertThat(users.iterator().next().getUserDetails().getName()).isEqualTo("Petia");
+        assertThat(users.iterator().next().getUserDetails().getSurname()).isEqualTo("Petrov");
     }
 
 
@@ -211,10 +211,10 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
                 .buildAnd();
 
         Sort sort = Sort.by("email").descending();
-        List<User> users = IterableUtils.toList(userRepository.findAll(resultPredicates, sort));
+        Iterable<User> users = userRepository.findAll(resultPredicates, sort);
 
         assertThat(users).hasSize(1);
-        List<String> emails = users.stream().map(User::getEmail).collect(toList());
+        List<String> emails = StreamSupport.stream(users.spliterator(), false).map(User::getEmail).collect(toList());
         assertThat(emails).contains("client@gmail.com");
     }
 }

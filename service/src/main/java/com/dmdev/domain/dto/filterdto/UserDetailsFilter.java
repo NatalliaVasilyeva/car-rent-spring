@@ -10,12 +10,8 @@ import java.time.LocalDate;
 public class UserDetailsFilter {
 
     String name;
-
     String surname;
-
     LocalDate birthday;
-
     String phone;
-
     String address;
 }

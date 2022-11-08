@@ -43,10 +43,20 @@ public interface OrderRepository extends JpaRepository<Order, Long>, QuerydslPre
     List<Order> findAllWithAccidents();
 
 
-    @Query(value = "SELECT o.id as id, o.date as date, o.insurance as insurance, o.orderStatus as orderStatus, " +
-            "o.sum as sum, crt.startRentalDate as startRentalDate, crt.endRentalDate as endRentalDate, " +
-            "c.carNumber as carNumber, m.name as modelName, b.name as brandName, " +
-            "ud.name as firstname, ud.surname as surname, ud.userContact.phone as phone,  CASE WHEN o.accidents.size > 0 THEN true ELSE false END " +
+    @Query(value = "SELECT o.id as id, " +
+            "o.date as date, " +
+            "o.insurance as insurance, " +
+            "o.orderStatus as orderStatus, " +
+            "o.sum as sum, " +
+            "crt.startRentalDate as startRentalDate, " +
+            "crt.endRentalDate as endRentalDate, " +
+            "c.carNumber as carNumber, " +
+            "m.name as modelName, " +
+            "b.name as brandName, " +
+            "ud.name as firstname, " +
+            "ud.surname as surname, " +
+            "ud.userContact.phone as phone,  " +
+            "CASE WHEN o.accidents.size > 0 THEN true ELSE false END " +
             "FROM Order o " +
             "JOIN o.carRentalTime crt " +
             "JOIN o.car c " +

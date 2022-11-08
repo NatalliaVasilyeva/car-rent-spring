@@ -25,8 +25,13 @@ public interface DriverLicenseRepository extends JpaRepository<DriverLicense, Lo
     List<DriverLicense> findByExpiredDateLessThanEqual(LocalDate expiredDate);
 
 
-    @Query(value = "SELECT dl.id as id, dl.number as number, dl.issueDate as issueDate, dl.expiredDate as expiredDate, " +
-            "ud.name as firstname, ud.surname as lastname, ud.userContact.phone as phone " +
+    @Query(value = "SELECT dl.id as id," +
+            " dl.number as number, " +
+            "dl.issueDate as issueDate, " +
+            "dl.expiredDate as expiredDate, " +
+            "ud.name as firstname, " +
+            "ud.surname as lastname, " +
+            "ud.userContact.phone as phone " +
             "FROM DriverLicense dl " +
             "JOIN dl.userDetails ud " +
             "WHERE dl.issueDate >= :issueDate AND dl.expiredDate <= :expiredDate " +

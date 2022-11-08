@@ -163,7 +163,7 @@ class AccidentRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnAccidentsByMoreDamage() {
-        List<Accident> accidents = accidentRepository.findAllByDamageIsGreaterThanEqualOrderByDamageDesc(BigDecimal.valueOf(75.50).setScale(2));
+        List<Accident> accidents = accidentRepository.findAllByDamage(BigDecimal.valueOf(75.50).setScale(2));
 
         assertThat(accidents).hasSize(1);
         assertThat(accidents.get(0).getDamage()).isEqualTo(BigDecimal.valueOf(75.50).setScale(2));

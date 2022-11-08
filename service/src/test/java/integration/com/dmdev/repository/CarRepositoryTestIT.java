@@ -10,7 +10,6 @@ import com.dmdev.utils.predicate.CarPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
-import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -126,10 +125,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                 .year(2022)
                 .build();
 
-        List<Car> cars = IterableUtils.toList(carRepository.findAll(carPredicateBuilder.build(carFilter)));
+       Iterable<Car> cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
 
         assertThat(cars).hasSize(1);
-        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
+        assertThat(cars.iterator().next()).isEqualTo(ExistEntityBuilder.getExistCar());
     }
 
     @Test
@@ -140,10 +139,10 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                 .categoryName("BUSINESS")
                 .build();
 
-        List<Car> cars = IterableUtils.toList(carRepository.findAll(carPredicateBuilder.build(carFilter)));
+        Iterable<Car> cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
 
         assertThat(cars).hasSize(1);
-        assertThat(cars.get(0)).isEqualTo(ExistEntityBuilder.getExistCar());
+        assertThat(cars.iterator().next()).isEqualTo(ExistEntityBuilder.getExistCar());
     }
 
     @Test
@@ -154,7 +153,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                 .categoryName("dummy")
                 .build();
 
-        List<Car> cars = IterableUtils.toList(carRepository.findAll(carPredicateBuilder.build(carFilter)));
+        Iterable cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
 
         assertThat(cars).isEmpty();
     }

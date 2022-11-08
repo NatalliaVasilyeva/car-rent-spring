@@ -13,16 +13,10 @@ import java.util.List;
 public class CarFilter {
 
     Color color;
-
     Integer year;
-
     List<String> modelNames;
-
     List<String> brandNames;
-
     String categoryName;
-
     Transmission transmission;
-
     EngineType engineType;
 }

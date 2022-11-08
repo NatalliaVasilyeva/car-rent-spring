@@ -3,13 +3,13 @@
 --changeset natallia.vasilyeva:db.changelog-1.0 splitStatements:false logicalFilePath:classpath:/db/changelog/db.changelog-1.0.sql runOnChange:true
 
 --Brand
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.brand (
+CREATE TABLE IF NOT EXISTS brand (
     id   BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE
 );
 
 --Category
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.category (
+CREATE TABLE IF NOT EXISTS category (
     id       BIGSERIAL PRIMARY KEY,
     name     VARCHAR(255) NOT NULL UNIQUE DEFAULT 'economy',
     price    NUMERIC(10, 2) NOT NULL CHECK (price > 0) default '50'
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.category (
 );
 
 --Model
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.model (
+CREATE TABLE IF NOT EXISTS model (
     id           BIGSERIAL PRIMARY KEY,
     brand_id     BIGINT,
     category_id  BIGINT,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.model (
 );
 
 --Car
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.car (
+CREATE TABLE IF NOT EXISTS car (
     id          BIGSERIAL PRIMARY KEY,
     model_id    BIGINT,
     color       VARCHAR(255),
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.car (
 );
 
 --User
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.users (
+CREATE TABLE IF NOT EXISTS users (
     id       BIGSERIAL PRIMARY KEY,
     login    VARCHAR(255) NOT NULL UNIQUE,
     email    VARCHAR(255) NOT NULL UNIQUE,
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.users (
 );
 
 --Order
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.orders (
+CREATE TABLE IF NOT EXISTS orders (
     id           BIGSERIAL PRIMARY KEY,
     date         TIMESTAMP      NOT NULL DEFAULT now(),
     user_id      BIGINT         NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.orders (
 );
 
 --Accident
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.accident (
+CREATE TABLE IF NOT EXISTS accident (
     id            BIGSERIAL PRIMARY KEY,
     order_id      BIGINT    NOT NULL,
     accident_date TIMESTAMP NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.accident (
 );
 
 --CarRentalTime
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.car_rental_time (
+CREATE TABLE IF NOT EXISTS car_rental_time (
     id                BIGSERIAL PRIMARY KEY,
     order_id          BIGINT    NOT NULL UNIQUE,
     start_rental_date TIMESTAMP NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.car_rental_time (
 );
 
 --UserDetails
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.user_details (
+CREATE TABLE IF NOT EXISTS user_details (
     id                BIGSERIAL PRIMARY KEY,
     user_id           BIGINT       NOT NULL UNIQUE,
     name              VARCHAR(128) NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.user_details (
 );
 
 --DriverLicence
-CREATE TABLE IF NOT EXISTS ${database.defaultSchemaName}.driver_license (
+CREATE TABLE IF NOT EXISTS driver_license (
     id              BIGSERIAL PRIMARY KEY,
     user_details_id BIGINT      NOT NULL,
     number          VARCHAR(32) NOT NULL UNIQUE,

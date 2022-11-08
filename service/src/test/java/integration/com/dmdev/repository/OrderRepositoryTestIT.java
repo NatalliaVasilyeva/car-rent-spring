@@ -11,7 +11,6 @@ import com.dmdev.utils.predicate.OrderPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
-import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -185,10 +184,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
                 .carNumber("7834AE-7")
                 .build();
 
-        List<Order> orders = IterableUtils.toList(orderRepository.findAll(orderPredicateBuilder.build(orderFilter)));
+        Iterable<Order> orders = orderRepository.findAll(orderPredicateBuilder.build(orderFilter));
 
         assertThat(orders).hasSize(1);
-        assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+        assertThat(orders.iterator().next()).isEqualTo(ExistEntityBuilder.getExistOrder());
     }
 
     @Test

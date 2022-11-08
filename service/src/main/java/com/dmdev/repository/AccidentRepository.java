@@ -17,7 +17,12 @@ public interface AccidentRepository extends JpaRepository<Accident, Long>, Query
 
     List<Accident> findAllByAccidentDateBetween(LocalDate firstDate, LocalDate secondDate);
 
-    List<Accident> findAllByDamageIsGreaterThanEqualOrderByDamageDesc(BigDecimal damage);
+
+    @Query(value = "SELECT a " +
+            "FROM Accident a " +
+            "WHERE a.damage >= :damage " +
+            "ORDER BY a.damage DESC ")
+    List<Accident> findAllByDamage(@Param("damage") BigDecimal damage);
 
     @Query(value = "SELECT a " +
             "FROM Accident a " +
@@ -46,8 +51,16 @@ public interface AccidentRepository extends JpaRepository<Accident, Long>, Query
             "WHERE a.damage > (SELECT avg(va.damage) FROM Accident va)")
     List<Accident> findAllByAvgDamageMore();
 
-    @Query(value = "SELECT a.id as id, a.accidentDate as accidentDate, a.description as description, a.damage as damage, o.id as orderId, " +
-            "b.name as brandName, m.name as modelName, c.carNumber as carNumber, ud.name as firstname, ud.surname as surname " +
+    @Query(value = "SELECT a.id as id," +
+            " a.accidentDate as accidentDate," +
+            " a.description as description, " +
+            "a.damage as damage, " +
+            "o.id as orderId, " +
+            "b.name as brandName," +
+            " m.name as modelName, " +
+            "c.carNumber as carNumber," +
+            " ud.name as firstname, " +
+            "ud.surname as surname " +
             "FROM Accident a " +
             "JOIN a.order o " +
             "JOIN o.car c " +
@@ -57,8 +70,16 @@ public interface AccidentRepository extends JpaRepository<Accident, Long>, Query
             "JOIN u.userDetails ud")
     List<AccidentFullView> findAllFull();
 
-    @Query(value = "SELECT a.id as id, a.accidentDate as accidentDate, a.description as description, a.damage as damage, o.id as orderId, " +
-            "b.name as brandName, m.name as modelName, c.carNumber as carNumber, ud.name as firstname, ud.surname as surname " +
+    @Query(value = "SELECT a.id as id, " +
+            "a.accidentDate as accidentDate, " +
+            "a.description as description," +
+            " a.damage as damage, " +
+            "o.id as orderId, " +
+            "b.name as brandName, " +
+            "m.name as modelName," +
+            " c.carNumber as carNumber, " +
+            "ud.name as firstname, " +
+            "ud.surname as surname " +
             "FROM Accident a " +
             "JOIN a.order o " +
             "JOIN o.car c " +

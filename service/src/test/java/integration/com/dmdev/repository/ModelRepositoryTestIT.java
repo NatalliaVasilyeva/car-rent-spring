@@ -11,7 +11,6 @@ import com.dmdev.utils.predicate.ModelPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
-import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -149,10 +148,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                 .models(List.of("Benz"))
                 .build();
 
-        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter)));
+        Iterable models = modelRepository.findAll(modelPredicateBuilder.build(modelFilter));
 
         assertThat(models).hasSize(1);
-        assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
+        assertThat(models.iterator().next()).isEqualTo(ExistEntityBuilder.getExistModel());
     }
 
     @Test
@@ -164,10 +163,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                 .build();
 
         Sort sort = Sort.by("brand").descending();
-        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort));
+        Iterable models = modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort);
 
         assertThat(models).hasSize(1);
-        assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
+        assertThat(models.iterator().next()).isEqualTo(ExistEntityBuilder.getExistModel());
     }
 
     @Test
@@ -179,7 +178,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                 .build();
 
         Sort sort = Sort.by("brand").descending();
-        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort));
+        Iterable models = modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort);
 
         assertThat(models).isEmpty();
     }
@@ -192,9 +191,9 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
                 .build();
 
         Sort sort = Sort.by("brand").descending();
-        List<Model> models = IterableUtils.toList(modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort));
+        Iterable models = modelRepository.findAll(modelPredicateBuilder.build(modelFilter), sort);
 
         assertThat(models).hasSize(1);
-        assertThat(models.get(0)).isEqualTo(ExistEntityBuilder.getExistModel());
+        assertThat(models.iterator().next()).isEqualTo(ExistEntityBuilder.getExistModel());
     }
 }

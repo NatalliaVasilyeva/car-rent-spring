@@ -10,7 +10,6 @@ import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
-import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_USER_DETAILS_ID;
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_USER_DETAILS_ID_FOR_DELETE;
@@ -96,10 +96,10 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                 .surname("Petrov")
                 .build();
 
-        List<UserDetails> userDetails = IterableUtils.toList(userDetailsRepository.findAll(userDetailsPredicateBuilder.build(userDetailsFilter)));
+        Iterable<UserDetails> userDetails = userDetailsRepository.findAll(userDetailsPredicateBuilder.build(userDetailsFilter));
 
         assertThat(userDetails).hasSize(1);
-        assertThat(userDetails.get(0)).isEqualTo(ExistEntityBuilder.getExistUserDetails());
+        assertThat(userDetails.iterator().next()).isEqualTo(ExistEntityBuilder.getExistUserDetails());
     }
 
     @Test
@@ -116,10 +116,10 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                 .birthday(LocalDate.of(1989, 3, 12))
                 .build();
         Sort sort = Sort.by("surname").descending().by("name").descending();
-        List<UserDetails> userDetails = IterableUtils.toList(userDetailsRepository.findAll(userDetailsPredicateBuilder.build(userDetailsFilter), sort));
+        Iterable<UserDetails> userDetails = userDetailsRepository.findAll(userDetailsPredicateBuilder.build(userDetailsFilter), sort);
         assertThat(userDetails).hasSize(1);
 
-        List<String> emails = userDetails.stream().map(UserDetails::getUser).map(User::getEmail).collect(toList());
+        List<String> emails = StreamSupport.stream(userDetails.spliterator(), false).map(UserDetails::getUser).map(User::getEmail).collect(toList());
         assertThat(emails).contains("client@gmail.com");
     }
 
