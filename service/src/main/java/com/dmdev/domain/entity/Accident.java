@@ -26,7 +26,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(exclude = "order")
 @Builder
 @Entity
-public class Accident implements BaseEntity<Long> {
+public class Accident extends AuditingEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

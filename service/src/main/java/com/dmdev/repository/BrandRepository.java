@@ -1,41 +1,46 @@
 package com.dmdev.repository;
 
 import com.dmdev.domain.entity.Brand;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
+import com.dmdev.domain.projection.BrandFullView;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.dmdev.domain.entity.QBrand.brand;
+public interface BrandRepository extends JpaRepository<Brand, Long>, QuerydslPredicateExecutor<Brand> {
 
-@Repository
-public class BrandRepository extends BaseRepository<Long, Brand> {
+    Optional<Brand> findByNameIgnoringCase(String name);
 
-    public BrandRepository() {
-        super(Brand.class);
-    }
+    @EntityGraph(attributePaths = {"models"})
+    Optional<Brand> findByName(String name);
 
-    public List<Brand> findAllQueryDsl() {
-        return new JPAQuery<Brand>(getEntityManager())
-                .select(brand)
-                .from(brand)
-                .fetch();
-    }
+    @EntityGraph(attributePaths = {"models"})
+    List<Brand> findByNameIn(List<String> names);
 
-    public Optional<Brand> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Brand>(getEntityManager())
-                .select(brand)
-                .from(brand)
-                .where(brand.id.eq(id))
-                .fetchOne());
-    }
+    @Query(value = "SELECT b " +
+            "FROM Brand b " +
+            "JOIN fetch b.models")
+    List<BrandFullView> findAllFull();
 
-    public Optional<Brand> findBrandByNameQueryDsl(String name) {
-        return Optional.ofNullable(new JPAQuery<Brand>(getEntityManager())
-                .select(brand)
-                .from(brand)
-                .where(brand.name.eq(name))
-                .fetchOne());
-    }
+    @Query(value = "SELECT b " +
+            "FROM Brand b " +
+            "JOIN fetch b.models " +
+            "WHERE b.id = :id")
+    Optional<BrandFullView> findByIdAllFull(@Param("id") Long brandId);
+
+    @Query(value = "SELECT b " +
+            "FROM Brand b " +
+            "JOIN fetch b.models " +
+            "WHERE lower(b.name) = lower(:name)")
+    List<BrandFullView> findByNameAllFull(@Param("name") String name);
+
+    @Query(value = "SELECT b " +
+            "FROM Brand b " +
+            "JOIN fetch b.models " +
+            "WHERE b.name IN :names")
+    List<BrandFullView> findByNameAllFullInIgnoringCase(@Param("names") List<String> names);
 }

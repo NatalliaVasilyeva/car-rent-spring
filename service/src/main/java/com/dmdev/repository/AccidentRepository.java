@@ -1,77 +1,92 @@
 package com.dmdev.repository;
 
-import com.dmdev.domain.dto.AccidentFilter;
 import com.dmdev.domain.entity.Accident;
-import com.dmdev.domain.entity.User;
-import com.dmdev.utils.predicate.QPredicate;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
+import com.dmdev.domain.projection.AccidentFullView;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-import static com.dmdev.domain.entity.QAccident.accident;
+public interface AccidentRepository extends JpaRepository<Accident, Long>, QuerydslPredicateExecutor<Accident> {
 
-@Repository
-public class AccidentRepository extends BaseRepository<Long, Accident> {
+    List<Accident> findAllByAccidentDateOrderByAccidentDateDesc(LocalDate localDate);
 
-    public AccidentRepository() {
-        super(Accident.class);
-    }
+    List<Accident> findAllByAccidentDateBetween(LocalDate firstDate, LocalDate secondDate);
 
-    public List<Accident> findAllQueryDsl() {
-        return new JPAQuery<Accident>(getEntityManager())
-                .select(accident)
-                .from(accident)
-                .fetch();
-    }
 
-    public Optional<Accident> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Accident>(getEntityManager())
-                .select(accident)
-                .from(accident)
-                .where(accident.id.eq(id))
-                .fetchOne());
-    }
+    @Query(value = "SELECT a " +
+            "FROM Accident a " +
+            "WHERE a.damage >= :damage " +
+            "ORDER BY a.damage DESC ")
+    List<Accident> findAllByDamage(@Param("damage") BigDecimal damage);
 
-    public List<Accident> findAccidentsByAccidentDateQueryDsl(LocalDate accidentDate) {
-        return new JPAQuery<Accident>(getEntityManager())
-                .select(accident)
-                .from(accident)
-                .where(accident.accidentDate.eq(accidentDate))
-                .fetch();
-    }
+    @Query(value = "SELECT a " +
+            "FROM Accident a " +
+            "JOIN fetch a.order o " +
+            "WHERE o.id = :orderId")
+    List<Accident> findAllByOrderId(@Param("orderId") Long orderId);
 
-    public List<Accident> findAccidentsByCarNumberAndDamageQueryDsl(AccidentFilter accidentFilter) {
-        var predicateOr = QPredicate.builder()
-                .add(accidentFilter.getDamage(), accident.damage::goe)
-                .buildOr();
+    @Query(value = "SELECT a " +
+            "FROM Accident a " +
+            "JOIN fetch a.order o " +
+            "JOIN fetch o.user u " +
+            "JOIN fetch u.userDetails ud " +
+            "WHERE lower(ud.name) = lower(:name) AND lower(ud.surname) = lower(:surname)")
+    List<Accident> findAllByNameAndSurname(@Param("name") String name, @Param("surname") String surname);
 
-        var predicateAnd = QPredicate.builder()
-                .add(accidentFilter.getCarNumber(), accident.order.car.carNumber::eq)
-                .buildAnd();
+    @Query(value = "SELECT a " +
+            "FROM Accident a " +
+            "JOIN fetch a.order o " +
+            "JOIN fetch o.car c " +
+            "WHERE c.carNumber like %:number% " +
+            "order by a.accidentDate")
+    List<Accident> findAllByCarNumber(@Param("number") String carNumber);
 
-        var predicateAll = QPredicate.builder()
-                .addPredicate(predicateOr)
-                .addPredicate(predicateAnd)
-                .buildAnd();
+    @Query(value = "SELECT a " +
+            "FROM Accident a " +
+            "WHERE a.damage > (SELECT avg(va.damage) FROM Accident va)")
+    List<Accident> findAllByAvgDamageMore();
 
-        return new JPAQuery<User>(getEntityManager())
-                .select(accident)
-                .from(accident)
-                .where(predicateAll)
-                .fetch();
-    }
+    @Query(value = "SELECT a.id as id," +
+            " a.accidentDate as accidentDate," +
+            " a.description as description, " +
+            "a.damage as damage, " +
+            "o.id as orderId, " +
+            "b.name as brandName," +
+            " m.name as modelName, " +
+            "c.carNumber as carNumber," +
+            " ud.name as firstname, " +
+            "ud.surname as surname " +
+            "FROM Accident a " +
+            "JOIN a.order o " +
+            "JOIN o.car c " +
+            "JOIN c.model m " +
+            "JOIN m.brand b " +
+            "JOIN o.user u " +
+            "JOIN u.userDetails ud")
+    List<AccidentFullView> findAllFull();
 
-    public List<Accident> findAccidentsByDamageMoreAvgQueryDsl() {
-        return new JPAQuery<User>(getEntityManager())
-                .select(accident)
-                .from(accident)
-                .where(accident.damage.gt(new JPAQuery<Double>(getEntityManager())
-                        .select(accident.damage.avg())
-                        .from(accident)))
-                .orderBy(accident.damage.desc())
-                .fetch();
-    }
+    @Query(value = "SELECT a.id as id, " +
+            "a.accidentDate as accidentDate, " +
+            "a.description as description," +
+            " a.damage as damage, " +
+            "o.id as orderId, " +
+            "b.name as brandName, " +
+            "m.name as modelName," +
+            " c.carNumber as carNumber, " +
+            "ud.name as firstname, " +
+            "ud.surname as surname " +
+            "FROM Accident a " +
+            "JOIN a.order o " +
+            "JOIN o.car c " +
+            "JOIN c.model m " +
+            "JOIN m.brand b " +
+            "JOIN o.user u " +
+            "JOIN u.userDetails ud " +
+            "WHERE a.id = :id")
+    List<AccidentFullView> findByIdFull(@Param("id") Long id);
 }

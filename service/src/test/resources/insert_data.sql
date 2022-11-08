@@ -4,8 +4,8 @@ VALUES (1, 'Admin', 'admin@gmail.com', 'VasilechekBel123!', 'ADMIN'),
 SELECT SETVAL('car_rent.users_id_seq', (SELECT MAX(id) FROM car_rent.users));
 
 INSERT INTO car_rent.user_details (id, user_id, name, surname, address, phone, birthday, registration_date)
-VALUES (1, (SELECT id FROM car_rent.users WHERE email = 'admin@gmail.com'), 'Ivan', 'Ivanov', 'Minsk', '+375 29 124 56 78', '1986-07-02 00:00:00', '2022-09-22 20:30:00'),
-       (2, (SELECT id FROM car_rent.users WHERE email = 'client@gmail.com'), 'Petia', 'Petrov', 'Minsk', '+375 29 124 56 79', '1989-03-12 00:00:00', '2022-09-22 20:31:00');
+VALUES (1, (SELECT id FROM car_rent.users WHERE email = 'admin@gmail.com'), 'Ivan', 'Ivanov', 'Minsk', '+375 29 124 56 78', '1986-07-02 00:00:00', '2022-09-22'),
+       (2, (SELECT id FROM car_rent.users WHERE email = 'client@gmail.com'), 'Petia', 'Petrov', 'Minsk', '+375 29 124 56 79', '1989-03-12 00:00:00', '2022-09-22');
 SELECT SETVAL('car_rent.user_details_id_seq', (SELECT MAX(id) FROM car_rent.user_details));
 
 INSERT INTO car_rent.driver_license (id, user_details_id, number, issue_date, expired_date)

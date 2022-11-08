@@ -36,7 +36,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "orders")
-public class Order implements BaseEntity<Long> {
+public class Order extends AuditingEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

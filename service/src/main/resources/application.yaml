@@ -1,9 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/rentcar
+    url: jdbc:postgresql://localhost:5433/rentcar
     username: postgres
     password: pass
-    driver-class-name: org.postgresql.Driver
+    hikari:
+      schema: ${car_rent.default-schema}
   jpa:
     properties.hibernate:
       show_sql: true
@@ -11,7 +12,8 @@ spring:
       hbm2ddl.auto: update
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
       physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-      default_schema: car_rent
 logging:
   level:
     root: DEBUG
+car_rent:
+  default-schema: car_rent

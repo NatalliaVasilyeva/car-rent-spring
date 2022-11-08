@@ -1,109 +1,46 @@
 package com.dmdev.repository;
 
-import com.dmdev.domain.dto.UserDto;
-import com.dmdev.domain.dto.UserFilter;
 import com.dmdev.domain.entity.User;
-import com.dmdev.domain.entity.UserContact_;
-import com.dmdev.domain.entity.UserDetails_;
-import com.dmdev.domain.entity.User_;
-import com.dmdev.utils.predicate.QPredicate;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
+import com.dmdev.domain.model.Role;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dmdev.domain.entity.QUser.user;
-import static com.dmdev.domain.entity.QUserDetails.userDetails;
+public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredicateExecutor<User> {
 
-@Repository
-public class UserRepository extends BaseRepository<Long, User> {
+    Optional<User> findByEmailAndPassword(String email, String password);
 
-    public UserRepository() {
-        super(User.class);
-    }
+    Optional<User> findByEmail(String email);
 
-    public List<User> findAllQueryDsl() {
-        return new JPAQuery<User>(getEntityManager())
-                .select(user)
-                .from(user)
-                .fetch();
-    }
+    List<User> findAllByRole(Role role);
 
-    public Optional<User> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
-                .select(user)
-                .from(user)
-                .where(user.id.eq(id))
-                .fetchOne());
-    }
+    @Query(value = "SELECT u " +
+            "FROM User u " +
+            "JOIN fetch u.userDetails ud " +
+            "WHERE ud.registrationDate  = :registrationDate")
+    List<User> findAllByRegistrationDate(@Param("registrationDate") LocalDate registrationDate);
 
-    public Optional<User> findUsersByEmailAndPasswordQueryDsl(UserFilter userFilter) {
-        var predicate = QPredicate.builder()
-                .add(userFilter.getEmail(), user.email::eq)
-                .add(userFilter.getPassword(), user.password::eq)
-                .buildAnd();
-        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
-                .select(user)
-                .from(user)
-                .where(predicate)
-                .fetchOne()
-        );
-    }
+    @Query(value = "SELECT u " +
+            "FROM User u " +
+            "JOIN fetch u.userDetails ud " +
+            "WHERE ud.userContact.phone  = :phone")
+    Optional<User> findByPhone(@Param("phone") String phone);
 
-    public List<User> findUsersByBirthdayQueryDsl(UserFilter userFilter) {
-        return new JPAQuery<User>(getEntityManager())
-                .select(user)
-                .from(user)
-                .where(user.userDetails.birthday.eq(userFilter.getBirthday()))
-                .fetch();
-    }
+    @EntityGraph(attributePaths = {"orders"})
+    @Query(value = "SELECT u " +
+            "FROM User u " +
+            "WHERE u.orders.size > 0")
+    List<User> findAllWithOrders();
 
-    public List<UserDto> findUsersWithShortDataOrderedByEmailCriteria() {
-        var cb = getEntityManager().getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDto.class);
-        var user = criteria.from(User.class);
-        var userDetails = user.join(User_.userDetails);
-
-        criteria.select(
-                        cb.construct(UserDto.class,
-                                user.get(User_.email),
-                                userDetails.get(UserDetails_.name),
-                                userDetails.get(UserDetails_.surname),
-                                userDetails.get(UserDetails_.birthday),
-                                userDetails.get(UserDetails_.userContact).get(UserContact_.phone),
-                                userDetails.get(UserDetails_.userContact).get(UserContact_.address))
-
-                )
-                .orderBy(cb.asc(user.get(User_.email)));
-
-        return getEntityManager().createQuery(criteria)
-                .getResultList();
-    }
-
-    public List<Tuple> findUsersTupleByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl(UserFilter userFilter) {
-        var predicateOr = QPredicate.builder()
-                .add(userFilter.getName(), user.userDetails.name::eq)
-                .add(userFilter.getSurname(), user.userDetails.surname::eq)
-                .buildOr();
-
-        var predicateAnd = QPredicate.builder()
-                .add(userFilter.getBirthday(), user.userDetails.birthday::eq)
-                .buildAnd();
-
-        var predicateAll = QPredicate.builder()
-                .addPredicate(predicateOr)
-                .addPredicate(predicateAnd);
-
-        return new JPAQuery<Tuple>(getEntityManager())
-                .select(user.email, userDetails.name,
-                        userDetails.surname, userDetails.birthday,
-                        userDetails.userContact.phone, userDetails.userContact.address)
-                .from(user)
-                .join(user.userDetails, userDetails)
-                .where(predicateAll.buildAnd())
-                .orderBy(user.email.asc())
-                .fetch();
-    }
+    @EntityGraph(attributePaths = {"orders"})
+    @Query(value = "SELECT u " +
+            "FROM User u " +
+            "WHERE u.orders.size = 0")
+    List<User> findAllWithoutOrders();
 }

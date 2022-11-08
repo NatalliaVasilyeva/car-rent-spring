@@ -1,22 +1,25 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.domain.dto.UserDto;
-import com.dmdev.domain.dto.UserFilter;
+import com.dmdev.domain.dto.filterdto.UserFilter;
 import com.dmdev.domain.entity.User;
-import com.dmdev.domain.entity.UserDetails;
+import com.dmdev.domain.model.Role;
 import com.dmdev.repository.UserRepository;
-import com.querydsl.core.Tuple;
+import com.dmdev.utils.predicate.QPredicate;
+import com.dmdev.utils.predicate.UserPredicateBuilder;
+import com.querydsl.core.types.Predicate;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.utils.TestEntityIdConst;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
+import static com.dmdev.domain.entity.QUser.user;
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_USER_ID;
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_USER_ID_FOR_DELETE;
 import static java.util.stream.Collectors.toList;
@@ -27,6 +30,9 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserPredicateBuilder userPredicateBuilder;
 
     @Test
     void shouldSaveUserWithoutUserDetails() {
@@ -66,7 +72,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         userToUpdate.setPassword("8967562");
         userDetails.setUser(userToUpdate);
 
-        userRepository.update(userToUpdate);
+        userRepository.save(userToUpdate);
 
         var updatedUser = userRepository.findById(userToUpdate.getId()).get();
 
@@ -83,7 +89,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldFindAllAccidents() {
+    void shouldFindAllUsers() {
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(2);
 
@@ -91,38 +97,15 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         assertThat(emails).containsExactlyInAnyOrder("admin@gmail.com", "client@gmail.com");
     }
 
-    @Test
-    void shouldReturnAllUsersWithQueryDsl() {
-        List<User> users = userRepository.findAllQueryDsl();
-        assertThat(users).hasSize(2);
-
-        List<String> emails = users.stream().map(User::getEmail).collect(toList());
-        assertThat(emails).contains("admin@gmail.com", "client@gmail.com");
-
-        List<LocalDate> birthdays = users.stream()
-                .map(User::getUserDetails)
-                .map(UserDetails::getBirthday)
-                .collect(toList());
-        assertThat(birthdays).contains(LocalDate.of(1989, 3, 12), LocalDate.of(1986, 7, 2));
-    }
 
     @Test
-    void shouldReturnUsersByIdWithQueryDsl() {
-        var optionalUser = userRepository.findByIdQueryDsl(TestEntityIdConst.TEST_EXISTS_USER_ID);
-
-        assertThat(optionalUser).isNotNull();
-        optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
-        assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
-    }
-
-    @Test
-    void shouldReturnUserByEmailAndPasswordQueryDsl() {
+    void shouldReturnUserByEmailAndPasswordWithFilter() {
         var userFilter = UserFilter.builder()
                 .email("client@gmail.com")
                 .password("VasilechekBel123!")
                 .build();
 
-        var optionalUser = userRepository.findUsersByEmailAndPasswordQueryDsl(userFilter);
+        var optionalUser = userRepository.findOne(userPredicateBuilder.build(userFilter));
 
         assertThat(optionalUser).isNotNull();
         optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
@@ -130,43 +113,108 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnUserByBirthdayQueryDsl() {
+    void shouldReturnUserByEmailAndPassword() {
+        var optionalUser = userRepository.findByEmailAndPassword("client@gmail.com", "VasilechekBel123!");
+
+        assertThat(optionalUser).isNotNull();
+        optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
+        assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
+    }
+
+    @Test
+    void shouldReturnUserByEmail() {
+        var optionalUser = userRepository.findByEmail("client@gmail.com");
+
+        assertThat(optionalUser).isNotNull();
+        optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
+        assertThat(optionalUser).isEqualTo(Optional.of(ExistEntityBuilder.getExistUser()));
+    }
+
+    @Test
+    void shouldReturnUserByPhone() {
+        var optionalUser = userRepository.findByPhone("+375 29 124 56 79");
+
+        assertThat(optionalUser).isNotEmpty();
+        optionalUser.ifPresent(user -> assertEquals(user, ExistEntityBuilder.getExistUser()));
+    }
+
+    @Test
+    void shouldReturnUsersWithOrders() {
+        List<User> users = userRepository.findAllWithOrders();
+
+        assertThat(users).isNotEmpty().hasSize(2);
+        List<String> emails = users.stream().map(User::getEmail).collect(toList());
+        assertThat(emails).containsExactlyInAnyOrder("admin@gmail.com", "client@gmail.com");
+    }
+
+    @Test
+    void shouldReturnUsersWithoutOrders() {
+        List<User> users = userRepository.findAllWithoutOrders();
+
+        assertThat(users).isEmpty();
+    }
+
+    @Test
+    void shouldReturnUserByRole() {
+        var users = userRepository.findAllByRole(Role.CLIENT);
+
+        assertThat(users).hasSize(1);
+
+        List<String> emails = users.stream().map(User::getEmail).collect(toList());
+        assertThat(emails).containsExactlyInAnyOrder( "client@gmail.com");
+    }
+
+    @Test
+    void shouldReturnUsersByRegistrationDate() {
+        var users = userRepository.findAllByRegistrationDate(LocalDate.of(2022, 9, 22));
+
+        assertThat(users).hasSize(2);
+
+        List<String> emails = users.stream().map(User::getEmail).collect(toList());
+        assertThat(emails).containsExactlyInAnyOrder("admin@gmail.com", "client@gmail.com");
+    }
+
+    @Test
+    void shouldReturnUserByUserFilterWithBirthday() {
         var userFilter = UserFilter.builder()
                 .birthday(LocalDate.of(1989, 3, 12))
                 .build();
 
-        List<User> users = userRepository.findUsersByBirthdayQueryDsl(userFilter);
+        Iterable<User> users = userRepository.findAll(userPredicateBuilder.build(userFilter));
 
         assertThat(users).hasSize(1);
-        assertThat(users.get(0).getUserDetails().getName()).isEqualTo("Petia");
-        assertThat(users.get(0).getUserDetails().getSurname()).isEqualTo("Petrov");
-    }
-
-    @Test
-    void shouldReturnUsersWithShortDataOrderedByEmailCriteria() {
-        List<UserDto> users = userRepository.findUsersWithShortDataOrderedByEmailCriteria();
-
-        assertThat(users).hasSize(2);
-        assertThat(users.get(0).getEmail()).isEqualTo("admin@gmail.com");
-        List<String> phones = users.stream()
-                .map(UserDto::getPhone)
-                .collect(toList());
-        assertThat(phones).contains("+375 29 124 56 78", "+375 29 124 56 79");
+        assertThat(users.iterator().next().getUserDetails().getName()).isEqualTo("Petia");
+        assertThat(users.iterator().next().getUserDetails().getSurname()).isEqualTo("Petrov");
     }
 
 
     @Test
-    void shouldReturnUsersWithShortDataByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl() {
+    void shouldReturnUsersByUserFilterWithNameOrSurnameAndBirthdayOrderedByEmail() {
         var userFilter = UserFilter.builder()
                 .name("Ivan")
                 .surname("Petrov")
                 .birthday(LocalDate.of(1989, 3, 12))
                 .build();
 
-        List<Tuple> users = userRepository.findUsersTupleByNameOrSurnameAndBirthdayOrderedByEmailQueryDsl(userFilter);
+        Predicate orPredicates = QPredicate.builder()
+                .add(userFilter.getName(), user.userDetails.name::eq)
+                .add(userFilter.getSurname(), user.userDetails.surname::eq)
+                .buildOr();
+
+        Predicate birthdayPredicates = QPredicate.builder()
+                .add(userFilter.getBirthday(), user.userDetails.birthday::eq)
+                .buildAnd();
+
+        Predicate resultPredicates = QPredicate.builder()
+                .addPredicate(orPredicates)
+                .addPredicate(birthdayPredicates)
+                .buildAnd();
+
+        Sort sort = Sort.by("email").descending();
+        Iterable<User> users = userRepository.findAll(resultPredicates, sort);
 
         assertThat(users).hasSize(1);
-        List<String> emails = users.stream().map(r -> r.get(0, String.class)).collect(toList());
+        List<String> emails = StreamSupport.stream(users.spliterator(), false).map(User::getEmail).collect(toList());
         assertThat(emails).contains("client@gmail.com");
     }
 }
