@@ -2,8 +2,10 @@ package integration.com.dmdev.utils.builder;
 
 import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
+import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
 import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
+import com.dmdev.domain.model.Role;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;
@@ -60,5 +62,12 @@ public class TestDtoBuilder {
                         .driverLicenseExpiredDate(LocalDate.of(2030, 10, 10))
                         .build())
                 .build();
+    }
+
+    public static UserUpdateRequestDto createUserUpdateRequestDTO() {
+        return new UserUpdateRequestDto(
+                "test1@gmal.com",
+                "test",
+                Role.CLIENT);
     }
 }

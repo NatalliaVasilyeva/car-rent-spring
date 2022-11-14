@@ -1,8 +1,8 @@
 package integration.com.dmdev.api;
 
 import com.dmdev.domain.dto.user.response.UserResponseDto;
-import com.dmdev.domain.model.Role;
 import com.dmdev.service.UserService;
+import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -62,8 +64,7 @@ class UserApiTestIT extends IntegrationBaseTest {
                                 .param("driverLicenseIssueDate", userCreateRequestDTO.getDriverLicenseIssueDate().toString())
                                 .param("driverLicenseExpiredDate", userCreateRequestDTO.getDriverLicenseExpiredDate().toString()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "/api/v1/welcome"))
-                .andReturn();
+                .andExpect(header().string("Location", "/api/v1/welcome"));
 
     }
 
@@ -121,8 +122,90 @@ class UserApiTestIT extends IntegrationBaseTest {
                         .param("password", userCreateRequestDTO.getPassword()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/api/v1/welcome"));
-        ;
     }
+
+    @Test
+    void shouldReturn200IfUserLogoutCorrectly() throws Exception {
+
+        mockMvc.perform(post(fromUriString(ENDPOINT + "/logout").build().encode().toUri())
+                        .headers(commonHeaders)
+                        .accept(MediaType.TEXT_HTML)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "/api/v1/welcome"));
+    }
+
+    @Test
+    void shouldUpdateUserCorrectly() throws Exception {
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
+
+        var saved = userService.createUser(userCreateRequestDTO);
+        var expected = saved.get();
+        assertExpectedIsSaved(expected, expected.getId());
+
+        var userUpdateRequestDTO = TestDtoBuilder.createUserUpdateRequestDTO();
+        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/update");
+       mockMvc.perform(
+                        post(uriBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("email", userUpdateRequestDTO.getEmail())
+                                .param("login", userUpdateRequestDTO.getLogin())
+                                .param("role", userUpdateRequestDTO.getRole().toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", ENDPOINT + "/" + expected.getId()));
+    }
+
+    @Test
+    void shouldChangePasswordCorrectly() throws Exception {
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
+
+        var saved = userService.createUser(userCreateRequestDTO);
+        var expected = saved.get();
+        assertExpectedIsSaved(expected, expected.getId());
+
+        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/change-password");
+        mockMvc.perform(
+                        post(uriBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("oldPassword", userCreateRequestDTO.getPassword())
+                                .param("newPassword", "test1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", ENDPOINT + "/" + expected.getId()));
+    }
+
+    @Test
+    void shouldReturn3xxOnDelete() throws Exception {
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
+
+        var saved = userService.createUser(userCreateRequestDTO);
+
+        assertThat(saved).isPresent();
+
+        mockMvc.perform(post(fromUriString(ENDPOINT + "/" + saved.get().getId() + "/delete").build().encode().toUri())
+                        .headers(commonHeaders)
+                .accept(MediaType.TEXT_HTML)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", ENDPOINT));
+
+        var result = assertThrowsExactly(NotFoundException.class, () -> userService.getUser(saved.get().getId()));
+
+        assertEquals( "404 NOT_FOUND \"User with id 3 does not exist.\"", result.getMessage());
+    }
+
+    @Test
+    void shouldReturn404onNoDelete() throws Exception {
+        mockMvc.perform(post(fromUriString(ENDPOINT + "4782749/delete").build().encode().toUri())
+                        .headers(commonHeaders)
+                        .accept(MediaType.TEXT_HTML)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+                .andExpect(status().isNotFound());
+    }
+
 
 
     private void assertExpectedIsSaved(UserResponseDto expected, Long id) throws Exception {

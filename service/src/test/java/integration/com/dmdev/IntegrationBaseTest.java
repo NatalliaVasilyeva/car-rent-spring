@@ -1,12 +1,10 @@
 package integration.com.dmdev;
 
-import com.dmdev.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.com.dmdev.annotation.IT;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -19,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 @IT
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Sql("/insert_data.sql")
 public abstract class IntegrationBaseTest {

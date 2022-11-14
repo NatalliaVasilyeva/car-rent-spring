@@ -60,11 +60,6 @@ public class UserService {
         this.isUniqueEmail(userRequestDto.getEmail());
 
         var user = userCreateMapper.map(userRequestDto);
-        user.setPassword(AppUtils.generateHash(user.getEmail(), user.getPassword()));
-        var driverLicense = driverLicenseCreateMapper.map(userRequestDto);
-        var userDetails = userDetailsCreateMapper.map(userRequestDto);
-        userDetails.setUser(user);
-        userDetails.setDriverLicense(driverLicense);
         return Optional.of(userResponserMapper.map(userRepository.save(user)));
     }
 
