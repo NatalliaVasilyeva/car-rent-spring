@@ -1,11 +1,21 @@
 package integration.com.dmdev;
 
+import com.dmdev.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import integration.com.dmdev.annotation.IT;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 @IT
@@ -13,6 +23,21 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @Sql("/insert_data.sql")
 public abstract class IntegrationBaseTest {
 
+    @Autowired
+    protected WebApplicationContext webApplicationContext;
+
+    protected MockMvc mockMvc;
+    protected HttpHeaders commonHeaders;
+
+    @BeforeEach
+    void beforeEachSetUp() {
+
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .alwaysDo(MockMvcResultHandlers.print())
+                .build();
+        commonHeaders = new HttpHeaders();
+    }
     private static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:14.5")
             .withDatabaseName("rentcar")
             .withUsername("postgres")

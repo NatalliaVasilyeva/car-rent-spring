@@ -1,0 +1,23 @@
+
+<form id="sign-in-form" th:action="@{/api/v1/users/sign-in}" method="post" th:fragment="sign-in">
+    <div class="form-group">
+        Email
+        <input type="text" name="email" class="form-control" placeholder="email" pattern="[\w-\.]+@([\w-]+\.)+[\w-]{2,4}"
+               maxlength="40" title="email"
+               autocomplete="off" id="sign-in-login-input" required/>
+        <small class="text-danger" id="sign-in-login-error-small"></small>
+    </div>
+    <div class="form-group">
+        Password
+        <input type="password" name="password" class="form-control" placeholder="password"
+               id="sign-in-password-input" pattern="(?=^.{6,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+               maxlength="40" title="password"
+               autocomplete="off" required/>
+        <small class="text-danger" id="sign-in-password-error-small"></small>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="form-control btn btn-light signupbtn" value="Submit">
+            Sign in
+        </button>
+    </div>
+</form>

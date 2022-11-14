@@ -16,9 +16,15 @@ public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredi
 
     Optional<User> findByEmailAndPassword(String email, String password);
 
+    boolean existsByEmailAndPassword(String email, String password);
+
     Optional<User> findByEmail(String email);
 
     List<User> findAllByRole(Role role);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByLogin(String login);
 
     @Query(value = "SELECT u " +
             "FROM User u " +

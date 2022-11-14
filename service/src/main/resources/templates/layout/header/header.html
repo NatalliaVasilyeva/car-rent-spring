@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en "xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="header">
+    <div th:if="${session.user == null}" th:insert="layout/header/header-guest"></div>
+    <th:block th:unless="${session.user == null}" th:switch='${session.user.role.name()}'>
+        <th:block th:case='ADMIN'>
+            <div th:insert="layout/header/header-admin"></div>
+        </th:block>
+        <th:block th:case='CLIENT'>
+            <div th:insert="layout/header/header-user"></div>
+        </th:block>
+    </th:block>
+</div>
+</html>
