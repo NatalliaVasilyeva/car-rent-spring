@@ -1,50 +1,38 @@
-$(function () {
-    $(".makeeditableinfobtn").click(function () {
+const MakeEditableInfo = () => {
         setInfoInputsReadOnly(false);
         $('#edit-user-info-button-div').hide();
         $('#edit-manage-user-info-buttons-div').show();
-    })
-});
+    };
 
-$(function () {
-    $(".makeeditabledetailsbtn").click(function () {
-        setDetailsInputsReadOnly(false);
-        $('#edit-user-details-button-div').hide();
-        $('#edit-manage-user-details-buttons-div').show();
-    })
-});
+const MakeEditableDetails = () => {
+    setDetailsInputsReadOnly(false);
+    $('#edit-user-details-button-div').hide();
+    $('#edit-manage-user-details-buttons-div').show();
+};
 
-$(function () {
-    $(".makeeditablelicensesbtn").click(function () {
-        setLicenseInputsReadOnly(false);
-        $('#edit-license-button-div').hide();
-        $('#edit-manage-license-buttons-div').show();
-    })
-});
+const MakeEditableLicenses = () => {
+    setLicenseInputsReadOnly(false);
+    $('#edit-license-button-div').hide();
+    $('#edit-manage-license-buttons-div').show();
+};
 
-$(function () {
-    $(".makeuneditableinfobtn").click(function () {
-        setInfoInputsReadOnly(true);
-        $('#edit-user-info-button-div').show();
-        $('#edit-manage-user-info-buttons-div').hide();
-    })
-});
+const MakeUnEditableInfo = () => {
+    setInfoInputsReadOnly(true);
+    $('#edit-user-info-button-div').show();
+    $('#edit-manage-user-info-buttons-div').hide();
+};
 
-$(function () {
-    $(".makeuneditabledetailsbtn").click(function () {
-        setDetailsInputsReadOnly(true);
-        $('#edit-user-details-button-div').show();
-        $('#edit-manage-user-details-buttons-div').hide();
-    })
-});
+const MakeUnEditableDetails = () => {
+    setDetailsInputsReadOnly(true);
+    $('#edit-user-details-button-div').show();
+    $('#edit-manage-user-details-buttons-div').hide();
+};
 
-$(function () {
-    $(".makeuneditablelicensesbtn").click(function () {
-        setLicenseInputsReadOnly(true);
-        $('#edit-license-button-div').show();
-        $('#edit-manage-license-buttons-div').hide();
-    })
-});
+const MakeUnEditableLicenses = () => {
+    setLicenseInputsReadOnly(true);
+    $('#edit-license-button-div').show();
+    $('#edit-manage-license-buttons-div').hide();
+};
 
 function setInfoInputsReadOnly(isReadOnly) {
     $('#user-info-email-input').prop('readonly', isReadOnly);

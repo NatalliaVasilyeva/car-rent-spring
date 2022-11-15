@@ -1,5 +1,5 @@
 
-<form id="sign-in-form" th:action="@{/api/v1/users/sign-in}" method="post" th:fragment="sign-in">
+<form id="sign-in-form" th:action="@{/users/sign-in}" method="post" th:fragment="sign-in">
     <div class="form-group">
         Email
         <input type="text" name="email" class="form-control" placeholder="email" pattern="[\w-\.]+@([\w-]+\.)+[\w-]{2,4}"

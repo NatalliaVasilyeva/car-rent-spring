@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link waves-effect waves-light" th:href="@{'/api/v1/welcome'}">Welcome<span
+                <a class="nav-link waves-effect waves-light" th:href="@{'/welcome'}">Welcome<span
                         class="sr-only">(current)</span></a>
             </li>
         </ul>
@@ -21,11 +21,11 @@
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item"
-                       th:href="@{'/languages/' + 'US'}"><span
+                       th:href="@{'/languages' + 'US'}"><span
                             class="flag-icon flag-icon-us"></span>
                         EN</a>
                     <a class="dropdown-item"
-                       th:href="@{'/languages/' + 'RU'}"><span
+                       th:href="@{'/languages' + 'RU'}"><span
                             class="flag-icon flag-icon-ru"></span>
                         RU</a>
                 </div>

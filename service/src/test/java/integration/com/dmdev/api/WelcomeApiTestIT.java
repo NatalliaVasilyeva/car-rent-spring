@@ -1,19 +1,28 @@
 package integration.com.dmdev.api;
 
 import integration.com.dmdev.IntegrationBaseTest;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
-public class WelcomeApiTestIT extends IntegrationBaseTest  {
+@AutoConfigureMockMvc
+@RequiredArgsConstructor
+class WelcomeApiTestIT extends IntegrationBaseTest {
+
+    private final MockMvc mockMvc;
+    private final HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
     void shouldRedirectToCorrectPage() throws Exception {
-        final UriComponentsBuilder uriBuilder = fromUriString("/api/v1/welcome");
+        final UriComponentsBuilder uriBuilder = fromUriString("/welcome");
 
         mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())

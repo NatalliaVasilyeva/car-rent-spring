@@ -7,10 +7,10 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent-3">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" th:href="@{'/api/v1/welcome'}">Welcome <span class="sr-only">(current)</span></a>
+                <a class="nav-link" th:href="@{'/welcome'}">Welcome <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" th.href="@{'api/v1/orders/user/' + '${user.id}}">Orders</a>
+                <a class="nav-link waves-effect waves-light" th:href="@{'/orders/user/' + ${session.user.id}}">Orders</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button" id="navbarDropdownMenuLink-3"
@@ -19,8 +19,10 @@
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="navbarDropdownMenuLink-3">
                     <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-brand-modal">Find by brand/></a>
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-category-modal">Find by category/></a>
                     <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-year-modal">Find by year</a>
                     <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-years-modal">Find by years</a>
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-filter">Find by filter</a>
                     <a class="dropdown-item" href="" data-toggle="modal"
                        data-target="#find-by-category-modal">Find by category></a>
                 </div>
@@ -30,16 +32,16 @@
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button" id="dropdownMenuButton"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="flag-icon flag-icon-us"></span> Car rent
+                    <span class="flag-icon flag-icon-us"></span> Language
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item"
-                       th:href="@{'/languages/' + 'US'}"><span
+                       th:href="@{'/languages' + 'US'}"><span
                             class="flag-icon flag-icon-us"></span>
                         US</a>
                     <a class="dropdown-item"
-                       th:href="@{'/languages/' + 'RU'}"><span
+                       th:href="@{'/languages' + 'RU'}"><span
                             class="flag-icon flag-icon-ru"></span>
                         RU</a>
                 </div>
@@ -72,9 +74,12 @@
                    aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" th:href="@{'/api/v1/users/' + ${session.user.id}}">Profile</a>
-                    <a class="dropdown-item" th:href="@{'/api/v1/settings' + ${session.user.id} }">Settings</a>
-                    <a class="nav-link d-flex align-items-center dropdown-item" th:href="@{'/logout'}">Logout</a>
+                    <a class="dropdown-item" th:href="@{'/users/' + ${session.user.id}}">Profile</a>
+                    <a class="dropdown-item" th:href="@{'/settings' + ${session.user.id} }">Settings</a>
+                    <a class="dropdown-item nav-link d-flex align-items-center" href="javascript: document.logoutForm.submit()" role="menuitem"> Logout</a>
+                    <form name="logoutForm" th:action="@{'/users/logout'}" method="post" th:hidden="true">
+                        <input hidden type="submit" value="Log Out"/>
+                    </form>
                 </div>
             </li>
         </ul>
@@ -86,7 +91,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title">
-                    <fmt:message key="form.find_car_brand"/>
+                    Find car by brand
                 </h1>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span>&times;</span>
@@ -104,7 +109,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title">
-                    <fmt:message key="form.find_car_category"/>
+                    Find car by category
                 </h1>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span>&times;</span>
@@ -122,7 +127,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title">
-                    <fmt:message key="form.find_car_year"/>
+                   Find car by year
                 </h1>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span>&times;</span>
@@ -140,7 +145,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title">
-                    <fmt:message key="form.find_car_years"/>
+                   Find car by years
                 </h1>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span>&times;</span>
@@ -148,6 +153,24 @@
             </div>
             <div class="modal-body">
                 <jsp:include page="/WEB-INF/form/find-cars-by-years.jsp"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="find-by-filter-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                    Find car by years
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <jsp:include page="/WEB-INF/form/find-cars-by-filter.jsp"/>
             </div>
         </div>
     </div>
