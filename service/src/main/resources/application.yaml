@@ -12,8 +12,20 @@ spring:
       hbm2ddl.auto: update
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
       physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+  mvc:
+     format:
+       date: iso
+       date-time: iso
+       time: iso
+server:
+  ssl:
+    enabled: false
 logging:
   level:
-    root: DEBUG
+    root: trace
 car_rent:
   default-schema: car_rent
+apache:
+    catalina:
+      core:
+        AprLifecycleListener: off

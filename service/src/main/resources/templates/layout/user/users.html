@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+
+
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<span th:if="${#lists.isEmpty(usersPage.content)}">There are not available users!</span>
+
+<div th:if="${not #lists.isEmpty(usersPage.content)}">
+    <div class="container-fluid">
+        <div class="col-lg-auto">
+            <div class="panel panel-default">
+
+                <form class="form-inline ml-3 mt-2" th:action="@{/users}" method="get">
+                    <span class="mr-2">Search</span>
+                    <div class="form-group mr-1">
+                        <input class="text" id="login" name="login" placeholder="login"/>
+                    </div>
+                    <div class="form-group mr-2">
+                        <input class="text" id="email" name="email" placeholder="email"/>
+                    </div>
+                    <div class="form-group mr-2">
+                        <input class="text" id="name" name="name" placeholder="name"/>
+                    </div>
+                    <div class="form-group mr-2">
+                        <input class="text" id="surname" name="surname" placeholder="surname"/>
+                    </div>
+                    <div class="form-group mr-2">
+                        <input type="date" class="form-control" id="birthday" name="birthday" placeholder="birthday"/>
+                    </div>
+                    <div class="form-group mr-2">
+                        <input type="date" class="form-control" id="expiredLicenseDriverDate"
+                               name="expiredLicenseDriverDate" placeholder="expired license driver date"/>
+                    </div>
+                    <button type="submit"><em class="fa fa-search"></em></button>
+                </form>
+
+
+                <div class="panel-heading">
+                    Users
+                </div>
+                <div class="panel-body table-responsive">
+                    <table class="table table-condensed table-striped text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col" hidden>id</th>
+                            <th scope="col">Login</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Surname</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Birthday</th>
+                            <th scope="col">Role</th>
+                            <th scope="col" colspan="2">Action</th>
+                        <tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user, iStat: ${usersPage.content}"
+                            th:style="${iStat.odd}? 'font-weight: bold;'"
+                            th:alt-title="${iStat.even}? 'even' : 'odd'">
+                            <td hidden th:text="${user.id}"></td>
+                            <td th:text="${user.login}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.userDetailsDto.name}"></td>
+                            <td th:text="${user.userDetailsDto.surname}"></td>
+                            <td th:text="${user.userDetailsDto.address}"></td>
+                            <td th:text="${user.userDetailsDto.phone}"></td>
+                            <td th:text="${user.userDetailsDto.birthday}"></td>
+                            <td th:text="${user.role.name()}">}</td>
+                            <td>
+                                <form th:action="@{/users{userId}/delete(userId=${user.id})}" method="post">
+                                    <button class="btn btn-dark btn-xs">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <form th:action="@{/users{userId}/changeRole(userId=${user.id})}" method="post">
+                                    <button class="btn btn-dark btn-xs">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- pagination -->
+                <nav aria-label="Pagination" th:if="${usersPage.totalPages gt 0}">
+                    <ul class="pagination justify-content-center font-weight-bold">
+                        <li class="page-item" th:classappend="${usersPage.number eq 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/users(page=${usersPage.number lt 2 ? 1 : usersPage.number})}"
+                               aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i eq usersPage.number + 1} ? 'active'"
+                            th:each="i : ${#numbers.sequence( 1, usersPage.totalPages, 1)}">
+                            <a class="page-link" th:href="@{/users(page=${i})}" th:text="${i}"
+                               th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${usersPage.number + 1 eq usersPage.totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/users(page=${usersPage.number + 2})}"
+                               aria-label="Next" title="Next Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

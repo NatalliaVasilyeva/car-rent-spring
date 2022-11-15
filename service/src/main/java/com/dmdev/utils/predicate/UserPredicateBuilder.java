@@ -14,7 +14,6 @@ public class UserPredicateBuilder implements PredicateBuilder<Predicate, UserFil
         return QPredicate.builder()
                 .add(requestFilter.getLogin(), user.login::eq)
                 .add(requestFilter.getEmail(), user.email::eq)
-                .add(requestFilter.getPassword(), user.password::eq)
                 .add(requestFilter.getName(), user.userDetails.name::containsIgnoreCase)
                 .add(requestFilter.getSurname(), user.userDetails.surname::containsIgnoreCase)
                 .add(requestFilter.getBirthday(), user.userDetails.birthday::eq)

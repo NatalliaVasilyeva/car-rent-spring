@@ -1,0 +1,79 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand waves-effect waves-light fa fa-leaf" href="#">Car rent</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-4"
+            aria-controls="navbarSupportedContent-4" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link waves-effect waves-light" th:href="@{'/welcome'}">Welcome<span
+                        class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto nav-flex-icons">
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button"
+                   id="dropdownMenuButton"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="flag-icon flag-icon-us"></span> Language
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item"
+                       th:href="@{'/languages' + 'US'}"><span
+                            class="flag-icon flag-icon-us"></span>
+                        EN</a>
+                    <a class="dropdown-item"
+                       th:href="@{'/languages' + 'RU'}"><span
+                            class="flag-icon flag-icon-ru"></span>
+                        RU</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link waves-effect waves-light" href="" data-toggle="modal" data-target="#sign-in-modal">
+                    Login
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link waves-effect waves-light" href="" data-toggle="modal" data-target="#sign-up-modal">
+                    Registration
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<div class="modal fade" id="sign-in-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                    Login
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" th:insert="layout/user/sign-in :: sign-in">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sign-up-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                    Registration
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" th:insert="layout/user/sign-up :: sign-up">
+            </div>
+        </div>
+    </div>
+</div>

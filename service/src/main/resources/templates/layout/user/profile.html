@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <script type="text/javascript" th:src="@{/js/user/profile-user.js}"></script>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-12">
+            <form id="user-info-form" th:action="@{/users/{userId}/update(userId=${user.id})}" method="POST"
+                  th:object="${user}">
+                <div class="card mb-4">
+                    <div class="card-header ">User info</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="user-info-email-input" class="col-2 col-form-label">
+                                Email:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-info-email-input" name="email"
+                                       th:value="*{email}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-info-login-input" class="col-2 col-form-label">
+                                Login:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-info-login-input" name="login"
+                                       th:value="*{login}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-info-role-input" class="col-2 col-form-label">
+                                Role:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-info-role-input" name="role"
+                                       th:value="*{role}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="edit-user-info-button-div">
+                            <input type="button"
+                                   class="from-control btn btn-light btn-lg btn-block" onclick="MakeEditableInfo()"
+                                   value="Edit">
+                        </div>
+                        <div class="form-group row" id="edit-manage-user-info-buttons-div"
+                             style="display: none">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-8">
+                                <input type="submit" class="from control btn btn-primary" value="Save Changes">
+                                <span></span>
+                                <input type="reset" class="from control btn btn-default"
+                                       onclick="MakeUnEditableInfo()"
+                                       value="Cancel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form id="user-details-form"
+                  th:action="@{/userdetails/{userDetailsId}/update(userDetailsId=${user.userDetailsDto.id})}"
+                  method="POST" th:object="${user.userDetailsDto}">
+                <div class="card mb-4">
+                    <div class="card-header">User details info</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="user-details-name-input" class="col-2 col-form-label">
+                                Name:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-name-input" name="name"
+                                       th:value="*{name}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-surname-input" class="col-2 col-form-label">
+                                Surname:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-surname-input" name="surname"
+                                       th:value="*{surname}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-address-input" class="col-2 col-form-label">
+                                Address:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-address-input" name="surname"
+                                       th:value="*{address}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-phone-input" class="col-2 col-form-label">
+                                Phone:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-phone-input" name="phone"
+                                       th:value="*{phone}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-birthday-input" class="col-2 col-form-label">
+                                Birthday:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-birthday-input" name="birthday"
+                                       th:value="*{birthday}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="edit-user-details-button-div">
+                            <input type="button"
+                                   class="from-control btn btn-light btn-lg btn-block"
+                                   onclick="MakeEditableDetails()"
+                                   value="Edit">
+                        </div>
+                        <div class="form-group row" id="edit-manage-user-details-buttons-div"
+                             style="display: none">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-8">
+                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <span></span>
+                                <input type="reset" class="btn btn-default" onclick="MakeUnEditableDetails()"
+                                       value="Cancel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form id="user-driver-license-form"
+                  th:action="@{/driverlicense/{driverLicenseId}/update(driverLicenseId=${user.driverLicenseDto.id})}"
+                  method="POST" th:object="${user.driverLicenseDto}">
+                <div class="card mb-4">
+                    <div class="card-header">User details info</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="user-license-name-input" class="col-2 col-form-label">
+                                Driver license number:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-license-name-input"
+                                       name="driverLicenseNumber"
+                                       th:value="*{driverLicenseNumber}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-license-issue-date-input" class="col-2 col-form-label">
+                                Driver license issue date:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-license-issue-date-input"
+                                       name="driverLicenseIssueDate"
+                                       th:value="*{driverLicenseIssueDate}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-license-expired-date-input" class="col-2 col-form-label">
+                                Driver license expired date::
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-license-expired-date-input"
+                                       name="driverLicenseExpiredDate"
+                                       th:value="*{driverLicenseExpiredDate}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="edit-license-button-div">
+                            <input type="button"
+                                   class="form-control btn btn-light align-content-lg-center"
+                                   onclick="MakeEditableLicenses()"
+                                   value="Edit">
+                        </div>
+                        <div class="form-group row" id="edit-manage-license-buttons-div"
+                             style="display: none">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-8">
+                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <span></span>
+                                <input type="reset" class="btn btn-default" onclick="MakeUnEditableLicenses()"
+                                       value="Cancel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -10,6 +10,7 @@ import com.dmdev.utils.predicate.CarPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,15 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@AllArgsConstructor
 class CarRepositoryTestIT extends IntegrationBaseTest {
 
-    @Autowired
     private CarRepository carRepository;
-
-    @Autowired
     private ModelRepository modelRepository;
-
-    @Autowired
     private CarPredicateBuilder carPredicateBuilder;
 
     @Test
@@ -125,7 +122,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                 .year(2022)
                 .build();
 
-       Iterable<Car> cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
+        Iterable<Car> cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
 
         assertThat(cars).hasSize(1);
         assertThat(cars.iterator().next()).isEqualTo(ExistEntityBuilder.getExistCar());

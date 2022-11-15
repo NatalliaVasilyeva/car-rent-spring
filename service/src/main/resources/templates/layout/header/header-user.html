@@ -1,0 +1,177 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Car rent</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-3"
+            aria-controls="navbarSupportedContent-3" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent-3">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{'/welcome'}">Welcome <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link waves-effect waves-light" th:href="@{'/orders/user/' + ${session.user.id}}">Orders</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button" id="navbarDropdownMenuLink-3"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Find car/>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="navbarDropdownMenuLink-3">
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-brand-modal">Find by brand/></a>
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-category-modal">Find by category/></a>
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-year-modal">Find by year</a>
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-years-modal">Find by years</a>
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-filter">Find by filter</a>
+                    <a class="dropdown-item" href="" data-toggle="modal"
+                       data-target="#find-by-category-modal">Find by category></a>
+                </div>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto nav-flex-icons">
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="flag-icon flag-icon-us"></span> Language
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item"
+                       th:href="@{'/languages' + 'US'}"><span
+                            class="flag-icon flag-icon-us"></span>
+                        US</a>
+                    <a class="dropdown-item"
+                       th:href="@{'/languages' + 'RU'}"><span
+                            class="flag-icon flag-icon-ru"></span>
+                        RU</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <button class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button" id="dropdownMenuButton1"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="flag-icon flag-icon-us"></span> About
+                </button>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="dropdownMenuButton1">
+                    <a class="dropdown-item"
+                       th:href="@{'/payment'}"><span
+                            class="flag-icon flag-icon-us"></span>
+                       Payments</a>
+                    <a class="dropdown-item"
+                       th:href="@{'/roads'}"><span
+                            class="flag-icon flag-icon-ru"></span>
+                       Road</a>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link waves-effect waves-light" th:href="@{'/contacts'}">
+                Contacts</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" th:href="@{'/users/' + ${session.user.id}}">Profile</a>
+                    <a class="dropdown-item" th:href="@{'/settings' + ${session.user.id} }">Settings</a>
+                    <a class="dropdown-item nav-link d-flex align-items-center" href="javascript: document.logoutForm.submit()" role="menuitem"> Logout</a>
+                    <form name="logoutForm" th:action="@{'/users/logout'}" method="post" th:hidden="true">
+                        <input hidden type="submit" value="Log Out"/>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="modal fade" id="find-by-brand-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                    Find car by brand
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <jsp:include page="/WEB-INF/form/find-cars-by-brand.jsp"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="find-by-category-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                    Find car by category
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <jsp:include page="/WEB-INF/form/find-cars-by-category.jsp"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="find-by-year-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                   Find car by year
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <jsp:include page="/WEB-INF/form/find-cars-by-year.jsp"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="find-by-years-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                   Find car by years
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <jsp:include page="/WEB-INF/form/find-cars-by-years.jsp"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="find-by-filter-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">
+                    Find car by years
+                </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <jsp:include page="/WEB-INF/form/find-cars-by-filter.jsp"/>
+            </div>
+        </div>
+    </div>
+</div>

@@ -102,7 +102,6 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnUserByEmailAndPasswordWithFilter() {
         var userFilter = UserFilter.builder()
                 .email("client@gmail.com")
-                .password("VasilechekBel123!")
                 .build();
 
         var optionalUser = userRepository.findOne(userPredicateBuilder.build(userFilter));
@@ -114,7 +113,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnUserByEmailAndPassword() {
-        var optionalUser = userRepository.findByEmailAndPassword("client@gmail.com", "VasilechekBel123!");
+        var optionalUser = userRepository.findByEmailAndPassword("client@gmail.com", "VmFzaWxlY2hla0JlbDEyMyE=");
 
         assertThat(optionalUser).isNotNull();
         optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));
@@ -161,7 +160,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
         assertThat(users).hasSize(1);
 
         List<String> emails = users.stream().map(User::getEmail).collect(toList());
-        assertThat(emails).containsExactlyInAnyOrder( "client@gmail.com");
+        assertThat(emails).containsExactlyInAnyOrder("client@gmail.com");
     }
 
     @Test

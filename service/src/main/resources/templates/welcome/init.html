@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/common :: head_common(~{this :: script})">
+</head>
+<body>
+
+<div th:replace="layout/header/header :: header"></div>
+<div th:if="${not #strings.isEmpty(success_message)}">
+    <div class="alert alert-success">
+        <p th:text="${success_message}"></p>
+    </div>
+</div>
+</body>
+</html>
