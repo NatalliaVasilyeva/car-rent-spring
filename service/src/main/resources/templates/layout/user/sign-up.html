@@ -1,5 +1,5 @@
 
-<form id="sign-up-form" th:action="@{/api/v1/users}" method="post" modelAttribute="registration" th:fragment="sign-up">
+<form id="sign-up-form" th:action="@{/users}" method="post" modelAttribute="registration" th:fragment="sign-up">
     <div class="form-group">
         <label class="col-form-label" for="sign-up-login-input">login </label>
         <input type="text" class="form-control" placeholder="login" id="sign-up-login-input" name="login" required/>
@@ -64,7 +64,7 @@
         <small class="text-danger" id="sign-up-confirm-password-error-small"></small>
     </div>
     <div class="form-group">
-        <button type="submit" class="form-control btn btn-light signupbtn" value="Submit">
+        <button type="submit" class="form-control btn btn-light" onclick="CheckFields()" value="Submit">
             Sign up
         </button>
     </div>

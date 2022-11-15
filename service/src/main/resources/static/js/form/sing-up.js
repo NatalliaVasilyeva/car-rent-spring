@@ -1,64 +1,22 @@
-$(function () {
-    $(".signupbtn").click(function () {
-        let login = $("#sign-up-login-input").val();
-        let name = $("#sign-up-first-name-input").val();
-        let surname = $("#sign-up-surname-input").val();
-        let email = $("#sign-up-email-input").val();
-        let phone = $("#sign-up-phone-input").val();
-        let address = $("#sign-up-address-input").val();
-        let birthday = $("#sign-up-birthday-input").val();
-        let license_number = $("#sign-up-driver-license-input").val();
-        let issue_date = $("#sign-up-issue-date-input").val();
-        let expired_date = $("#sign-up-expired-date-input").val();
-        let password = $("#sign-up-password-input").val();
-        let repeat_password = $("#sign-up-confirm-password-input").val();
+const CheckFields = () => {
+    let login = $("#sign-up-login-input").val();
+    let name = $("#sign-up-first-name-input").val();
+    let surname = $("#sign-up-surname-input").val();
+    let email = $("#sign-up-email-input").val();
+    let phone = $("#sign-up-phone-input").val();
+    let address = $("#sign-up-address-input").val();
+    let birthday = $("#sign-up-birthday-input").val();
+    let license_number = $("#sign-up-driver-license-input").val();
+    let issue_date = $("#sign-up-issue-date-input").val();
+    let expired_date = $("#sign-up-expired-date-input").val();
+    let password = $("#sign-up-password-input").val();
+    let repeat_password = $("#sign-up-confirm-password-input").val();
 
-        const isValid = validateSignUpForm(login, name, surname, email, phone, address, birthday, license_number, issue_date, expired_date, password, repeat_password);
-        if (!isValid) {
-            return;
-        }
-        // $.ajax({
-        //     url: "users",
-        //     type: "POST",
-        //     data: JSON.stringify(
-        //         {
-        //         email: email,
-        //         login: login,
-        //         password: password,
-        //         name: name,
-        //         surname: surname,
-        //         address: address,
-        //         phone: phone,
-        //         birthday: birthday,
-        //         driverLicenseNumber: license_number,
-        //         driverLicenseIssueDate: issue_date,
-        //         driverLicenseExpiredDate: expired_date
-        //     }),
-        //     contentType:"application/json; charset=utf-8",
-        //     success: function (data, textStatus) {
-        //         if (data.redirect) {
-        //             window.location.replace(data.redirect);
-        //         }
-        //     }
-        // })
-
-        // $.post("users",
-        //     {
-        //         email: email,
-        //         login: login,
-        //         password: password,
-        //         name: name,
-        //         surname: surname,
-        //         address: address,
-        //         phone: phone,
-        //         birthday: birthday,
-        //         driverLicenseNumber: license_number,
-        //         driverLicenseIssueDate: issue_date,
-        //         driverLicenseExpiredDate: expired_date
-        //     }
-        // )
-    })
-});
+    const isValid = validateSignUpForm(login, name, surname, email, phone, address, birthday, license_number, issue_date, expired_date, password, repeat_password);
+    if (!isValid) {
+        return;
+    }
+};
 
 function validateSignUpForm(login, name, surname, email, phone, address, birthday, driverLicenseNumber, driverLicenseIssueDate, driverLicenseExpiredDate, password, repeat_password) {
     let errorMessage = {};

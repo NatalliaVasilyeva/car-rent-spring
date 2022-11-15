@@ -5,10 +5,14 @@ import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -24,16 +28,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
+@AutoConfigureMockMvc
+@RequiredArgsConstructor
 class UserApiTestIT extends IntegrationBaseTest {
 
-    static final String ENDPOINT = "/api/v1/users";
+    private static final String ENDPOINT = "/users";
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final MockMvc mockMvc;
+    private HttpHeaders commonHeaders;
+
+    @BeforeEach
+    void beforeEachSetUp() {
+
+        commonHeaders = new HttpHeaders();
+    }
 
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
-        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/8974239878");
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/8974239878");
 
         mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
@@ -46,7 +59,7 @@ class UserApiTestIT extends IntegrationBaseTest {
     @Test
     void shouldCreateUserCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
-        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT);
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT);
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
@@ -64,15 +77,14 @@ class UserApiTestIT extends IntegrationBaseTest {
                                 .param("driverLicenseIssueDate", userCreateRequestDTO.getDriverLicenseIssueDate().toString())
                                 .param("driverLicenseExpiredDate", userCreateRequestDTO.getDriverLicenseExpiredDate().toString()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "/api/v1/welcome"));
-
+                .andExpect(header().string("Location", "/welcome"));
     }
 
     @Test
     void shouldReturnUserByIdCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
 
-        var saved = userService.createUser(userCreateRequestDTO);
+        var saved = userService.create(userCreateRequestDTO);
 
         var expected = saved.get();
         assertExpectedIsSaved(expected, expected.getId());
@@ -80,8 +92,8 @@ class UserApiTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnAllUsers() throws Exception {
-        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT);
-        final MvcResult result = mockMvc.perform(
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT);
+        MvcResult result = mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
@@ -110,7 +122,7 @@ class UserApiTestIT extends IntegrationBaseTest {
     void shouldReturn200IfUserLoginCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
 
-        var saved = userService.createUser(userCreateRequestDTO);
+        var saved = userService.create(userCreateRequestDTO);
         var expected = saved.get();
         assertExpectedIsSaved(expected, expected.getId());
 
@@ -121,7 +133,7 @@ class UserApiTestIT extends IntegrationBaseTest {
                         .param("email", userCreateRequestDTO.getEmail())
                         .param("password", userCreateRequestDTO.getPassword()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "/api/v1/welcome"));
+                .andExpect(header().string("Location", "/welcome"));
     }
 
     @Test
@@ -132,20 +144,20 @@ class UserApiTestIT extends IntegrationBaseTest {
                         .accept(MediaType.TEXT_HTML)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "/api/v1/welcome"));
+                .andExpect(header().string("Location", "/welcome"));
     }
 
     @Test
     void shouldUpdateUserCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
 
-        var saved = userService.createUser(userCreateRequestDTO);
+        var saved = userService.create(userCreateRequestDTO);
         var expected = saved.get();
         assertExpectedIsSaved(expected, expected.getId());
 
         var userUpdateRequestDTO = TestDtoBuilder.createUserUpdateRequestDTO();
-        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/update");
-       mockMvc.perform(
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/update");
+        mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
@@ -161,11 +173,11 @@ class UserApiTestIT extends IntegrationBaseTest {
     void shouldChangePasswordCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
 
-        var saved = userService.createUser(userCreateRequestDTO);
+        var saved = userService.create(userCreateRequestDTO);
         var expected = saved.get();
         assertExpectedIsSaved(expected, expected.getId());
 
-        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/change-password");
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/change-password");
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
@@ -181,20 +193,20 @@ class UserApiTestIT extends IntegrationBaseTest {
     void shouldReturn3xxOnDelete() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
 
-        var saved = userService.createUser(userCreateRequestDTO);
+        var saved = userService.create(userCreateRequestDTO);
 
         assertThat(saved).isPresent();
 
         mockMvc.perform(post(fromUriString(ENDPOINT + "/" + saved.get().getId() + "/delete").build().encode().toUri())
                         .headers(commonHeaders)
-                .accept(MediaType.TEXT_HTML)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+                        .accept(MediaType.TEXT_HTML)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT));
 
-        var result = assertThrowsExactly(NotFoundException.class, () -> userService.getUser(saved.get().getId()));
+        var result = assertThrowsExactly(NotFoundException.class, () -> userService.getById(saved.get().getId()));
 
-        assertEquals( "404 NOT_FOUND \"User with id 3 does not exist.\"", result.getMessage());
+        assertEquals("404 NOT_FOUND \"User with id 3 does not exist.\"", result.getMessage());
     }
 
     @Test
@@ -206,11 +218,9 @@ class UserApiTestIT extends IntegrationBaseTest {
                 .andExpect(status().isNotFound());
     }
 
-
-
     private void assertExpectedIsSaved(UserResponseDto expected, Long id) throws Exception {
-        final UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + id);
-        final MvcResult result = mockMvc.perform(
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + id);
+        MvcResult result = mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)

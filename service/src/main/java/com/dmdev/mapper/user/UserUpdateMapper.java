@@ -11,6 +11,8 @@ public class UserUpdateMapper implements Mapper<UserUpdateRequestDto, User> {
     @Override
     public User map(UserUpdateRequestDto object) {
         return User.builder()
+                .email(object.getEmail())
+                .login(object.getLogin())
                 .build();
     }
 

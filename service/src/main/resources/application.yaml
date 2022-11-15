@@ -18,7 +18,6 @@ spring:
        date-time: iso
        time: iso
 server:
-  max-http-header-size: 65536
   ssl:
     enabled: false
 logging:

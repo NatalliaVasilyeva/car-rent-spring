@@ -13,10 +13,10 @@ import javax.validation.constraints.NotEmpty;
 public class UserResponseDto {
 
     @NotEmpty
-    private long id;
-    private String login;
-    private String email;
-    private Role role;
-    private UserDetailsResponseDto userDetailsDto;
-    private DriverLicenseResponseDto driverLicenseDto;
+    long id;
+    String login;
+    String email;
+    Role role;
+    UserDetailsResponseDto userDetailsDto;
+    DriverLicenseResponseDto driverLicenseDto;
 }

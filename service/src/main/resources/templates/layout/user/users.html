@@ -16,7 +16,7 @@
         <div class="col-lg-auto">
             <div class="panel panel-default">
 
-                <form class="form-inline ml-3 mt-2" th:action="@{/api/v1/users}" method="get">
+                <form class="form-inline ml-3 mt-2" th:action="@{/users}" method="get">
                     <span class="mr-2">Search</span>
                     <div class="form-group mr-1">
                         <input class="text" id="login" name="login" placeholder="login"/>
@@ -38,7 +38,6 @@
                                name="expiredLicenseDriverDate" placeholder="expired license driver date"/>
                     </div>
                     <button type="submit"><em class="fa fa-search"></em></button>
-
                 </form>
 
 
@@ -75,14 +74,14 @@
                             <td th:text="${user.userDetailsDto.birthday}"></td>
                             <td th:text="${user.role.name()}">}</td>
                             <td>
-                                <form th:action="@{/api/v1/users{userId}/delete(userId=${user.id})}" method="post">
+                                <form th:action="@{/users{userId}/delete(userId=${user.id})}" method="post">
                                     <button class="btn btn-dark btn-xs">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </button>
                                 </form>
                             </td>
                             <td>
-                                <form th:action="@{/api/v1/users{userId}/changeRole(userId=${user.id})}" method="post">
+                                <form th:action="@{/users{userId}/changeRole(userId=${user.id})}" method="post">
                                     <button class="btn btn-dark btn-xs">
                                         <i class="fa fa-pencil" aria-hidden="true"></i>
                                     </button>
@@ -97,20 +96,20 @@
                     <ul class="pagination justify-content-center font-weight-bold">
                         <li class="page-item" th:classappend="${usersPage.number eq 0} ? 'disabled'">
                             <a class="page-link"
-                               th:href="@{/api/v1/users(page=${usersPage.number lt 2 ? 1 : usersPage.number})}"
+                               th:href="@{/users(page=${usersPage.number lt 2 ? 1 : usersPage.number})}"
                                aria-label="Previous" title="Previous Page" data-toggle="tooltip">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
                         <li class="page-item" th:classappend="${i eq usersPage.number + 1} ? 'active'"
                             th:each="i : ${#numbers.sequence( 1, usersPage.totalPages, 1)}">
-                            <a class="page-link" th:href="@{/api/v1/users(page=${i})}" th:text="${i}"
+                            <a class="page-link" th:href="@{/users(page=${i})}" th:text="${i}"
                                th:title="${'Page '+ i}" data-toggle="tooltip"></a>
                         </li>
                         <li class="page-item"
                             th:classappend="${usersPage.number + 1 eq usersPage.totalPages} ? 'disabled'">
                             <a class="page-link"
-                               th:href="@{/api/v1/users(page=${usersPage.number + 2})}"
+                               th:href="@{/users(page=${usersPage.number + 2})}"
                                aria-label="Next" title="Next Page" data-toggle="tooltip">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>

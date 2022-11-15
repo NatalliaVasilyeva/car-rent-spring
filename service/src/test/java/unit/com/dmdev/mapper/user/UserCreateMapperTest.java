@@ -6,7 +6,7 @@ import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.mapper.user.DriverLicenseCreateMapper;
 import com.dmdev.mapper.user.UserCreateMapper;
 import com.dmdev.mapper.user.UserDetailsCreateMapper;
-import com.dmdev.utils.AppUtils;
+import com.dmdev.utils.SecurityUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({MockitoExtension.class})
+@ExtendWith(MockitoExtension.class)
 class UserCreateMapperTest {
 
     @Mock
@@ -46,6 +46,6 @@ class UserCreateMapperTest {
 
         assertEquals(actualResult.getEmail(), createUserRequestDto.getEmail());
         assertEquals(actualResult.getLogin(), createUserRequestDto.getLogin());
-        assertEquals(actualResult.getPassword(), AppUtils.generateHash(createUserRequestDto.getEmail(), createUserRequestDto.getPassword()));
+        assertEquals(actualResult.getPassword(), SecurityUtils.securePassword(createUserRequestDto.getEmail(), createUserRequestDto.getPassword()));
     }
 }

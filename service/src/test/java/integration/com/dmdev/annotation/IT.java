@@ -17,4 +17,5 @@ import java.lang.annotation.Target;
 @Transactional
 @SpringBootTest(classes = {CarRentApplication.class})
 public @interface IT {
+
 }

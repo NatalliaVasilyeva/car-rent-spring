@@ -8,10 +8,10 @@ import com.dmdev.service.UserService;
 import com.dmdev.service.exception.UserBadRequestException;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -25,20 +25,17 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith({MockitoExtension.class})
+@ExtendWith(MockitoExtension.class)
+@RequiredArgsConstructor
 class UserServiceTest extends IntegrationBaseTest {
 
-    @Autowired
-    private UserService userService;
-
-
-
+    private final UserService userService;
 
     @Test
     void shouldSaveUserCorrectly() {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
 
-        var actualUser = userService.createUser(userCreateRequestDTO);
+        var actualUser = userService.create(userCreateRequestDTO);
 
         assertTrue(actualUser.isPresent());
         assertEquals(userCreateRequestDTO.getName(), actualUser.get().getUserDetailsDto().getName());
@@ -53,15 +50,15 @@ class UserServiceTest extends IntegrationBaseTest {
     void shouldThrowExceptionWhenSaveUserWithExistsEmail() {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTOWithExistsEmail();
 
-        var result = assertThrowsExactly(UserBadRequestException.class, () -> userService.createUser(userCreateRequestDTO));
+        var result = assertThrowsExactly(UserBadRequestException.class, () -> userService.create(userCreateRequestDTO));
 
-        assertEquals( "400 BAD_REQUEST \"User with email 'admin@gmail.com' already exists\"", result.getMessage());
+        assertEquals("400 BAD_REQUEST \"User with email 'admin@gmail.com' already exists\"", result.getMessage());
     }
 
 
     @Test
     void shouldFindAllUsers() {
-        Page<UserResponseDto> users = userService.getUsers(0, 4);
+        Page<UserResponseDto> users = userService.getAll(0, 4);
 
         assertThat(users.getContent()).hasSize(2);
         assertThat(users.getTotalElements()).isEqualTo(2L);
@@ -74,13 +71,13 @@ class UserServiceTest extends IntegrationBaseTest {
     @Test
     void shouldReturnUsersByFilter() {
         var userCreateRequestDto = TestDtoBuilder.createUserCreateRequestDTO();
-        var userResponseDto = userService.createUser(userCreateRequestDto);
+        var userResponseDto = userService.create(userCreateRequestDto);
 
         var userFilter = UserFilter.builder()
                 .email(userCreateRequestDto.getEmail())
                 .build();
 
-        Page<UserResponseDto> users = userService.getUsersByFilter(userFilter, 0, 4);
+        Page<UserResponseDto> users = userService.getAllByFilter(userFilter, 0, 4);
 
         assertThat(users.getContent()).hasSize(1);
         assertThat(users.getTotalElements()).isEqualTo(1L);
@@ -94,9 +91,9 @@ class UserServiceTest extends IntegrationBaseTest {
     @Test
     void shouldReturnUserById() {
         var userCreateRequestDto = TestDtoBuilder.createUserCreateRequestDTO();
-        var expectedUser = userService.createUser(userCreateRequestDto);
+        var expectedUser = userService.create(userCreateRequestDto);
 
-        var actualUser = userService.getUser(expectedUser.get().getId());
+        var actualUser = userService.getById(expectedUser.get().getId());
 
         assertThat(actualUser).isNotNull();
         assertEquals(expectedUser, actualUser);
@@ -109,9 +106,9 @@ class UserServiceTest extends IntegrationBaseTest {
                 "test1@gmal.com",
                 "test",
                 Role.CLIENT);
-        var savedUser = userService.createUser(userCreateRequestDto);
+        var savedUser = userService.create(userCreateRequestDto);
 
-        var actualUser = userService.updateUser(savedUser.get().getId(), userUpdateRequestDto);
+        var actualUser = userService.update(savedUser.get().getId(), userUpdateRequestDto);
 
         assertThat(actualUser).isNotNull();
         actualUser.ifPresent(user -> {
@@ -123,11 +120,11 @@ class UserServiceTest extends IntegrationBaseTest {
 
     @Test
     void shouldDeleteUserByIdCorrectly() {
-        assertTrue(userService.deleteUserById(TEST_EXISTS_USER_ID));
+        assertTrue(userService.deleteById(TEST_EXISTS_USER_ID));
     }
 
     @Test
     void shouldNotDeleteUserWithNonExistsId() {
-        assertFalse(userService.deleteUserById(999999L));
+        assertFalse(userService.deleteById(999999L));
     }
 }
