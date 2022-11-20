@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="layout/common :: head_common(~{this :: script})">
+    <script type="text/javascript" th:src="@{/js/user/users.js}"></script>
     <meta charset="UTF-8">
     <title>Users</title>
 </head>
@@ -8,86 +9,155 @@
 
 <body>
 <div th:replace="layout/header/header :: header"/>
+<div class="container-fluid">
+    <div class="col-lg-auto">
+        <h3 class="text-center">Search Users</h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-xs-offset-8">
+                    <form class="form ml-3 mt-2" th:action="@{/users}" method="get">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="login">Login</label>
+                                <input id="login" type="text" name="login" th:value="${filter.getLogin()}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="email">Email:</label>
+                                <input id="email" type="email" name="email" th:value="${filter.getEmail()}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="birthday">Birthday:</label>
+                                <input id="birthday" type="date" name="birthday" th:value="${filter.getBirthday()}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="name">Name:</label>
+                                    <input id="name" type="text" name="name" th:value="${filter.getName()}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="surname">Surname:</label>
+                                    <input id="surname" type="text" name="surname"
+                                           th:value="${filter.getSurname()}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="expiredLicenseDriverDate">Expired driver license date:</label>
+                                    <input id="expiredLicenseDriverDate" type="date" name="expiredLicenseDriverDate"
+                                           th:value="${filter.getExpiredLicenseDriverDate()}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="allExpiredLicense">Choose all users with expired driver licenses:</label>
+                                    <input id="allExpiredLicense" type="checkbox" name="allExpiredLicenses"
+                                           th:checked="${filter.getAllExpiredLicenses()?: 'false'}">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <div>
+                                    <label for="page">Page(start from 1):</label>
+                                        <input id="page" type="number" name="page" min="1"
+                                               th:value="${usersPage.number + 1}">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <span th:if="${#lists.isEmpty(usersPage.content)}">There are not available users!</span>
 
 <div th:if="${not #lists.isEmpty(usersPage.content)}">
-    <div class="container-fluid">
+    <div class="container-fluid col">
         <div class="col-lg-auto">
             <div class="panel panel-default">
-
-                <form class="form-inline ml-3 mt-2" th:action="@{/users}" method="get">
-                    <span class="mr-2">Search</span>
-                    <div class="form-group mr-1">
-                        <input class="text" id="login" name="login" placeholder="login"/>
-                    </div>
-                    <div class="form-group mr-2">
-                        <input class="text" id="email" name="email" placeholder="email"/>
-                    </div>
-                    <div class="form-group mr-2">
-                        <input class="text" id="name" name="name" placeholder="name"/>
-                    </div>
-                    <div class="form-group mr-2">
-                        <input class="text" id="surname" name="surname" placeholder="surname"/>
-                    </div>
-                    <div class="form-group mr-2">
-                        <input type="date" class="form-control" id="birthday" name="birthday" placeholder="birthday"/>
-                    </div>
-                    <div class="form-group mr-2">
-                        <input type="date" class="form-control" id="expiredLicenseDriverDate"
-                               name="expiredLicenseDriverDate" placeholder="expired license driver date"/>
-                    </div>
-                    <button type="submit"><em class="fa fa-search"></em></button>
-                </form>
-
-
-                <div class="panel-heading">
-                    Users
-                </div>
+                <h3 class="text-center">Users list</h3>
                 <div class="panel-body table-responsive">
                     <table class="table table-condensed table-striped text-center">
                         <thead class="thead-dark">
                         <tr>
-                            <th scope="col" hidden>id</th>
-                            <th scope="col">Login</th>
-                            <th scope="col">Email</th>
+                            <th></th>
                             <th scope="col">Name</th>
                             <th scope="col">Surname</th>
-                            <th scope="col">Address</th>
                             <th scope="col">Phone</th>
-                            <th scope="col">Birthday</th>
+                            <th scope="col">Registration date</th>
                             <th scope="col">Role</th>
-                            <th scope="col" colspan="2">Action</th>
                         <tr>
                         </thead>
                         <tbody>
-                        <tr th:each="user, iStat: ${usersPage.content}"
-                            th:style="${iStat.odd}? 'font-weight: bold;'"
-                            th:alt-title="${iStat.even}? 'even' : 'odd'">
-                            <td hidden th:text="${user.id}"></td>
-                            <td th:text="${user.login}"></td>
-                            <td th:text="${user.email}"></td>
-                            <td th:text="${user.userDetailsDto.name}"></td>
-                            <td th:text="${user.userDetailsDto.surname}"></td>
-                            <td th:text="${user.userDetailsDto.address}"></td>
-                            <td th:text="${user.userDetailsDto.phone}"></td>
-                            <td th:text="${user.userDetailsDto.birthday}"></td>
-                            <td th:text="${user.role.name()}">}</td>
-                            <td>
-                                <form th:action="@{/users{userId}/delete(userId=${user.id})}" method="post">
+                        <th:block th:each="user, iStat: ${usersPage.content}"
+                                  th:style="${iStat.odd}? 'font-weight: bold;'"
+                                  th:alt-title="${iStat.even}? 'even' : 'odd'">
+                            <tr data-toggle="collapse" th:attr="data-target='#user_' + ${iStat.index}"
+                                class="accordion-toggle">
+                                <td>
                                     <button class="btn btn-dark btn-xs">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
                                     </button>
-                                </form>
-                            </td>
-                            <td>
-                                <form th:action="@{/users{userId}/changeRole(userId=${user.id})}" method="post">
-                                    <button class="btn btn-dark btn-xs">
-                                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+                                </td>
+                                <td th:text="${user.userDetailsDto.name}"></td>
+                                <td th:text="${user.userDetailsDto.surname}"></td>
+                                <td th:text="${user.userDetailsDto.phone}"></td>
+                                <td th:text="${user.userDetailsDto.registrationAt}"></td>
+                                <td th:text="${user.role.name()}">}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="12" class="hiddenRow">
+                                    <div class="accordian-body collapse col-lg-auto table-responsive"
+                                         th:id="'user_' + ${iStat.index}">
+                                        <table class="table table-striped text-center" id="innerTable">
+                                            <thead class="thead-dark">
+                                            <tr class="info">
+                                                <th>Id</th>
+                                                <th>Login</th>
+                                                <th>Email</th>
+                                                <th>Address</th>
+                                                <th>Birthday</th>
+                                                <th>Driver license number</th>
+                                                <th>Driver license issue day</th>
+                                                <th>Driver license expired day</th>
+                                                <th colspan="2"></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="info">
+                                                <td th:text="${user.id}"></td>
+                                                <td th:text="${user.login}"></td>
+                                                <td th:text="${user.email}"></td>
+                                                <td th:text="${user.userDetailsDto.address}"></td>
+                                                <td th:text="${user.userDetailsDto.birthday}"></td>
+                                                <td th:text="${user.driverLicenseDto.driverLicenseNumber}"></td>
+                                                <td th:text="${user.driverLicenseDto.driverLicenseIssueDate}"></td>
+                                                <td th:text="${user.driverLicenseDto.driverLicenseExpiredDate}"></td>
+                                                <td>
+                                                    <form th:action="@{/users/{userId}/delete(userId=${user.id})}"
+                                                          method="post">
+                                                        <button class="btn btn-dark btn-xs">
+                                                            <i class="fa fa-trash"
+                                                               aria-hidden="true"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-dark btn-xs"
+                                                            data-toggle="modal"
+                                                            th:attr="data-target='#changeRole'"
+                                                            th:user-id="${user.id}"
+                                                            th:onclick="ChangeRole(this.getAttribute('user-id'))">
+                                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </th:block>
                         </tbody>
                     </table>
                 </div>
@@ -116,6 +186,36 @@
                         </li>
                     </ul>
                 </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" th:id="changeRole" tabindex="-1" role="dialog"
+         aria-labelledby="changeRoleLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="change-role-label">Choose role:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="attachment-body-content">
+                    <form id="change-role-form" action="#" th:action="@{/users/:/change-role}"
+                          method="post">
+                        <div class="form-group" th:each="role : ${roles}">
+                            <input th:id="${role}" type="radio" name="role" th:value="${role}">
+                            <label th:for="${role}" th:text="${role}">Role name</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" form="change-role-form" value="Submit"
+                            class="btn btn-primary">Save changes
+                    </button>
+                </div>
             </div>
         </div>
     </div>

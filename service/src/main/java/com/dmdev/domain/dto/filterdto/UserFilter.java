@@ -15,4 +15,5 @@ public class UserFilter {
     String surname;
     LocalDate birthday;
     LocalDate expiredLicenseDriverDate;
+    Boolean allExpiredLicenses;
 }

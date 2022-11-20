@@ -89,7 +89,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldFindByNameIn() {
         var expectedBrand = ExistEntityBuilder.getExistBrand();
-        List<Brand> actualBrands = brandRepository.findByNameIn(List.of("mercedes"));
+        List<Brand> actualBrands = brandRepository.findByNameInIgnoringCase(List.of("mercedes"));
         assertThat(actualBrands).hasSize(1);
         assertEquals(expectedBrand, actualBrands.get(0));
     }

@@ -1,23 +1,23 @@
-package com.dmdev.api;
+package com.dmdev.api.controller;
 
 import com.dmdev.domain.dto.filterdto.UserFilter;
 import com.dmdev.domain.dto.user.request.LoginRequestDto;
 import com.dmdev.domain.dto.user.request.UserChangePasswordDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
-import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.domain.model.Role;
 import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UnauthorizedException;
 import com.dmdev.service.exception.UserBadRequestException;
-import com.dmdev.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 
 @Controller
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserApi {
 
-    private final static String SUCCESS_ATTRIBUTE = "success_message";
+    private static final String SUCCESS_ATTRIBUTE = "success_message";
     private final UserService userService;
 
     @PostMapping()
@@ -94,16 +95,24 @@ public class UserApi {
                 .orElseThrow(() -> new UserBadRequestException("Password have not been changed. Please check if old password is correct"));
     }
 
+    @PostMapping("/{id}/change-role")
+    public String changePassword(@PathVariable("id") Long id,
+                                 @PathParam(value = "role") String role) {
+        return userService.changeRole(id, role)
+                .map(result -> "redirect:/users")
+                .orElseThrow(() -> new UserBadRequestException("Role have not been changed"));
+    }
+
     @GetMapping()
     public String findAll(Model model,
                           @ModelAttribute @Nullable UserFilter userFilter,
                           @RequestParam(required = false, defaultValue = "1") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
-        Page<UserResponseDto> usersPage = ValidationUtils.checkNull(userFilter) ?
-                userService.getAll(page - 1, size) :
-                userService.getAllByFilter(userFilter, page - 1, size);
 
+        var usersPage = userService.getAll(userFilter, page - 1, size);
         model.addAttribute("usersPage", usersPage);
+        model.addAttribute("filter", userFilter);
+        model.addAttribute("roles", Role.values());
 
         return "layout/user/users";
     }
@@ -114,5 +123,9 @@ public class UserApi {
             throw new NotFoundException(String.format("User with id %s does not exist.", id));
         }
         return "redirect:/users";
+    }
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 }

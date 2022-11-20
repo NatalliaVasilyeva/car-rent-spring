@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <script type="text/javascript" th:src="@{/js/category/1.js}"></script>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+
+<script th:inline="javascript">
+    function saveCategory(e) {
+        var name = document.getElementById("create-category-name-input").value;
+        var brandArray = [[${existsCategories}]];
+        if (brandArray.includes(name)) {
+            e.preventDefault();
+            $("#create-category-name-input").addClass("is-invalid");
+            $("#create-category-error-small").text("category already exist");
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+
+<form id="create-category-form" th:action="@{/categories}" method="post" th:object="${category}" onsubmit="saveCategory(event)">
+    <div class="form-group">
+        <label class="col-form-label" for="create-category-name-input">Category name </label>
+        <input type="text" class="form-control" placeholder="name" id="create-category-name-input" name="name" th:field="*{name}" required/>
+        <small class="text-danger" id="create-category-error-small"></small>
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="create-category-price-input">Category price </label>
+        <input type="number" class="form-control" placeholder="name" id="create-category-price-input" name="price" th:field="*{price}" required/>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="form-control btn btn-light" value="Submit">
+            Create
+        </button>
+    </div>
+</form>
+</body>
+</html>

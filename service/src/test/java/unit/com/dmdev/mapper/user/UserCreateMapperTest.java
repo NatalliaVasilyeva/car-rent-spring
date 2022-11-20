@@ -3,9 +3,9 @@ package unit.com.dmdev.mapper.user;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.domain.entity.UserDetails;
-import com.dmdev.mapper.user.DriverLicenseCreateMapper;
+import com.dmdev.mapper.user.DriverLicenseFromUserCreateMapper;
 import com.dmdev.mapper.user.UserCreateMapper;
-import com.dmdev.mapper.user.UserDetailsCreateMapper;
+import com.dmdev.mapper.user.UserDetailsFromUserCreateMapper;
 import com.dmdev.utils.SecurityUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +22,10 @@ import static org.mockito.Mockito.when;
 class UserCreateMapperTest {
 
     @Mock
-    UserDetailsCreateMapper userDetailsCreateMapper;
+    UserDetailsFromUserCreateMapper userDetailsCreateMapper;
 
     @Mock
-    DriverLicenseCreateMapper driverLicenseCreateMapper;
+    DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
 
     @InjectMocks
     UserCreateMapper userCreateMapper;

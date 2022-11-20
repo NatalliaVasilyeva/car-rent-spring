@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor
 class UserServiceTestIT extends IntegrationBaseTest {
 
-    private  final UserService userService;
+    private final UserService userService;
 
     @Test
     void shouldSaveUserCorrectly() {
@@ -55,7 +55,7 @@ class UserServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindAllUsers() {
-        Page<UserResponseDto> users = userService.getAll(0, 4);
+        Page<UserResponseDto> users = userService.getAll(UserFilter.builder().build(), 0, 4);
 
         assertThat(users.getContent()).hasSize(2);
         assertThat(users.getTotalElements()).isEqualTo(2L);
@@ -74,7 +74,7 @@ class UserServiceTestIT extends IntegrationBaseTest {
                 .email(userCreateRequestDto.getEmail())
                 .build();
 
-        Page<UserResponseDto> users = userService.getAllByFilter(userFilter, 0, 4);
+        Page<UserResponseDto> users = userService.getAll(userFilter, 0, 4);
 
         assertThat(users.getContent()).hasSize(1);
         assertThat(users.getTotalElements()).isEqualTo(1L);

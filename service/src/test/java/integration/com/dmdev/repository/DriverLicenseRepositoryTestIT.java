@@ -21,7 +21,6 @@ import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_USER_ID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
@@ -83,11 +82,11 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDriverLicenseByNumber() {
-        var optionalDriverLicense = driverLicenseRepository.findByNumberContainingIgnoreCase("Ab12346");
+        var driverLicenses = driverLicenseRepository.findByNumberContainingIgnoreCase("Ab12346");
 
-        assertThat(optionalDriverLicense).isNotNull();
-        optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId()));
-        assertThat(optionalDriverLicense).isEqualTo(Optional.of(ExistEntityBuilder.getExistDriverLicense()));
+        assertThat(driverLicenses).hasSize(1);
+        assertThat(driverLicenses.get(0).getId()).isEqualTo(ExistEntityBuilder.getExistDriverLicense().getId());
+        assertThat(driverLicenses.get(0)).isEqualTo(ExistEntityBuilder.getExistDriverLicense());
     }
 
     @Test
@@ -113,12 +112,9 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDriverLicenseByUserId() {
-        Optional<DriverLicense> driverLicense = driverLicenseRepository.findByUserId(TEST_EXISTS_USER_ID);
+        List<DriverLicense> driverLicenses = driverLicenseRepository.findByUserId(TEST_EXISTS_USER_ID);
 
-        assertTrue(driverLicense.isPresent());
-
-        driverLicense.ifPresent(
-                dl -> assertEquals(dl, ExistEntityBuilder.getExistDriverLicense())
-        );
+        assertThat(driverLicenses).hasSize(1);
+        assertEquals(driverLicenses.get(0), ExistEntityBuilder.getExistDriverLicense());
     }
 }

@@ -64,7 +64,7 @@
                 </div>
             </form>
             <form id="user-details-form"
-                  th:action="@{/userdetails/{userDetailsId}/update(userDetailsId=${user.userDetailsDto.id})}"
+                  th:action="@{/user-details/{userDetailsId}/update(userDetailsId=${user.userDetailsDto.id})}"
                   method="POST" th:object="${user.userDetailsDto}">
                 <div class="card mb-4">
                     <div class="card-header">User details info</div>
@@ -112,6 +112,15 @@
                             <div class="col-10">
                                 <input type="text" class="form-control" id="user-details-birthday-input" name="birthday"
                                        th:value="*{birthday}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-registration-input" class="col-2 col-form-label">
+                                Birthday:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-registration-input" name="birthday"
+                                       th:value="*{registrationAt}" readonly/>
                             </div>
                         </div>
                         <div class="form-group row" id="edit-user-details-button-div">

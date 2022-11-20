@@ -7,22 +7,23 @@ import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
 import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.domain.entity.User;
+import com.dmdev.domain.model.Role;
 import com.dmdev.mapper.user.UserCreateMapper;
-import com.dmdev.mapper.user.UserResponserMapper;
+import com.dmdev.mapper.user.UserResponseMapper;
 import com.dmdev.mapper.user.UserUpdateMapper;
 import com.dmdev.repository.UserRepository;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserBadRequestException;
+import com.dmdev.utils.PageableUtils;
 import com.dmdev.utils.SecurityUtils;
 import com.dmdev.utils.predicate.UserPredicateBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -32,7 +33,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserCreateMapper userCreateMapper;
     private final UserUpdateMapper userUpdateMapper;
-    private final UserResponserMapper userResponserMapper;
+    private final UserResponseMapper userResponseMapper;
     private final UserPredicateBuilder userPredicateBuilder;
 
     @Transactional
@@ -40,14 +41,16 @@ public class UserService {
         this.checkEmailIsUnique(userRequestDto.getEmail());
 
         var user = userCreateMapper.map(userRequestDto);
-        return Optional.of(userResponserMapper.map(userRepository.save(user)));
+        return Optional.of(userResponseMapper
+                .map(userRepository
+                        .save(user)));
     }
 
     @Transactional
     public Optional<UserResponseDto> login(LoginRequestDto loginRequestDto) {
         return userRepository.findByEmailAndPassword(loginRequestDto.getEmail(),
                         SecurityUtils.securePassword(loginRequestDto.getEmail(), loginRequestDto.getPassword()))
-                .map(userResponserMapper::map);
+                .map(userResponseMapper::map);
     }
 
     @Transactional
@@ -58,17 +61,18 @@ public class UserService {
             checkEmailIsUnique(user.getEmail());
         }
 
-        return Optional.of(
-                        userRepository.save(
-                                userUpdateMapper.map(user, existingUser)))
-                .map(userResponserMapper::map);
+        return Optional.of(userRepository
+                        .save(userUpdateMapper
+                                .map(user, existingUser)))
+                .map(userResponseMapper::map);
     }
     @Transactional(readOnly = true)
     public Optional<UserResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
-                .map(userResponserMapper::map);
+                .map(userResponseMapper::map);
     }
 
+    @Transactional
     public Optional<UserResponseDto> changePassword(Long id, UserChangePasswordDto changedPasswordDto) {
         var existingUser = getByIdOrElseThrow(id);
 
@@ -80,23 +84,26 @@ public class UserService {
         }
 
         return Optional.of(userRepository.save(existingUser))
-                .map(userResponserMapper::map);
+                .map(userResponseMapper::map);
+    }
+
+    @Transactional
+    public Optional<UserResponseDto> changeRole(Long id, String role) {
+        var existingUser = getByIdOrElseThrow(id);
+        Role.find(role).ifPresent(existingUser::setRole);
+        return Optional.of(userRepository.save(existingUser))
+                .map(userResponseMapper::map);
     }
 
     @Transactional(readOnly = true)
-    public Page<UserResponseDto> getAll(Integer page, Integer pageSize) {
-        Pageable pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "userDetails_surname");
-        return userRepository.findAll(pageRequest)
-                .map(userResponserMapper::map);
+    public Page<UserResponseDto> getAll(UserFilter userFilter, Integer page, Integer pageSize) {
+        return userFilter.getAllExpiredLicenses() == null || !userFilter.getAllExpiredLicenses() ?
+                userRepository.findAll(userPredicateBuilder.build(userFilter),
+                                PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname"))
+                        .map(userResponseMapper::map)
+                : userRepository.findAllWithExpiredDriverLicense(LocalDate.now(), PageableUtils.unSortedPageable(page, pageSize))
+                .map(userResponseMapper::map);
     }
-
-    @Transactional(readOnly = true)
-    public Page<UserResponseDto> getAllByFilter(UserFilter userFilter, Integer page, Integer pageSize) {
-        Pageable pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "userDetails_surname");
-        return userRepository.findAll(userPredicateBuilder.build(userFilter), pageRequest)
-                .map(userResponserMapper::map);
-    }
-
 
     @Transactional
     public boolean deleteById(Long id) {

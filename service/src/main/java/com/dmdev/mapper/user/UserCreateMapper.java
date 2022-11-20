@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserCreateMapper implements Mapper<UserCreateRequestDto, User> {
 
-    private final  UserDetailsCreateMapper userDetailsCreateMapper;
-    private final DriverLicenseCreateMapper driverLicenseCreateMapper;
+    private final UserDetailsFromUserCreateMapper userDetailsCreateMapper;
+    private final DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
 
     @Override
     public User map(UserCreateRequestDto requestDto) {

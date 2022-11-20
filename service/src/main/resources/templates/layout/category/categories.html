@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <script type="text/javascript" th:src="@{/js/category/1.js}"></script>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+
+
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<!--<div class="container my-5">-->
+<!--    <div class="row">-->
+<!--        <div class="form-row">-->
+<!--            <span th:size="13">Search by price equals</span>-->
+<!--        </div>-->
+
+<!--        <form class="form-inline mt-2" th:action="@{/categories/by-price}" method="get">-->
+<!--            <div class="form-row">-->
+<!--                <label class="mr5-m" for="price">Price:</label>-->
+<!--                <input class="form-control mr5-m" id="price" type="number" name="price">-->
+<!--                <div class="form-check">-->
+<!--                    <label class="form-check-label mr5-m">-->
+<!--                        <input class="form-check-input" type="radio" id="inlineCheckbox1" name="type"-->
+<!--                               value="equals">Equals-->
+<!--                    </label>-->
+<!--                </div>-->
+<!--                <div class="form-check">-->
+<!--                    <label class="form-check-label mr5-m">-->
+<!--                        <input class="form-check-input" type="radio" id="inlineCheckbox2" name="type"-->
+<!--                               value="less">Less-->
+<!--                    </label>-->
+<!--                </div>-->
+<!--                <div class="form-check">-->
+<!--                    <label class="form-check-label mr5-m">-->
+<!--                        <input class="form-check-input" type="radio" id="inlineCheckbox3" name="type"-->
+<!--                               value="greater">Greater-->
+<!--                    </label>-->
+<!--                </div>-->
+<!--                <button class="btn btn-light" type="submit">Search</button>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<div>
+    <div class="container mt5 ml-auto-m mb5">
+        <H3 class="justify-content">Search by price</H3>
+        <div class="d-flex">
+            <form class="form-inline my-2" th:action="@{/categories/by-price}" method="get">
+                <label class="mr-md-3" for="price">Price:
+                    <input class="form-control ml-md-3 mr-md-3 w-100-m" placeholder="Enter price" id="price"
+                           type="number"
+                           name="price">
+                </label>
+                <div class="form-check">
+                    <label class="form-check-label mr-md-3">
+                        <input class="form-check-input mt-2 mr-md-3" type="radio" id="inlineCheckbox1" name="type"
+                               value="equals"> Equals
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label mr-md-3">
+                        <input class="form-check-input mt-2 mr-md-3" type="radio" id="inlineCheckbox2" name="type"
+                               value="less"> Less
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label mr-md-3">
+                        <input class="form-check-input mt-2 mr-md-3" type="radio" id="inlineCheckbox3" name="type"
+                               value="greater"> Greater
+                    </label>
+                </div>
+                <button class="btn btn-info mr-md-3" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<span th:if="${#lists.isEmpty(categories)}">There are not available categories!</span>
+
+<div th:if="${not #lists.isEmpty(categories)}">
+    <div class="container-fluid col">
+        <div class="col-lg-auto">
+            <div class="panel panel-default">
+                <h3 class="text-center">Categories list</h3>
+                <div class="panel-body table-responsive">
+                    <table class="table table-condensed table-striped text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th colspan="2">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="category: ${categories}">
+                            <tr scope="row">
+                                <td th:text="${category.id}"></td>
+                                <td th:text="${category.name}"></td>
+                                <td th:text="${category.price}"></td>
+                                <td>
+                                    <form th:action="@{/categories/{categoryId}/delete(categoryId=${category.id})}"
+                                          method="post">
+                                        <button class="btn btn-dark btn-xs">
+                                            <i class="fa fa-trash"
+                                               aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form th:action="@{/categories/{categoryId}(categoryId=${category.id})}"
+                                          method="get">
+                                        <button class="btn btn-dark btn-xs">
+                                            <i class="fa fa-pencil"
+                                               aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

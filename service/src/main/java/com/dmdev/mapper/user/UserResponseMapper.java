@@ -8,7 +8,7 @@ import com.dmdev.mapper.Mapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserResponserMapper implements Mapper<User, UserResponseDto> {
+public class UserResponseMapper implements Mapper<User, UserResponseDto> {
 
     @Override
     public UserResponseDto map(User user) {
@@ -19,15 +19,23 @@ public class UserResponserMapper implements Mapper<User, UserResponseDto> {
                 .role(user.getRole())
                 .userDetailsDto(UserDetailsResponseDto.builder()
                         .id(user.getUserDetails().getId())
+                        .userId(user.getUserDetails().getUser().getId())
                         .name(user.getUserDetails().getName())
                         .surname(user.getUserDetails().getSurname())
                         .address(user.getUserDetails().getUserContact().getAddress())
                         .phone(user.getUserDetails().getUserContact().getPhone())
                         .birthday(user.getUserDetails().getBirthday())
+                        .registrationAt(user.getUserDetails().getRegistrationDate())
                         .build())
                 .role(user.getRole())
                 .driverLicenseDto(DriverLicenseResponseDto.builder()
                         .id(user.getUserDetails().getDriverLicenses().iterator().next().getId())
+                        .userId(user.getUserDetails().getDriverLicenses()
+                                .stream()
+                                .limit(1)
+                                .findFirst()
+                                .get()
+                                .getId())
                         .driverLicenseNumber(user.getUserDetails().getDriverLicenses().iterator().next().getNumber())
                         .driverLicenseIssueDate(user.getUserDetails().getDriverLicenses().iterator().next().getIssueDate())
                         .driverLicenseExpiredDate(user.getUserDetails().getDriverLicenses().iterator().next().getExpiredDate())

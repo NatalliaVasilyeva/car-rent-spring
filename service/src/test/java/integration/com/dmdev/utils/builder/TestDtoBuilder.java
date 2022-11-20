@@ -1,13 +1,18 @@
 package integration.com.dmdev.utils.builder;
 
+import com.dmdev.domain.dto.brand.request.BrandCreateEditRequestDto;
+import com.dmdev.domain.dto.category.request.CategoryCreateEditRequestDto;
+import com.dmdev.domain.dto.driverlicense.request.DriverLicenseUpdateRequestDto;
 import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
 import com.dmdev.domain.dto.user.response.UserResponseDto;
+import com.dmdev.domain.dto.userdetails.request.UserDetailsUpdateRequestDto;
 import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
 import com.dmdev.domain.model.Role;
 import lombok.experimental.UtilityClass;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @UtilityClass
@@ -28,6 +33,15 @@ public class TestDtoBuilder {
                 LocalDate.of(2020, 10, 10),
                 LocalDate.of(2030, 10, 10));
     }
+
+    public static BrandCreateEditRequestDto createBrandCreateEditRequestDto() {
+        return new BrandCreateEditRequestDto("toyota");
+    }
+
+    public static CategoryCreateEditRequestDto createCategoryCreateEditRequestDto() {
+        return new CategoryCreateEditRequestDto("super-econome", BigDecimal.valueOf(120L));
+    }
+
 
     public static UserCreateRequestDto createUserCreateRequestDTOWithExistsEmail() {
         return new UserCreateRequestDto(
@@ -69,5 +83,31 @@ public class TestDtoBuilder {
                 "test1@gmal.com",
                 "test",
                 Role.CLIENT);
+    }
+
+    public static UserDetailsUpdateRequestDto createUserDetailsUpdateRequestDTO() {
+        return new UserDetailsUpdateRequestDto(
+                "test",
+                "test",
+                "Minsk",
+                "+37511111111");
+    }
+
+    public static DriverLicenseUpdateRequestDto createDriverLicenseUpdateRequestDTO() {
+        return new DriverLicenseUpdateRequestDto(
+                "aaa",
+                LocalDate.now(),
+                LocalDate.now().plusYears(1));
+    }
+
+    public static BrandCreateEditRequestDto createBrandUpdateRequestDTO() {
+        return new BrandCreateEditRequestDto(
+                "audis");
+    }
+
+    public static CategoryCreateEditRequestDto createCategoryUpdateRequestDto() {
+        return new CategoryCreateEditRequestDto(
+                "super-econome",
+                BigDecimal.valueOf(150L));
     }
 }

@@ -2,7 +2,7 @@
 <form id="sign-in-form" th:action="@{/users/sign-in}" method="post" th:fragment="sign-in">
     <div class="form-group">
         Email
-        <input type="text" name="email" class="form-control" placeholder="email" pattern="[\w-\.]+@([\w-]+\.)+[\w-]{2,4}"
+        <input type="email" name="email" class="form-control" placeholder="email" pattern="[\w-\.]+@([\w-]+\.)+[\w-]{2,4}"
                maxlength="40" title="email"
                autocomplete="off" id="sign-in-login-input" required/>
         <small class="text-danger" id="sign-in-login-error-small"></small>

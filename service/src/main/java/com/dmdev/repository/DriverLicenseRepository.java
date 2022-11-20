@@ -9,18 +9,19 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface DriverLicenseRepository extends JpaRepository<DriverLicense, Long>, QuerydslPredicateExecutor<DriverLicense> {
 
-    Optional<DriverLicense> findByNumberContainingIgnoreCase(String number);
+    List<DriverLicense> findByNumberContainingIgnoreCase(String number);
+
+    boolean existsByNumber(String number);
 
     @Query(value = "SELECT dl " +
             "FROM DriverLicense dl " +
             "JOIN fetch dl.userDetails ud " +
             "JOIN fetch ud.user u " +
             "WHERE u.id  = :id ")
-    Optional<DriverLicense> findByUserId(@Param("id") Long userId);
+    List<DriverLicense> findByUserId(@Param("id") Long userId);
 
     List<DriverLicense> findByExpiredDateLessThanEqual(LocalDate expiredDate);
 

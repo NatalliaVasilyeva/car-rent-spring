@@ -85,8 +85,8 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
         var optionalUserDetails = userDetailsRepository.findByUserId(TestEntityIdConst.TEST_EXISTS_USER_ID);
 
         assertThat(optionalUserDetails).isNotNull();
-        optionalUserDetails.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId()));
-        assertThat(optionalUserDetails).isEqualTo(Optional.of(ExistEntityBuilder.getExistUserDetails()));
+        assertThat(optionalUserDetails.getId()).isEqualTo(ExistEntityBuilder.getExistUserDetails().getId());
+        assertThat(optionalUserDetails).isEqualTo(ExistEntityBuilder.getExistUserDetails());
     }
 
     @Test

@@ -15,11 +15,13 @@ public interface BrandRepository extends JpaRepository<Brand, Long>, QuerydslPre
 
     Optional<Brand> findByNameIgnoringCase(String name);
 
+    boolean existsByNameIgnoringCase(String name);
+
     @EntityGraph(attributePaths = {"models"})
     Optional<Brand> findByName(String name);
 
     @EntityGraph(attributePaths = {"models"})
-    List<Brand> findByNameIn(List<String> names);
+    List<Brand> findByNameInIgnoringCase(List<String> names);
 
     @Query(value = "SELECT b " +
             "FROM Brand b " +
