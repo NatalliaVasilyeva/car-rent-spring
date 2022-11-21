@@ -11,11 +11,13 @@ import com.dmdev.service.exception.UserBadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
+import java.rmi.ServerException;
 import java.time.LocalDate;
 
 @Slf4j
@@ -49,6 +51,19 @@ public class ControllerExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public String handleNotValidException(Exception ex, HttpServletRequest request, Model model) {
+        log.error("Request: " + request.getRequestURL() + " raised " + ex);
+
+        model.addAttribute("timestamp", LocalDate.now());
+        model.addAttribute("url", request.getRequestURL());
+        model.addAttribute("message", ex.getMessage());
+        model.addAttribute("error", ex.getCause());
+
+        return "/error/error400";
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({BrandBadRequestException.class, DriverLicenseBadRequestException.class, OrderBadRequestException.class,
             CategoryBadRequestException.class, UserBadRequestException.class})
     public String handleBadRequestException(Exception ex, HttpServletRequest request, Model model) {
@@ -63,7 +78,7 @@ public class ControllerExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RentCarException.class)
+    @ExceptionHandler(ServerException.class)
     public String handleServerInternalException(Exception ex, HttpServletRequest request, Model model) {
         log.error("Request: " + request.getRequestURL() + " raised " + ex);
 
