@@ -5,13 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletRequest;
 import java.rmi.ServerException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +36,7 @@ public class RestControllerExceptionHandler {
 
 
     @ExceptionHandler(ServerException.class)
-    public ResponseEntity<Map<String, List<String>>> handleServerInternalException(Exception ex, HttpServletRequest request, Model model) {
+    public ResponseEntity<Map<String, List<String>>> handleServerInternalException(ServerException ex) {
         List<String> errors = Collections.singletonList(ex.getMessage());
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
