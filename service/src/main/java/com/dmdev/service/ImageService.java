@@ -1,7 +1,7 @@
 package com.dmdev.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +14,11 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
 
+    @Value("${app.image.bucket: /Users/natallia.vasilyeva/myProjects/car-rent/service/src/main/resources/static/images}")
     private final String bucket;
-
-    @Autowired
-    public ImageService( @Value("${app.image.bucket: /Users/natallia.vasilyeva/myProjects/car-rent/service/src/main/resources/static/images}")String bucket) {
-        this.bucket = bucket;
-    }
 
     @SneakyThrows
     public void upload(String imagePath, InputStream content) {
