@@ -110,7 +110,7 @@ class UserServiceTestIT extends IntegrationBaseTest {
         assertThat(actualUser).isNotNull();
         actualUser.ifPresent(user -> {
             assertEquals(userUpdateRequestDto.getEmail(), user.getEmail());
-            assertEquals(userUpdateRequestDto.getLogin(), user.getLogin());
+            assertEquals(userUpdateRequestDto.getUsername(), user.getLogin());
             assertSame(userUpdateRequestDto.getRole(), user.getRole());
         });
     }

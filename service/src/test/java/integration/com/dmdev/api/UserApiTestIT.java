@@ -163,7 +163,7 @@ class UserApiTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                                 .param("email", userUpdateRequestDTO.getEmail())
-                                .param("login", userUpdateRequestDTO.getLogin())
+                                .param("login", userUpdateRequestDTO.getUsername())
                                 .param("role", userUpdateRequestDTO.getRole().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT + "/" + expected.getId()));

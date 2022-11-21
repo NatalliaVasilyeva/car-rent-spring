@@ -15,6 +15,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -37,8 +38,13 @@ public class UserApi {
     private final UserService userService;
 
     @PostMapping()
-    public String create(@ModelAttribute("registration") UserCreateRequestDto userCreateRequestDto,
+    public String create(@ModelAttribute("registration") UserCreateRequestDto userCreateRequestDto, BindingResult bindingResult,
                          RedirectAttributes redirectedAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectedAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+            return "redirect:/welcome";
+        }
         return userService.create(userCreateRequestDto)
                 .map(user -> {
                     redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "Your registration was successfully. Please login");
