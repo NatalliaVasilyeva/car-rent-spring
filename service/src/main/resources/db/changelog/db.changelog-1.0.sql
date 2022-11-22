@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset natallia.vasilyeva:db.changelog-1.0 splitStatements:false logicalFilePath:classpath:/db/changelog/db.changelog-1.0.sql runOnChange:true
+--changeset natallia.vasilyeva:db.changelog-1.0 splitStatements:false logicalFilePath:classpath:/db/changelog/db.changelog-1.0.sql
 
 --Brand
 CREATE TABLE IF NOT EXISTS brand (
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS car (
 --User
 CREATE TABLE IF NOT EXISTS users (
     id       BIGSERIAL PRIMARY KEY,
-    login    VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL UNIQUE,
     email    VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role     VARCHAR(32)  NOT NULL DEFAULT 'CLIENT'

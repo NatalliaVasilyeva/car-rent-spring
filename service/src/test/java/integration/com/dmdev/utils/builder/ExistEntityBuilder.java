@@ -110,7 +110,7 @@ public class ExistEntityBuilder {
     public static User getExistUser() {
         return User.builder()
                 .id(TestEntityIdConst.TEST_EXISTS_USER_ID)
-                .login("Client")
+                .username("Client")
                 .email("client@gmail.com")
                 .password("VasilechekBel123!")
                 .role(Role.CLIENT)

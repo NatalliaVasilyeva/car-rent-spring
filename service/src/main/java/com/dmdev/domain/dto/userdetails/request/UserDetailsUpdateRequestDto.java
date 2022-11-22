@@ -1,14 +1,11 @@
 package com.dmdev.domain.dto.userdetails.request;
 
-import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import javax.validation.constraints.Pattern;
 
 @Value
-@Builder
 public class UserDetailsUpdateRequestDto {
 
     @NotEmpty
@@ -21,8 +18,6 @@ public class UserDetailsUpdateRequestDto {
     String address;
 
     @NotEmpty
+    @Pattern(regexp = "(\\+?(375|80)?\\s?)?\\(?(17|29|33|44|25)\\)?\\s?(\\d{3})[-|\\s]?(\\d{2})[-|\\s]?(\\d{2})")
     String phone;
-
-    @NotNull
-    LocalDate birthday;
 }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <script type="text/javascript" th:src="@{/js/category/category.js}"></script>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<script th:inline="javascript">
+    function editCategory(e) {
+        var name = document.getElementById("category-name-input").value;
+        var brandArray = [[${existsCategories}]];
+        if (brandArray.includes(name)) {
+            e.preventDefault();
+            $("#category-name-input").addClass("is-invalid");
+            $("#edit-category-error-small").text("category already exist");
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-12">
+            <form id="user-details-form"
+                  th:action="@{/categories/{categoryId}/update(categoryId=${category.id})}"
+                  method="POST" th:object="${category}">
+                <div class="card mb-4">
+                    <div class="card-header">Category info</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="category-id-input" class="col-2 col-form-label">
+                                Id:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="category-id-input" name="id"
+                                       th:value="*{id}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="category-name-input" class="col-2 col-form-label">
+                                Name:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="category-name-input" name="name"
+                                       th:value="*{name}" readonly/>
+                                <small class="text-danger" id="edit-category-error-small"></small>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="category-price-input" class="col-2 col-form-label">
+                                Name:
+                            </label>
+                            <div class="col-10">
+                                <input type="number" class="form-control" id="category-price-input" name="price"
+                                       th:value="*{price}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="edit-category-button-div">
+                            <input type="button"
+                                   class="from-control btn btn-light btn-lg btn-block"
+                                   onclick="MakeEditableCategory()"
+                                   value="Edit">
+                        </div>
+                        <div class="form-group row" id="edit-manage-category-buttons-div"
+                             style="display: none">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-8">
+                                <input type="submit" class="btn btn-primary" value="Save Changes" onsubmit="editCategory(event)">
+                                <span></span>
+                                <input type="reset" class="btn btn-default" onclick="MakeUnEditableCategory()"
+                                       value="Cancel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

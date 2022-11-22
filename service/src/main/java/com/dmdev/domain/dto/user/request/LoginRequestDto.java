@@ -10,8 +10,7 @@ import javax.validation.constraints.Size;
 public class LoginRequestDto {
 
     @NotEmpty
-    @Email
-    String email;
+    String username;
 
     @NotEmpty
     @Size(min = 8, message = "Password should have at least 8 characters")

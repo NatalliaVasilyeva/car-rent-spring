@@ -36,13 +36,7 @@ class UserApiTestIT extends IntegrationBaseTest {
 
     private final UserService userService;
     private final MockMvc mockMvc;
-    private HttpHeaders commonHeaders;
-
-    @BeforeEach
-    void beforeEachSetUp() {
-
-        commonHeaders = new HttpHeaders();
-    }
+    private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
@@ -66,7 +60,7 @@ class UserApiTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                                 .param("email", userCreateRequestDTO.getEmail())
-                                .param("login", userCreateRequestDTO.getLogin())
+                                .param("username", userCreateRequestDTO.getUsername())
                                 .param("password", userCreateRequestDTO.getPassword())
                                 .param("name", userCreateRequestDTO.getName())
                                 .param("surname", userCreateRequestDTO.getSurname())
@@ -113,7 +107,7 @@ class UserApiTestIT extends IntegrationBaseTest {
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("email", "client@gmail.com")
+                                .param("username", "test")
                                 .param("password", "test"))
                 .andExpect(status().isUnauthorized());
     }
@@ -130,7 +124,7 @@ class UserApiTestIT extends IntegrationBaseTest {
                         .headers(commonHeaders)
                         .accept(MediaType.TEXT_HTML)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                        .param("email", userCreateRequestDTO.getEmail())
+                        .param("username", userCreateRequestDTO.getUsername())
                         .param("password", userCreateRequestDTO.getPassword()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/welcome"));
@@ -163,7 +157,7 @@ class UserApiTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                                 .param("email", userUpdateRequestDTO.getEmail())
-                                .param("login", userUpdateRequestDTO.getLogin())
+                                .param("username", userUpdateRequestDTO.getUsername())
                                 .param("role", userUpdateRequestDTO.getRole().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT + "/" + expected.getId()));
@@ -232,7 +226,7 @@ class UserApiTestIT extends IntegrationBaseTest {
         UserResponseDto responseDto = (UserResponseDto) result.getModelAndView().getModel().get("user");
 
         assertThat(responseDto.getId()).isEqualTo(id);
-        assertThat(responseDto.getLogin()).isEqualTo(expected.getLogin());
+        assertThat(responseDto.getUsername()).isEqualTo(expected.getUsername());
         assertThat(responseDto.getEmail()).isEqualTo(expected.getEmail());
         assertThat(responseDto.getRole()).isEqualTo(expected.getRole());
 

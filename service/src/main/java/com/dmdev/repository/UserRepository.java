@@ -2,6 +2,8 @@ package com.dmdev.repository;
 
 import com.dmdev.domain.entity.User;
 import com.dmdev.domain.model.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,9 +16,10 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredicateExecutor<User> {
 
+    Optional<User> findByUsernameAndPassword(String username, String password);
     Optional<User> findByEmailAndPassword(String email, String password);
 
-    boolean existsByEmailAndPassword(String email, String password);
+    boolean existsByUsernameAndPassword(String email, String password);
 
     Optional<User> findByEmail(String email);
 
@@ -24,13 +27,18 @@ public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredi
 
     boolean existsByEmail(String email);
 
-    boolean existsByLogin(String login);
-
     @Query(value = "SELECT u " +
             "FROM User u " +
             "JOIN fetch u.userDetails ud " +
             "WHERE ud.registrationDate  = :registrationDate")
     List<User> findAllByRegistrationDate(@Param("registrationDate") LocalDate registrationDate);
+
+    @Query(value = "SELECT u " +
+            "FROM User u " +
+            "JOIN u.userDetails ud " +
+            "JOIN ud.driverLicenses dl " +
+            "WHERE dl.expiredDate  < :driverLicenseExpiredDate")
+    Page<User> findAllWithExpiredDriverLicense(@Param("driverLicenseExpiredDate") LocalDate driverLicenseExpiredDate, Pageable pageable);
 
     @Query(value = "SELECT u " +
             "FROM User u " +
@@ -49,4 +57,6 @@ public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredi
             "FROM User u " +
             "WHERE u.orders.size = 0")
     List<User> findAllWithoutOrders();
+
+    boolean existsByUsername(String username);
 }

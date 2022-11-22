@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <script type="text/javascript" th:src="@{/js/user/user-details.js}"></script>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-12">
+            <form id="user-details-form"
+                  th:action="@{/user-details/{userDetailsId}/update(userDetailsId=${userDetails.id})}"
+                  method="POST" th:object="${userDetails}">
+                <div class="card mb-4">
+                    <div class="card-header">User details info</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="user-details-id-input" class="col-2 col-form-label">
+                                Id:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-id-input" name="id"
+                                       th:value="*{id}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-user-id-input" class="col-2 col-form-label">
+                                User id:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-user-id-input" name="userId"
+                                       th:value="*{userId}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-name-input" class="col-2 col-form-label">
+                                Name:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-name-input" name="name"
+                                       th:value="*{name}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-surname-input" class="col-2 col-form-label">
+                                Surname:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-surname-input" name="surname"
+                                       th:value="*{surname}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-address-input" class="col-2 col-form-label">
+                                Address:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-address-input" name="address"
+                                       th:value="*{address}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-phone-input" class="col-2 col-form-label">
+                                Phone:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-phone-input" name="phone"
+                                       th:value="*{phone}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-birthday-input" class="col-2 col-form-label">
+                                Birthday:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-birthday-input" name="birthday"
+                                       th:value="*{birthday}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="user-details-registration-input" class="col-2 col-form-label">
+                                Registration date:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="user-details-registration-input"
+                                       name="registrationAt"
+                                       th:value="*{registrationAt}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="edit-user-details-button-div">
+                            <input type="button"
+                                   class="from-control btn btn-light btn-lg btn-block"
+                                   onclick="MakeEditableDetails()"
+                                   value="Edit">
+                        </div>
+                        <div class="form-group row" id="edit-manage-user-details-buttons-div"
+                             style="display: none">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-8">
+                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <span></span>
+                                <input type="reset" class="btn btn-default" onclick="MakeUnEditableDetails()"
+                                       value="Cancel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

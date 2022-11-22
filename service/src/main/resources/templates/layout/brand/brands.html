@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <script type="text/javascript" th:src="@{/js/brand/brand.js}"></script>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+
+
+<body>
+<div th:replace="layout/header/header :: header"/>
+<div class="container-fluid">
+    <div>
+        <div class="container my-5">
+            <div class="form-group row">
+                <span th:size="16" class="mr-2">Search by name</span>
+                <button
+                        class="from-control btn btn-light btn-lg btn-block"
+                        onclick="ShowSearchByNameForm()">Search
+                </button>
+            </div>
+            <div class="row" id="search-name-form" style="display: none">
+                <form th:action="@{/brands/by-name}" method="get">
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name">Name:</label>
+                            <input class="form-control" id="name" type="text" name="name">
+                        </div>
+                    </div>
+                    <div class="col-md-8 mb-3 content-center">
+                        <button type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="container my-5">
+            <div class="form-group row">
+                <span th:size="16" class="mr-2">Search by names</span>
+                <button
+                        class="from-control btn btn-light btn-lg btn-block"
+                        onclick="ShowSearchByNamesForm()">Search
+                </button>
+            </div>
+            <div id="search-names-form" style="display: none">
+                <form th:action="@{/brands/by-names}" method="get">
+                    <div class="form-check form-check-inline">
+                        <th:block th:each="brand : ${brandNames}">
+                            <input class="form-check-input" type="checkbox" name="names" th:value="${brand}"/>
+                            <label class="form-check-label" th:text="${brand}"></label>
+                        </th:block>
+                        </td>
+                        <button class="btn btn-light mb-2" type="submit">Search</button>
+                    </div>
+<!--                    <div class="col-md-8 mb-3 content-center">-->
+<!--                        <button type="submit">Search</button>-->
+<!--                    </div>-->
+                </form>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="container my-5">
+            <div class="form-group row">
+                <span th:size="16" class="mr-2">Search all full view</span>
+            </div>
+            <div class="col-md-8 mb-3 content-center" id="search-all-full-view-form">
+                <a th:href="@{/brands/all-full-view}" class="btn btn-secondary btn-lg" role="button"
+                   aria-pressed="true">Search</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span th:if="${#lists.isEmpty(brandPage.content)}">There are not available brands!</span>
+
+<div th:if="${not #lists.isEmpty(brandPage.content)}">
+    <div class="container-fluid col">
+        <div class="col-lg-auto">
+            <div class="panel panel-default">
+                <h3 class="text-center">Brands list</h3>
+                <div class="panel-body table-responsive">
+                    <table class="table table-condensed table-striped text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Models</th>
+                            <th scope="col" colspan="2">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="brand, iStat: ${brandPage.content}"
+                                  th:style="${iStat.odd}? 'font-weight: bold;'"
+                                  th:alt-title="${iStat.even}? 'even' : 'odd'">
+                            <tr scope="row">
+                                <td th:text="${brand.id}"></td>
+                                <td th:text="${brand.name}"></td>
+                                <td>
+                                    <div class="form-group row" th:each="model : ${brand.models}">
+                                        <a th:href="@{'/model/' + ${model.id}}"
+                                           th:text="|${model.name} - ${model.transmission.name()} - ${model.engineType.name()}|">See
+                                            model</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group row">
+                                        <form th:action="@{/brands/{brandId}/delete(brandId=${brand.id})}"
+                                              method="post">
+                                            <button class="btn btn-dark btn-xs">
+                                                <i class="fa fa-trash"
+                                                   aria-hidden="true"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="form-group row">
+                                        <form th:action="@{/brands/{brandId}(brandId=${brand.id})}"
+                                              method="get">
+                                            <button class="btn btn-dark btn-xs">
+                                                <i class="fa fa-pencil"
+                                                   aria-hidden="true"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- pagination -->
+                <!--                <nav aria-label="Pagination" th:if="${brandPage.totalPages gt 0}">-->
+                <!--                    <ul class="pagination justify-content-center font-weight-bold">-->
+                <!--                        <li class="page-item" th:classappend="${brandPage.number eq 0} ? 'disabled'">-->
+                <!--                            <a class="page-link"-->
+                <!--                               th:href="@{/brands(page=${brandPage.number lt 2 ? 1 : brandPage.number})}"-->
+                <!--                               aria-label="Previous" title="Previous Page" data-toggle="tooltip">-->
+                <!--                                <span aria-hidden="true">&laquo;</span>-->
+                <!--                            </a>-->
+                <!--                        </li>-->
+                <!--                        <li class="page-item" th:classappend="${i eq brandPage.number + 1} ? 'active'"-->
+                <!--                            th:each="i : ${#numbers.sequence( 1, brandPage.totalPages, 1)}">-->
+                <!--                            <a class="page-link" th:href="@{/brands(page=${i})}" th:text="${i}"-->
+                <!--                               th:title="${'Page '+ i}" data-toggle="tooltip"></a>-->
+                <!--                        </li>-->
+                <!--                        <li class="page-item"-->
+                <!--                            th:classappend="${brandPage.number + 1 eq brandPage.totalPages} ? 'disabled'">-->
+                <!--                            <a class="page-link"-->
+                <!--                               th:href="@{/brands(page=${brandPage.number + 2})}"-->
+                <!--                               aria-label="Next" title="Next Page" data-toggle="tooltip">-->
+                <!--                                <span aria-hidden="true">&raquo;</span>-->
+                <!--                            </a>-->
+                <!--                        </li>-->
+                <!--                    </ul>-->
+                <!--                </nav>-->
+                <div th:if="${brandPage.totalPages > 0}" class="pagination"
+                     th:each="pageNumber : ${pageNumbers}">
+                    <a th:href="@{/brands(page=${pageNumber})}"
+                       th:text="${pageNumber}"
+                       th:class="${pageNumber==brandPage.number + 1} ? active"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

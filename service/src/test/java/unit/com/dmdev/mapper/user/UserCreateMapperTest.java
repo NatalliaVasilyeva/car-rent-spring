@@ -3,9 +3,9 @@ package unit.com.dmdev.mapper.user;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.domain.entity.UserDetails;
-import com.dmdev.mapper.user.DriverLicenseCreateMapper;
+import com.dmdev.mapper.user.DriverLicenseFromUserCreateMapper;
 import com.dmdev.mapper.user.UserCreateMapper;
-import com.dmdev.mapper.user.UserDetailsCreateMapper;
+import com.dmdev.mapper.user.UserDetailsFromUserCreateMapper;
 import com.dmdev.utils.SecurityUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +22,10 @@ import static org.mockito.Mockito.when;
 class UserCreateMapperTest {
 
     @Mock
-    UserDetailsCreateMapper userDetailsCreateMapper;
+    UserDetailsFromUserCreateMapper userDetailsCreateMapper;
 
     @Mock
-    DriverLicenseCreateMapper driverLicenseCreateMapper;
+    DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
 
     @InjectMocks
     UserCreateMapper userCreateMapper;
@@ -36,7 +36,7 @@ class UserCreateMapperTest {
         var createUserRequestDto = new UserCreateRequestDto(
                 "test@gmail.com", "test", "test",
                 "vasia", "pupkin", "minsk",
-                "+37529111111111", LocalDate.now().minusYears(20),
+                "+37529111-11-11", LocalDate.now().minusYears(20),
                 "ak874", LocalDate.now().minusYears(6), LocalDate.now().plusYears(4)
         );
         when(userDetailsCreateMapper.map(createUserRequestDto)).thenReturn(UserDetails.builder().build());
@@ -45,7 +45,7 @@ class UserCreateMapperTest {
         var actualResult = userCreateMapper.map(createUserRequestDto);
 
         assertEquals(actualResult.getEmail(), createUserRequestDto.getEmail());
-        assertEquals(actualResult.getLogin(), createUserRequestDto.getLogin());
-        assertEquals(actualResult.getPassword(), SecurityUtils.securePassword(createUserRequestDto.getEmail(), createUserRequestDto.getPassword()));
+        assertEquals(actualResult.getUsername(), createUserRequestDto.getUsername());
+        assertEquals(actualResult.getPassword(), SecurityUtils.securePassword(createUserRequestDto.getUsername(), createUserRequestDto.getPassword()));
     }
 }

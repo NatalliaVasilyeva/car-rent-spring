@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor
 class UserServiceTestIT extends IntegrationBaseTest {
 
-    private  final UserService userService;
+    private final UserService userService;
 
     @Test
     void shouldSaveUserCorrectly() {
@@ -38,7 +38,7 @@ class UserServiceTestIT extends IntegrationBaseTest {
         assertEquals(userCreateRequestDTO.getName(), actualUser.get().getUserDetailsDto().getName());
         assertEquals(userCreateRequestDTO.getSurname(), actualUser.get().getUserDetailsDto().getSurname());
         assertEquals(userCreateRequestDTO.getEmail(), actualUser.get().getEmail());
-        assertEquals(userCreateRequestDTO.getLogin(), actualUser.get().getLogin());
+        assertEquals(userCreateRequestDTO.getUsername(), actualUser.get().getUsername());
         assertEquals(userCreateRequestDTO.getDriverLicenseNumber(), actualUser.get().getDriverLicenseDto().getDriverLicenseNumber());
         assertSame(Role.CLIENT, actualUser.get().getRole());
     }
@@ -49,13 +49,13 @@ class UserServiceTestIT extends IntegrationBaseTest {
 
         var result = assertThrowsExactly(UserBadRequestException.class, () -> userService.create(userCreateRequestDTO));
 
-        assertEquals("400 BAD_REQUEST \"User with email 'admin@gmail.com' already exists\"", result.getMessage());
+        assertEquals("400 BAD_REQUEST \"User with this email admin@gmail.com already exist.\"", result.getMessage());
     }
 
 
     @Test
     void shouldFindAllUsers() {
-        Page<UserResponseDto> users = userService.getAll(0, 4);
+        Page<UserResponseDto> users = userService.getAll(UserFilter.builder().build(), 0, 4);
 
         assertThat(users.getContent()).hasSize(2);
         assertThat(users.getTotalElements()).isEqualTo(2L);
@@ -74,14 +74,14 @@ class UserServiceTestIT extends IntegrationBaseTest {
                 .email(userCreateRequestDto.getEmail())
                 .build();
 
-        Page<UserResponseDto> users = userService.getAllByFilter(userFilter, 0, 4);
+        Page<UserResponseDto> users = userService.getAll(userFilter, 0, 4);
 
         assertThat(users.getContent()).hasSize(1);
         assertThat(users.getTotalElements()).isEqualTo(1L);
         assertThat(users.getNumberOfElements()).isEqualTo(1L);
 
         assertThat(users.getContent().get(0).getEmail()).isEqualTo(userResponseDto.get().getEmail());
-        assertThat(users.getContent().get(0).getLogin()).isEqualTo(userResponseDto.get().getLogin());
+        assertThat(users.getContent().get(0).getUsername()).isEqualTo(userResponseDto.get().getUsername());
         assertThat(users.getContent().get(0).getUserDetailsDto().getAddress()).isEqualTo(userResponseDto.get().getUserDetailsDto().getAddress());
     }
 
@@ -110,7 +110,7 @@ class UserServiceTestIT extends IntegrationBaseTest {
         assertThat(actualUser).isNotNull();
         actualUser.ifPresent(user -> {
             assertEquals(userUpdateRequestDto.getEmail(), user.getEmail());
-            assertEquals(userUpdateRequestDto.getLogin(), user.getLogin());
+            assertEquals(userUpdateRequestDto.getUsername(), user.getUsername());
             assertSame(userUpdateRequestDto.getRole(), user.getRole());
         });
     }

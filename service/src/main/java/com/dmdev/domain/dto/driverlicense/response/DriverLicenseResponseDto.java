@@ -12,6 +12,10 @@ public class DriverLicenseResponseDto {
 
     @NotEmpty
     Long id;
+
+    @NotEmpty
+    Long userId;
+
     String driverLicenseNumber;
     LocalDate driverLicenseIssueDate;
     LocalDate driverLicenseExpiredDate;

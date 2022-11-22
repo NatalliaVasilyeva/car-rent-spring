@@ -1,11 +1,11 @@
 
 <form id="sign-in-form" th:action="@{/users/sign-in}" method="post" th:fragment="sign-in">
     <div class="form-group">
-        Email
-        <input type="text" name="email" class="form-control" placeholder="email" pattern="[\w-\.]+@([\w-]+\.)+[\w-]{2,4}"
-               maxlength="40" title="email"
-               autocomplete="off" id="sign-in-login-input" required/>
-        <small class="text-danger" id="sign-in-login-error-small"></small>
+        Username
+        <input type="username" name="username" class="form-control" placeholder="username"
+               maxlength="40" title="username"
+               autocomplete="off" id="sign-in-username-input" required/>
+        <small class="text-danger" id="sign-in-username-error-small"></small>
     </div>
     <div class="form-group">
         Password

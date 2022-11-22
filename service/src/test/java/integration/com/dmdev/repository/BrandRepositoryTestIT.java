@@ -89,7 +89,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldFindByNameIn() {
         var expectedBrand = ExistEntityBuilder.getExistBrand();
-        List<Brand> actualBrands = brandRepository.findByNameIn(List.of("mercedes"));
+        List<Brand> actualBrands = brandRepository.findByNameInIgnoringCase(List.of("mercedes"));
         assertThat(actualBrands).hasSize(1);
         assertEquals(expectedBrand, actualBrands.get(0));
     }
@@ -104,7 +104,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindAllBrandFullView() {
-        List<BrandFullView> brands = brandRepository.findAllFull();
+        List<BrandFullView> brands = brandRepository.findAllFullView();
         assertThat(brands).hasSize(2);
 
         List<BigDecimal> prices = brands.stream()
@@ -117,7 +117,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindByIdBrandFullView() {
-        BrandFullView brand = brandRepository.findByIdAllFull(TEST_EXISTS_BRAND_ID).get();
+        BrandFullView brand = brandRepository.findAllByIdFullView(TEST_EXISTS_BRAND_ID).get();
 
         assertThat(brand.getName()).isEqualTo("mercedes");
         assertThat(brand.getModels()).hasSize(1);
@@ -126,7 +126,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindAllByNameBrandFullView() {
-        List<BrandFullView> brands = brandRepository.findByNameAllFull("mercedes");
+        List<BrandFullView> brands = brandRepository.findAllByNameFullView("mercedes");
 
         List<BigDecimal> prices = brands.stream()
                 .map(BrandFullView::getModels)
@@ -138,7 +138,7 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindAllByNameInBrandFullView() {
-        List<BrandFullView> actualBrands = brandRepository.findByNameAllFullInIgnoringCase(List.of("mercedes", "reno"));
+        List<BrandFullView> actualBrands = brandRepository.findAllByNameFullViewInIgnoringCase(List.of("mercedes", "reno"));
 
         assertThat(actualBrands).hasSize(1);
 

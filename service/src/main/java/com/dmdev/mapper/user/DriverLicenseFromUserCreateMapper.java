@@ -5,9 +5,8 @@ import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.mapper.Mapper;
 import org.springframework.stereotype.Component;
 
-
 @Component
-public class DriverLicenseCreateMapper implements Mapper<UserCreateRequestDto, DriverLicense> {
+public class DriverLicenseFromUserCreateMapper implements Mapper<UserCreateRequestDto, DriverLicense> {
 
     @Override
     public DriverLicense map(UserCreateRequestDto requestDto) {

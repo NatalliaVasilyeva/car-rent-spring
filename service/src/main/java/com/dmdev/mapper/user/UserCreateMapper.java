@@ -11,17 +11,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserCreateMapper implements Mapper<UserCreateRequestDto, User> {
 
-    private final  UserDetailsCreateMapper userDetailsCreateMapper;
-    private final DriverLicenseCreateMapper driverLicenseCreateMapper;
+    private final UserDetailsFromUserCreateMapper userDetailsCreateMapper;
+    private final DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
 
     @Override
     public User map(UserCreateRequestDto requestDto) {
         var driverLicense = driverLicenseCreateMapper.map(requestDto);
         var userDetails = userDetailsCreateMapper.map(requestDto);
         var user = User.builder()
-                .login(requestDto.getLogin())
+                .username(requestDto.getUsername())
                 .email(requestDto.getEmail())
-                .password(SecurityUtils.securePassword(requestDto.getEmail(), requestDto.getPassword()))
+                .password(SecurityUtils.securePassword(requestDto.getUsername(), requestDto.getPassword()))
                 .build();
         userDetails.setUser(user);
         userDetails.setDriverLicense(driverLicense);

@@ -15,32 +15,34 @@ public interface BrandRepository extends JpaRepository<Brand, Long>, QuerydslPre
 
     Optional<Brand> findByNameIgnoringCase(String name);
 
+    boolean existsByNameIgnoringCase(String name);
+
     @EntityGraph(attributePaths = {"models"})
     Optional<Brand> findByName(String name);
 
     @EntityGraph(attributePaths = {"models"})
-    List<Brand> findByNameIn(List<String> names);
+    List<Brand> findByNameInIgnoringCase(List<String> names);
 
     @Query(value = "SELECT b " +
             "FROM Brand b " +
             "JOIN fetch b.models")
-    List<BrandFullView> findAllFull();
+    List<BrandFullView> findAllFullView();
 
     @Query(value = "SELECT b " +
             "FROM Brand b " +
             "JOIN fetch b.models " +
             "WHERE b.id = :id")
-    Optional<BrandFullView> findByIdAllFull(@Param("id") Long brandId);
+    Optional<BrandFullView> findAllByIdFullView(@Param("id") Long brandId);
 
     @Query(value = "SELECT b " +
             "FROM Brand b " +
             "JOIN fetch b.models " +
             "WHERE lower(b.name) = lower(:name)")
-    List<BrandFullView> findByNameAllFull(@Param("name") String name);
+    List<BrandFullView> findAllByNameFullView(@Param("name") String name);
 
     @Query(value = "SELECT b " +
             "FROM Brand b " +
             "JOIN fetch b.models " +
             "WHERE b.name IN :names")
-    List<BrandFullView> findByNameAllFullInIgnoringCase(@Param("names") List<String> names);
+    List<BrandFullView> findAllByNameFullViewInIgnoringCase(@Param("names") List<String> names);
 }

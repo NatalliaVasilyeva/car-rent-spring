@@ -12,7 +12,6 @@ import integration.com.dmdev.utils.builder.ExistEntityBuilder;
 import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -150,7 +149,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
                 .categoryName("dummy")
                 .build();
 
-        Iterable cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
+        Iterable<Car> cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
 
         assertThat(cars).isEmpty();
     }

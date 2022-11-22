@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <script type="text/javascript" th:src="@{/js/user/driver-license.js}"></script>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-12">
+            <form id="user-details-form"
+                  th:action="@{/driver-licenses/{driverLicenseId}/update(driverLicenseId=${driverLicense.id})}"
+                  method="POST" th:object="${driverLicense}">
+                <div class="card mb-4">
+                    <div class="card-header">Driver license info</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="driver-license-id-input" class="col-2 col-form-label">
+                                Id:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="driver-license-id-input" name="id"
+                                       th:value="*{id}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="driver-license-user-id-input" class="col-2 col-form-label">
+                                User id:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="driver-license-user-id-input" name="userId"
+                                       th:value="*{userId}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="driver-license-driverLicenseNumber-input" class="col-2 col-form-label">
+                                Number:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" id="driver-license-driverLicenseNumber-input" name="driverLicenseNumber"
+                                       th:value="*{driverLicenseNumber}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="driver-license-driverLicenseIssueDate-input" class="col-2 col-form-label">
+                                Issue date:
+                            </label>
+                            <div class="col-10">
+                                <input type="date" class="form-control" id="driver-license-driverLicenseIssueDate-input" name="driverLicenseIssueDate"
+                                       th:value="*{driverLicenseIssueDate}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="driver-license-driverLicenseExpiredDate-input" class="col-2 col-form-label">
+                                Expired date:
+                            </label>
+                            <div class="col-10">
+                                <input type="date" class="form-control" id="driver-license-driverLicenseExpiredDate-input" name="driverLicenseExpiredDate"
+                                       th:value="*{driverLicenseExpiredDate}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="edit-driver-license-details-button-div">
+                            <input type="button"
+                                   class="from-control btn btn-light btn-lg btn-block"
+                                   onclick="MakeEditableDetails()"
+                                   value="Edit">
+
+                            <a th:href="@{'/users/' + *{userId}}" class="from-control btn btn-light btn-lg btn-block" role="button"
+                               th:text="|See more info about user|">See info about user</a>
+                        </div>
+
+                        <div class="form-group row" id="edit-manage-driver-license-buttons-div"
+                             style="display: none">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-8">
+                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <span></span>
+                                <input type="reset" class="btn btn-default" onclick="MakeUnEditableDetails()"
+                                       value="Cancel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

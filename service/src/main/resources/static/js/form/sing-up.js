@@ -1,5 +1,5 @@
 const CheckFields = () => {
-    let login = $("#sign-up-login-input").val();
+    let username = $("#sign-up-username-input").val();
     let name = $("#sign-up-first-name-input").val();
     let surname = $("#sign-up-surname-input").val();
     let email = $("#sign-up-email-input").val();
@@ -12,16 +12,16 @@ const CheckFields = () => {
     let password = $("#sign-up-password-input").val();
     let repeat_password = $("#sign-up-confirm-password-input").val();
 
-    const isValid = validateSignUpForm(login, name, surname, email, phone, address, birthday, license_number, issue_date, expired_date, password, repeat_password);
+    const isValid = validateSignUpForm(username, name, surname, email, phone, address, birthday, license_number, issue_date, expired_date, password, repeat_password);
     if (!isValid) {
         return;
     }
 };
 
-function validateSignUpForm(login, name, surname, email, phone, address, birthday, driverLicenseNumber, driverLicenseIssueDate, driverLicenseExpiredDate, password, repeat_password) {
+function validateSignUpForm(username, name, surname, email, phone, address, birthday, driverLicenseNumber, driverLicenseIssueDate, driverLicenseExpiredDate, password, repeat_password) {
     let errorMessage = {};
-    if (!login) {
-        errorMessage.login = "Login is empty";
+    if (!username) {
+        errorMessage.username = "Username is empty";
     }
     if (!name) {
         errorMessage.name = "First name is empty";
@@ -60,13 +60,13 @@ function validateSignUpForm(login, name, surname, email, phone, address, birthda
         errorMessage.password = "Password and Confirm Password do not match";
         errorMessage.repeat_password = "Password and Confirm Password do not match";
     }
-    showSignUpErrors(errorMessage.login, errorMessage.name, errorMessage.surname, errorMessage.email, errorMessage.phone,
+    showSignUpErrors(errorMessage.username, errorMessage.name, errorMessage.surname, errorMessage.email, errorMessage.phone,
         errorMessage.address, errorMessage.birthday, errorMessage.driverLicenseNumber, errorMessage.driverLicenseIssueDate, errorMessage.driverLicenseExpiredDate, errorMessage.password, errorMessage.repeat_password);
     return $.isEmptyObject(errorMessage);
 }
 
-function showSignUpErrors(loginMsg, nameMsg, surnameMsg, emailMsg, phoneMsg, addressMsg, birthdayMsg, driverNumberMsg, issueDateMsg, expireDateMsg, passwordMsg, repeat_passwordMsg) {
-    showOneError($("#sign-up-login-input"), $("#sign-up-login-error-small"), loginMsg);
+function showSignUpErrors(usernameMsg, nameMsg, surnameMsg, emailMsg, phoneMsg, addressMsg, birthdayMsg, driverNumberMsg, issueDateMsg, expireDateMsg, passwordMsg, repeat_passwordMsg) {
+    showOneError($("#sign-up-username-input"), $("#sign-up-username-error-small"), usernameMsg);
     showOneError($("#sign-up-first-name-input"), $("#sign-up-first-name-error-small"), nameMsg);
     showOneError($("#sign-up-surname-input"), $("#sign-up-surname-error-small"), surnameMsg);
     showOneError($("#sign-up-email-input"), $("#sign-up-email-error-small"), emailMsg);
@@ -91,8 +91,8 @@ function showOneError(input, error, msg) {
 }
 
 function clearSignUpInput() {
-    let logInput = $("#sign-up-login-input");
-    let logError = $("#sign-up-login-error-small");
+    let logInput = $("#sign-up-username-input");
+    let logError = $("#sign-up-username-error-small");
     let nameInput = $("#sign-up-first-name-input");
     let nameError = $("#sign-up-first-name-error-small");
     let lastnameInput = $("#sign-up-surname-input");
