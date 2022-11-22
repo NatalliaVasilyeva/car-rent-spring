@@ -14,7 +14,7 @@ public class UserResponseDto {
 
     @NotEmpty
     long id;
-    String login;
+    String username;
     String email;
     Role role;
     UserDetailsResponseDto userDetailsDto;

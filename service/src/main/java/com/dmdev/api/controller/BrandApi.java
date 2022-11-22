@@ -40,10 +40,7 @@ public class BrandApi {
     @GetMapping("/create")
     public String createBrand(Model model, @ModelAttribute BrandCreateEditRequestDto brand) {
         model.addAttribute("brand", brand);
-        model.addAttribute("existsBrands", brandService.getAll()
-                .stream()
-                .map(BrandResponseDto::getName)
-                .collect(toList()));
+        model.addAttribute("brands", brandService.getAll());
         return "layout/brand/create-brand";
     }
 
@@ -70,10 +67,7 @@ public class BrandApi {
         return brandService.getById(id)
                 .map(brand -> {
                     model.addAttribute("brand", brand);
-                    model.addAttribute("existsBrands", brandService.getAll()
-                            .stream()
-                            .map(BrandResponseDto::getName)
-                            .collect(toList()));
+                    model.addAttribute("brands", brandService.getAll());
                     return "layout/brand/brand";
                 })
                 .orElseThrow(() -> new NotFoundException(String.format("Brand with id %s does not exist.", id)));
@@ -85,10 +79,7 @@ public class BrandApi {
                 .map(brand -> {
                     Page<BrandResponseDto> brandPage = new PageImpl<>(List.of(brand));
                     model.addAttribute("brandPage", brandPage);
-                    model.addAttribute("brandNames", brandService.getAll()
-                            .stream()
-                            .map(BrandResponseDto::getName)
-                            .collect(toList()));
+                    model.addAttribute("brands", brandService.getAll());
                     return "layout/brand/brands";
                 })
                 .orElseThrow(() -> new NotFoundException(String.format("Brand with name %s does not exist.", name)));
@@ -99,10 +90,7 @@ public class BrandApi {
         var brands = names != null ? brandService.getByNames(names) : new ArrayList<BrandResponseDto>();
         var brandPage = new PageImpl<>(brands);
         model.addAttribute("brandPage", brandPage);
-        model.addAttribute("brandNames", brandService.getAll()
-                .stream()
-                .map(BrandResponseDto::getName)
-                .collect(toList()));
+        model.addAttribute("brands", brandService.getAll());
 
         return "layout/brand/brands";
     }
@@ -113,10 +101,7 @@ public class BrandApi {
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
         var brandPage = brandService.getAll(page - 1, size);
         model.addAttribute("brandPage", brandPage);
-        model.addAttribute("brandNames", brandService.getAll()
-                .stream()
-                .map(BrandResponseDto::getName)
-                .collect(toList()));
+        model.addAttribute("brands", brandService.getAll());
 
         return "layout/brand/brands";
     }
@@ -126,10 +111,7 @@ public class BrandApi {
         var brands = brandService.getAllFullView();
         var brandFullViewPage = new PageImpl<>(brands);
         model.addAttribute("brandFullViewPage", brandFullViewPage);
-        model.addAttribute("brandNames", brandService.getAll()
-                .stream()
-                .map(BrandResponseDto::getName)
-                .collect(toList()));
+        model.addAttribute("brands", brandService.getAll());
 
         return "layout/brand/brands-full-view";
     }
@@ -137,17 +119,12 @@ public class BrandApi {
     @GetMapping("/by-id-all-full-view")
     public String findAllFullViewById(Model model, @PathVariable("id") Long id) {
         var brand = brandService.getByIdFullView(id);
-        Page<BrandFullView> brandFullViewPage;
-        if (brand.isEmpty()) {
-            brandFullViewPage = new PageImpl<>(Collections.emptyList());
-        } else {
-            brandFullViewPage = new PageImpl<>(List.of(brand.get()));
-        }
+        Page<BrandFullView> brandFullViewPage = brand.isEmpty()
+                ? new PageImpl<>(Collections.emptyList())
+                : new PageImpl<>(List.of(brand.get()));
+
         model.addAttribute("brandFullViewPage", brandFullViewPage);
-        model.addAttribute("brandNames", brandService.getAll()
-                .stream()
-                .map(BrandResponseDto::getName)
-                .collect(toList()));
+        model.addAttribute("brands", brandService.getAll());
 
         return "layout/brand/brands-full-view";
     }
@@ -158,10 +135,7 @@ public class BrandApi {
         var brands = brandService.getByNameFullView(name);
         var brandFullViewPage = new PageImpl<>(brands);
         model.addAttribute("brandFullViewPage", brandFullViewPage);
-        model.addAttribute("brandNames", brandService.getAll()
-                .stream()
-                .map(BrandResponseDto::getName)
-                .collect(toList()));
+        model.addAttribute("brands", brandService.getAll());
 
         return "layout/brand/brands-full-view";
     }
@@ -173,10 +147,5 @@ public class BrandApi {
             throw new NotFoundException(String.format("Brand with id %s does not exist.", id));
         }
         return "redirect:/brands";
-    }
-
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 }

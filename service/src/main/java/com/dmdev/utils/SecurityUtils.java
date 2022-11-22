@@ -14,8 +14,8 @@ import java.util.Base64;
 @UtilityClass
 public final class SecurityUtils {
 
-    public static String securePassword(String login, String password) {
-        byte[] salt = login.getBytes();
+    public static String securePassword(String username, String password) {
+        byte[] salt = username.getBytes();
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");

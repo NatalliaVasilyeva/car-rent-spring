@@ -36,6 +36,7 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <spring-parent-version>2.7.5</spring-parent-version>
         <apache-collections4.version>4.4</apache-collections4.version>
+        <springdoc-openapi.version>1.6.9</springdoc-openapi.version>
         <!-- plugins -->
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>

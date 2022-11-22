@@ -13,8 +13,9 @@
 <script th:inline="javascript">
     function saveBrand(e) {
         var name = document.getElementById("create-brand-name-input").value;
-        var brandArray = [[${existsBrands}]];
-        if (brandArray.includes(name)) {
+        var brands = [[${brands}]];
+        var brandsNames = brands.map(function (el) { return el.name; });
+        if (brandsNames.includes(name)) {
             e.preventDefault();
             $("#create-brand-name-input").addClass("is-invalid");
             $("#create-brand-error-small").text("brand already exist");

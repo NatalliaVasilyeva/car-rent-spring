@@ -36,7 +36,7 @@ const MakeUnEditableLicenses = () => {
 
 function setInfoInputsReadOnly(isReadOnly) {
     $('#user-info-email-input').prop('readonly', isReadOnly);
-    $('#user-info-login-input').prop('readonly', isReadOnly);
+    $('#user-info-username-input').prop('readonly', isReadOnly);
 
 }
 

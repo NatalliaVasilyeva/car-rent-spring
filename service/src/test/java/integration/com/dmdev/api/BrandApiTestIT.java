@@ -36,13 +36,7 @@ class BrandApiTestIT extends IntegrationBaseTest {
 
     private final BrandService brandService;
     private final MockMvc mockMvc;
-    private HttpHeaders commonHeaders;
-
-    @BeforeEach
-    void beforeEachSetUp() {
-
-        commonHeaders = new HttpHeaders();
-    }
+    private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {

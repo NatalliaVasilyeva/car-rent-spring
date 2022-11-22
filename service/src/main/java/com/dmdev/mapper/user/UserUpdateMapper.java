@@ -12,7 +12,7 @@ public class UserUpdateMapper implements Mapper<UserUpdateRequestDto, User> {
     public User map(UserUpdateRequestDto object) {
         return User.builder()
                 .email(object.getEmail())
-                .login(object.getUsername())
+                .username(object.getUsername())
                 .build();
     }
 
@@ -23,7 +23,7 @@ public class UserUpdateMapper implements Mapper<UserUpdateRequestDto, User> {
     }
 
     private void merge(UserUpdateRequestDto requestDto, User existing) {
-        existing.setLogin(requestDto.getUsername());
+        existing.setUsername(requestDto.getUsername());
         existing.setEmail(requestDto.getEmail());
         existing.setRole(requestDto.getRole());
     }

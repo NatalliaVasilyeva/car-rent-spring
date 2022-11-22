@@ -9,6 +9,7 @@ import com.dmdev.mapper.brand.BrandResponserMapper;
 import com.dmdev.mapper.brand.BrandUpdateMapper;
 import com.dmdev.repository.BrandRepository;
 import com.dmdev.service.exception.BrandBadRequestException;
+import com.dmdev.service.exception.ExceptionMessageUtil;
 import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,10 +36,9 @@ public class BrandService {
     public Optional<BrandResponseDto> create(BrandCreateEditRequestDto brandCreateEditRequestDto) {
         checkBrandNameIsUnique(brandCreateEditRequestDto.getName());
 
-        var brand = brandCreateEditMapper.map(brandCreateEditRequestDto);
-        return Optional.of(brandResponserMapper
-                .map(brandRepository
-                        .save(brand)));
+        return Optional.of(brandCreateEditMapper.map(brandCreateEditRequestDto))
+                .map(brandRepository::save)
+                .map(brandResponserMapper::map);
     }
 
     @Transactional
@@ -49,9 +49,8 @@ public class BrandService {
             checkBrandNameIsUnique(brandCreateEditRequestDto.getName());
         }
 
-        return Optional.of(
-                        brandRepository.save(
-                                brandUpdateMapper.map(brandCreateEditRequestDto, existingBrand)))
+        return Optional.of(brandUpdateMapper.map(brandCreateEditRequestDto, existingBrand))
+                .map(brandRepository::save)
                 .map(brandResponserMapper::map);
     }
 
@@ -70,25 +69,24 @@ public class BrandService {
 
     @Transactional(readOnly = true)
     public List<BrandResponseDto> getAll() {
-        return brandRepository.findAll()
-                .stream()
+        return brandRepository.findAll().stream()
                 .map(brandResponserMapper::mapNames)
                 .collect(toList());
     }
 
     @Transactional(readOnly = true)
     public List<BrandFullView> getAllFullView() {
-        return brandRepository.findAllFull();
+        return brandRepository.findAllFullView();
     }
 
     @Transactional(readOnly = true)
     public Optional<BrandFullView> getByIdFullView(Long brandId) {
-        return brandRepository.findByIdAllFull(brandId);
+        return brandRepository.findAllByIdFullView(brandId);
     }
 
     @Transactional(readOnly = true)
     public List<BrandFullView> getByNameFullView(String name) {
-        return brandRepository.findByNameAllFull(name);
+        return brandRepository.findAllByNameFullView(name);
     }
 
     @Transactional(readOnly = true)
@@ -99,8 +97,7 @@ public class BrandService {
 
     @Transactional(readOnly = true)
     public List<BrandResponseDto> getByNames(List<String> names) {
-        return brandRepository.findByNameInIgnoringCase(names)
-                .stream()
+        return brandRepository.findByNameInIgnoringCase(names).stream()
                 .map(brandResponserMapper::map)
                 .collect(toList());
     }
@@ -116,12 +113,12 @@ public class BrandService {
 
     private Brand getByIdOrElseThrow(Long id) {
         return brandRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Brand with id %s does not exist.", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Brand",  "id", id)));
     }
 
     private void checkBrandNameIsUnique(String brandName) {
         if (brandRepository.existsByNameIgnoringCase(brandName)) {
-            throw new BrandBadRequestException(String.format("Brand with this name '%s' already exists", brandName));
+            throw new BrandBadRequestException(ExceptionMessageUtil.getAlreadyExistsMessage("Brand",  "name", brandName));
         }
     }
 }

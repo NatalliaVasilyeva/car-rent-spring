@@ -9,7 +9,6 @@ spring:
     properties.hibernate:
       show_sql: true
       format_sql: true
-      hbm2ddl.auto: update
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
       physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
   mvc:
@@ -23,7 +22,7 @@ server:
     enabled: false
 logging:
   level:
-    root: trace
+    root: debug
 car_rent:
   default-schema: car_rent
 apache:

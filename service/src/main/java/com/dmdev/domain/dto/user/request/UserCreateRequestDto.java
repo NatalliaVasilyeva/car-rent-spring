@@ -17,9 +17,9 @@ public class UserCreateRequestDto {
     @Email
     String email;
 
-    @NotBlank(message = "Login is mandatory")
-    @Size(min = 2, message = "Login should have at least 2 characters")
-    String login;
+    @NotBlank(message = "Username is mandatory")
+    @Size(min = 2, message = "Username should have at least 2 characters")
+    String username;
 
     @NotEmpty
     @Size(min = 8, message = "Password should have at least 8 characters")

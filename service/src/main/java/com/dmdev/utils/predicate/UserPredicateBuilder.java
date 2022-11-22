@@ -12,7 +12,7 @@ public class UserPredicateBuilder implements PredicateBuilder<Predicate, UserFil
     @Override
     public Predicate build(UserFilter requestFilter) {
         return QPredicate.builder()
-                .add(requestFilter.getLogin(), user.login::eq)
+                .add(requestFilter.getUsername(), user.username::eq)
                 .add(requestFilter.getEmail(), user.email::eq)
                 .add(requestFilter.getName(), user.userDetails.name::containsIgnoreCase)
                 .add(requestFilter.getSurname(), user.userDetails.surname::containsIgnoreCase)

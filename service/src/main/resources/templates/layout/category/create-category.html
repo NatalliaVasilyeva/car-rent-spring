@@ -13,8 +13,9 @@
 <script th:inline="javascript">
     function saveCategory(e) {
         var name = document.getElementById("create-category-name-input").value;
-        var brandArray = [[${existsCategories}]];
-        if (brandArray.includes(name)) {
+        var categories = [[${categories}]];
+        var categoriesNames = categories.map(function (el) { return el.name; });
+        if (categoriesNames.includes(name)) {
             e.preventDefault();
             $("#create-category-name-input").addClass("is-invalid");
             $("#create-category-error-small").text("category already exist");

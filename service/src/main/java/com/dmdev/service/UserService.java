@@ -12,6 +12,7 @@ import com.dmdev.mapper.user.UserCreateMapper;
 import com.dmdev.mapper.user.UserResponseMapper;
 import com.dmdev.mapper.user.UserUpdateMapper;
 import com.dmdev.repository.UserRepository;
+import com.dmdev.service.exception.ExceptionMessageUtil;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserBadRequestException;
 import com.dmdev.utils.PageableUtils;
@@ -38,18 +39,18 @@ public class UserService {
 
     @Transactional
     public Optional<UserResponseDto> create(UserCreateRequestDto userRequestDto) {
+        this.checkUsernameIsUnique(userRequestDto.getUsername());
         this.checkEmailIsUnique(userRequestDto.getEmail());
 
-        var user = userCreateMapper.map(userRequestDto);
-        return Optional.of(userResponseMapper
-                .map(userRepository
-                        .save(user)));
+        return Optional.of(userCreateMapper.map(userRequestDto))
+                .map(userRepository::save)
+                .map(userResponseMapper::map);
     }
 
     @Transactional
     public Optional<UserResponseDto> login(LoginRequestDto loginRequestDto) {
-        return userRepository.findByEmailAndPassword(loginRequestDto.getEmail(),
-                        SecurityUtils.securePassword(loginRequestDto.getEmail(), loginRequestDto.getPassword()))
+        return userRepository.findByUsernameAndPassword(loginRequestDto.getUsername(),
+                        SecurityUtils.securePassword(loginRequestDto.getUsername(), loginRequestDto.getPassword()))
                 .map(userResponseMapper::map);
     }
 
@@ -58,14 +59,14 @@ public class UserService {
         var existingUser = getByIdOrElseThrow(id);
 
         if (!existingUser.getEmail().equals(user.getEmail())) {
-            checkEmailIsUnique(user.getEmail());
+            checkUsernameIsUnique(user.getEmail());
         }
 
-        return Optional.of(userRepository
-                        .save(userUpdateMapper
-                                .map(user, existingUser)))
+        return Optional.of(userUpdateMapper.map(user, existingUser))
+                .map(userRepository::save)
                 .map(userResponseMapper::map);
     }
+
     @Transactional(readOnly = true)
     public Optional<UserResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
@@ -76,10 +77,10 @@ public class UserService {
     public Optional<UserResponseDto> changePassword(Long id, UserChangePasswordDto changedPasswordDto) {
         var existingUser = getByIdOrElseThrow(id);
 
-        if (isExistsByEmailAndPassword(existingUser.getEmail(),
-                SecurityUtils.securePassword(existingUser.getEmail(), changedPasswordDto.getOldPassword()))) {
+        if (isExistsByUsernameAndPassword(existingUser.getEmail(),
+                SecurityUtils.securePassword(existingUser.getUsername(), changedPasswordDto.getOldPassword()))) {
             existingUser.setPassword(
-                    SecurityUtils.securePassword(existingUser.getEmail(), changedPasswordDto.getNewPassword())
+                    SecurityUtils.securePassword(existingUser.getUsername(), changedPasswordDto.getNewPassword())
             );
         }
 
@@ -88,21 +89,18 @@ public class UserService {
     }
 
     @Transactional
-    public Optional<UserResponseDto> changeRole(Long id, String role) {
+    public Optional<UserResponseDto> changeRole(Long id, Role role) {
         var existingUser = getByIdOrElseThrow(id);
-        Role.find(role).ifPresent(existingUser::setRole);
+        Optional.of(role).ifPresent(existingUser::setRole);
         return Optional.of(userRepository.save(existingUser))
                 .map(userResponseMapper::map);
     }
 
     @Transactional(readOnly = true)
     public Page<UserResponseDto> getAll(UserFilter userFilter, Integer page, Integer pageSize) {
-        return userFilter.getAllExpiredLicenses() == null || !userFilter.getAllExpiredLicenses() ?
-                userRepository.findAll(userPredicateBuilder.build(userFilter),
-                                PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname"))
-                        .map(userResponseMapper::map)
-                : userRepository.findAllWithExpiredDriverLicense(LocalDate.now(), PageableUtils.unSortedPageable(page, pageSize))
-                .map(userResponseMapper::map);
+        return userFilter.getAllExpiredLicenses() == null || !userFilter.getAllExpiredLicenses()
+                ? userRepository.findAll(userPredicateBuilder.build(userFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname")).map(userResponseMapper::map)
+                : userRepository.findAllWithExpiredDriverLicense(LocalDate.now(), PageableUtils.unSortedPageable(page, pageSize)).map(userResponseMapper::map);
     }
 
     @Transactional
@@ -116,16 +114,21 @@ public class UserService {
 
     private User getByIdOrElseThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id %s does not exist.", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User",  "id", id)));
     }
 
+    public void checkUsernameIsUnique(String username) {
+        if (userRepository.existsByUsername(username)) {
+            throw new UserBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("User",  "username", username)));
+        }
+    }
     public void checkEmailIsUnique(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new UserBadRequestException(String.format("User with email '%s' already exists", email));
+            throw new UserBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("User",  "email", email)));
         }
     }
 
-    private boolean isExistsByEmailAndPassword(String email, String password) {
-        return userRepository.existsByEmailAndPassword(email, password);
+    private boolean isExistsByUsernameAndPassword(String email, String password) {
+        return userRepository.existsByUsernameAndPassword(email, password);
     }
 }

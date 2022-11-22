@@ -39,13 +39,7 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final MockMvc mockMvc;
-    private HttpHeaders commonHeaders;
-
-    @BeforeEach
-    void beforeEachSetUp() {
-
-        commonHeaders = new HttpHeaders();
-    }
+    private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {

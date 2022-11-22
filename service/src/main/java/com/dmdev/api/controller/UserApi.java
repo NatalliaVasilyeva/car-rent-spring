@@ -102,8 +102,8 @@ public class UserApi {
     }
 
     @PostMapping("/{id}/change-role")
-    public String changePassword(@PathVariable("id") Long id,
-                                 @PathParam(value = "role") String role) {
+    public String changeRole(@PathVariable("id") Long id,
+                                 @PathParam(value = "role") Role role) {
         return userService.changeRole(id, role)
                 .map(result -> "redirect:/users")
                 .orElseThrow(() -> new UserBadRequestException("Role have not been changed"));
@@ -129,9 +129,5 @@ public class UserApi {
             throw new NotFoundException(String.format("User with id %s does not exist.", id));
         }
         return "redirect:/users";
-    }
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 }

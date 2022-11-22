@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.notFound;
 
@@ -77,12 +79,28 @@ public class UserRestApi {
     }
 
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all users")
-    public ApiResponse<UserResponseDto> findAll(@Parameter() @RequestBody @Valid UserFilter userFilter,
+    public ApiResponse<UserResponseDto> findAll(@Parameter() @RequestParam(required = false) String username,
+                                                @Parameter() @RequestParam(required = false) String email,
+                                                @Parameter() @RequestParam(required = false) String name,
+                                                @Parameter() @RequestParam(required = false) String surname,
+                                                @Parameter() @RequestParam(required = false) LocalDate birthday,
+                                                @Parameter() @RequestParam(required = false) LocalDate expiredLicenseDriverDate,
+                                                @Parameter() @RequestParam(required = false) Boolean allExpiredLicenses,
                                                 @Parameter(required = true) @RequestParam(required = false, defaultValue = "1") Integer page,
                                                 @Parameter() @RequestParam(required = false, defaultValue = "20") Integer size) {
+
+        var userFilter = UserFilter.builder()
+                .username(username)
+                .email(email)
+                .name(name)
+                .surname(surname)
+                .birthday(birthday)
+                .expiredLicenseDriverDate(expiredLicenseDriverDate)
+                .allExpiredLicenses(allExpiredLicenses)
+                .build();
 
         Page<UserResponseDto> usersPage = userService.getAll(userFilter, page - 1, size);
 
@@ -91,7 +109,7 @@ public class UserRestApi {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete user by id")
-    public ResponseEntity<?> delete(@Parameter(required = true) @PathVariable @Valid @NotNull Long id) {
+    public ResponseEntity<?> delete(@Parameter(required = true) @PathVariable @Valid Long id) {
         return userService.deleteById(id)
                 ? noContent().build()
                 : notFound().build();

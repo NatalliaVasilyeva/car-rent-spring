@@ -129,8 +129,4 @@ public class UserDetailsApi {
         return "redirect:/user-details";
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-    }
 }

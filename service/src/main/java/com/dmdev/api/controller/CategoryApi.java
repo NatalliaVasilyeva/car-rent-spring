@@ -33,10 +33,7 @@ public class CategoryApi {
     @GetMapping("/create")
     public String createCategory(Model model, @ModelAttribute CategoryCreateEditRequestDto category) {
         model.addAttribute("category", category);
-        model.addAttribute("existsCategories", categoryService.getAllNames()
-                .stream()
-                .map(CategoryResponseDto::getName)
-                .collect(toList()));
+        model.addAttribute("categories", categoryService.getAll());
         return "layout/category/create-category";
     }
 
@@ -63,10 +60,7 @@ public class CategoryApi {
         return categoryService.getById(id)
                 .map(category -> {
                     model.addAttribute("category", category);
-                    model.addAttribute("existsCategories", categoryService.getAllNames()
-                            .stream()
-                            .map(CategoryResponseDto::getName)
-                            .collect(toList()));
+                    model.addAttribute("categories", categoryService.getAll());
                     return "layout/category/category";
                 })
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id %s does not exist.", id)));
@@ -97,8 +91,4 @@ public class CategoryApi {
         return "redirect:/categories";
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-    }
 }

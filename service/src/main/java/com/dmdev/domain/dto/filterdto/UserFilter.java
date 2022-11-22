@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 public class UserFilter {
 
-    String login;
+    String username;
     String email;
     String name;
     String surname;

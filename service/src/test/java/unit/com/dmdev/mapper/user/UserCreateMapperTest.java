@@ -36,7 +36,7 @@ class UserCreateMapperTest {
         var createUserRequestDto = new UserCreateRequestDto(
                 "test@gmail.com", "test", "test",
                 "vasia", "pupkin", "minsk",
-                "+37529111111111", LocalDate.now().minusYears(20),
+                "+37529111-11-11", LocalDate.now().minusYears(20),
                 "ak874", LocalDate.now().minusYears(6), LocalDate.now().plusYears(4)
         );
         when(userDetailsCreateMapper.map(createUserRequestDto)).thenReturn(UserDetails.builder().build());
@@ -45,7 +45,7 @@ class UserCreateMapperTest {
         var actualResult = userCreateMapper.map(createUserRequestDto);
 
         assertEquals(actualResult.getEmail(), createUserRequestDto.getEmail());
-        assertEquals(actualResult.getLogin(), createUserRequestDto.getLogin());
-        assertEquals(actualResult.getPassword(), SecurityUtils.securePassword(createUserRequestDto.getEmail(), createUserRequestDto.getPassword()));
+        assertEquals(actualResult.getUsername(), createUserRequestDto.getUsername());
+        assertEquals(actualResult.getPassword(), SecurityUtils.securePassword(createUserRequestDto.getUsername(), createUserRequestDto.getPassword()));
     }
 }

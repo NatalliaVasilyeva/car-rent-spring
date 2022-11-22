@@ -9,6 +9,8 @@ import com.dmdev.mapper.category.CategoryResponseMapper;
 import com.dmdev.mapper.category.CategoryUpdateMapper;
 import com.dmdev.repository.CategoryRepository;
 import com.dmdev.service.exception.BrandBadRequestException;
+import com.dmdev.service.exception.CategoryBadRequestException;
+import com.dmdev.service.exception.ExceptionMessageUtil;
 import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,10 +35,10 @@ public class CategoryService {
     public Optional<CategoryResponseDto> create(CategoryCreateEditRequestDto categoryCreateEditRequestDto) {
         checkCategoryNameIsUnique(categoryCreateEditRequestDto.getName());
 
-        var category = categoryCreateEditMapper.map(categoryCreateEditRequestDto);
-        return Optional.of(categoryResponseMapper
-                .map(categoryRepository
-                        .save(category)));
+        return Optional.of(categoryCreateEditMapper.map(categoryCreateEditRequestDto))
+                .map(categoryRepository::save)
+                .map(categoryResponseMapper::map);
+
     }
 
     @Transactional
@@ -47,9 +49,8 @@ public class CategoryService {
             checkCategoryNameIsUnique(categoryCreateEditRequestDto.getName());
         }
 
-        return Optional.of(
-                        categoryRepository.save(
-                                categoryUpdateMapper.map(categoryCreateEditRequestDto, existingCategory)))
+        return Optional.of(categoryUpdateMapper.map(categoryCreateEditRequestDto, existingCategory))
+                .map(categoryRepository::save)
                 .map(categoryResponseMapper::map);
     }
 
@@ -58,19 +59,9 @@ public class CategoryService {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(categoryResponseMapper::map);
     }
-
-    @Transactional(readOnly = true)
-    public List<CategoryResponseDto> getAllNames() {
-        return categoryRepository.findAll()
-                .stream()
-                .map(categoryResponseMapper::mapNames)
-                .collect(toList());
-    }
-
     @Transactional(readOnly = true)
     public List<CategoryResponseDto> getAll() {
-        return categoryRepository.findAll()
-                .stream()
+        return categoryRepository.findAll().stream()
                 .map(categoryResponseMapper::map)
                 .collect(toList());
     }
@@ -105,34 +96,31 @@ public class CategoryService {
     }
 
     private List<CategoryResponseDto> getAllByPriceEquals(BigDecimal price) {
-        return categoryRepository.findAllByPrice(price)
-                .stream()
+        return categoryRepository.findAllByPrice(price).stream()
                 .map(categoryResponseMapper::map)
                 .collect(toList());
     }
 
     private List<CategoryResponseDto> getAllByPriceLess(BigDecimal price) {
-        return categoryRepository.findAllByPriceLessThanEqual(price)
-                .stream()
+        return categoryRepository.findAllByPriceLessThanEqual(price).stream()
                 .map(categoryResponseMapper::map)
                 .collect(toList());
     }
 
     private List<CategoryResponseDto> getAllByPriceGreater(BigDecimal price) {
-        return categoryRepository.findAllByPriceGreaterThanEqual(price)
-                .stream()
+        return categoryRepository.findAllByPriceGreaterThanEqual(price).stream()
                 .map(categoryResponseMapper::map)
                 .collect(toList());
     }
 
     private Category getByIdOrElseThrow(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Category with id %s does not exist.", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Category",  "id", id)));
     }
 
     private void checkCategoryNameIsUnique(String categoryName) {
         if (categoryRepository.existsByNameIgnoringCase(categoryName)) {
-            throw new BrandBadRequestException(String.format("Category with this name '%s' already exists", categoryName));
+            throw new CategoryBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Category",  "name", categoryName)));
         }
     }
 }

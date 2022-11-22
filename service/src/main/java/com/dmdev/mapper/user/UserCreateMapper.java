@@ -19,9 +19,9 @@ public class UserCreateMapper implements Mapper<UserCreateRequestDto, User> {
         var driverLicense = driverLicenseCreateMapper.map(requestDto);
         var userDetails = userDetailsCreateMapper.map(requestDto);
         var user = User.builder()
-                .login(requestDto.getLogin())
+                .username(requestDto.getUsername())
                 .email(requestDto.getEmail())
-                .password(SecurityUtils.securePassword(requestDto.getEmail(), requestDto.getPassword()))
+                .password(SecurityUtils.securePassword(requestDto.getUsername(), requestDto.getPassword()))
                 .build();
         userDetails.setUser(user);
         userDetails.setDriverLicense(driverLicense);

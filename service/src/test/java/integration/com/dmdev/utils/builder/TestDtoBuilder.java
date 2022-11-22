@@ -23,7 +23,7 @@ public class TestDtoBuilder {
         return new UserCreateRequestDto(
                 "test@gmal.com",
                 "test",
-                "test",
+                "testtesttest",
                 "petia",
                 "petrov",
                 "Minsk",
@@ -51,7 +51,7 @@ public class TestDtoBuilder {
                 "petia",
                 "petrov",
                 "Minsk",
-                "+37529111111111",
+                "+37529111-11-11",
                 LocalDate.of(2000, 10, 10),
                 "AG67482",
                 LocalDate.of(2020, 10, 10),
@@ -62,7 +62,7 @@ public class TestDtoBuilder {
     public static UserResponseDto getUserResponseDto() {
         return UserResponseDto.builder()
                 .email("test@gmal.com")
-                .login("test")
+                .username("test")
                 .userDetailsDto(UserDetailsResponseDto.builder()
                         .name("petia")
                         .surname("petrov")

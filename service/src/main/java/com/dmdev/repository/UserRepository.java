@@ -16,9 +16,10 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredicateExecutor<User> {
 
+    Optional<User> findByUsernameAndPassword(String username, String password);
     Optional<User> findByEmailAndPassword(String email, String password);
 
-    boolean existsByEmailAndPassword(String email, String password);
+    boolean existsByUsernameAndPassword(String email, String password);
 
     Optional<User> findByEmail(String email);
 
@@ -56,4 +57,6 @@ public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredi
             "FROM User u " +
             "WHERE u.orders.size = 0")
     List<User> findAllWithoutOrders();
+
+    boolean existsByUsername(String username);
 }

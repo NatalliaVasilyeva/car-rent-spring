@@ -1,10 +1,17 @@
 package com.dmdev.domain.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Schema(title = "Base wrapper for api response with pagination information")
 public class ApiResponse<T> {
 
@@ -32,10 +39,6 @@ public class ApiResponse<T> {
     @Schema(description = "Pagination: total number of pages containing results")
     private int totalPages;
 
-    public ApiResponse() {
-        // base default constructor
-    }
-
     public ApiResponse(List<T> results, Page<?> page) {
         this.results = results;
         this.size = page.getSize();
@@ -45,37 +48,5 @@ public class ApiResponse<T> {
         this.numberOfElements = page.getNumberOfElements();
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
-    }
-
-    public List<T> getResults() {
-        return results;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public boolean isFirst() {
-        return first;
-    }
-
-    public boolean isLast() {
-        return last;
-    }
-
-    public int getNumberOfElements() {
-        return numberOfElements;
-    }
-
-    public long getTotalElements() {
-        return totalElements;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
     }
 }

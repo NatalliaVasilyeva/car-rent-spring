@@ -2,6 +2,8 @@ package com.dmdev.annotation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.Optional;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -20,11 +22,9 @@ public class EnumNamePatternValidator implements ConstraintValidator<EnumNamePat
 
     @Override
     public boolean isValid(Enum<?> value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        }
 
-        Matcher m = pattern.matcher(value.name());
-        return m.matches();
+        return Optional.ofNullable(value)
+                .map(it -> pattern.matcher(it.name()).matches())
+                .orElse(false);
     }
 }

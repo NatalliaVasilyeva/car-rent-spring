@@ -9,11 +9,14 @@ import com.dmdev.service.exception.RentCarException;
 import com.dmdev.service.exception.UnauthorizedException;
 import com.dmdev.service.exception.UserBadRequestException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,11 +31,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public String handleNotFoundException(Exception ex, HttpServletRequest request, Model model) {
         log.error("Request: " + request.getRequestURL() + " raised " + ex);
-
-        model.addAttribute("timestamp", LocalDate.now());
-        model.addAttribute("url", request.getRequestURL());
-        model.addAttribute("message", ex.getMessage());
-        model.addAttribute("error", ex.getCause());
+        addAttributes(model, request, ex);
 
         return "/error/error404";
     }
@@ -41,11 +40,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public String handleUnauthorizedException(Exception ex, HttpServletRequest request, Model model) {
         log.error("Request: " + request.getRequestURL() + " raised " + ex);
-
-        model.addAttribute("timestamp", LocalDate.now());
-        model.addAttribute("url", request.getRequestURL());
-        model.addAttribute("message", ex.getMessage());
-        model.addAttribute("error", ex.getCause());
+        addAttributes(model, request, ex);
 
         return "/error/error401";
     }
@@ -54,11 +49,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public String handleNotValidException(Exception ex, HttpServletRequest request, Model model) {
         log.error("Request: " + request.getRequestURL() + " raised " + ex);
-
-        model.addAttribute("timestamp", LocalDate.now());
-        model.addAttribute("url", request.getRequestURL());
-        model.addAttribute("message", ex.getMessage());
-        model.addAttribute("error", ex.getCause());
+        addAttributes(model, request, ex);
 
         return "/error/error400";
     }
@@ -68,11 +59,7 @@ public class ControllerExceptionHandler {
             CategoryBadRequestException.class, UserBadRequestException.class})
     public String handleBadRequestException(Exception ex, HttpServletRequest request, Model model) {
         log.error("Request: " + request.getRequestURL() + " raised " + ex);
-
-        model.addAttribute("timestamp", LocalDate.now());
-        model.addAttribute("url", request.getRequestURL());
-        model.addAttribute("message", ex.getMessage());
-        model.addAttribute("error", ex.getCause());
+        addAttributes(model, request, ex);
 
         return "/error/error400";
     }
@@ -81,12 +68,20 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ServerException.class)
     public String handleServerInternalException(Exception ex, HttpServletRequest request, Model model) {
         log.error("Request: " + request.getRequestURL() + " raised " + ex);
+        addAttributes(model, request, ex);
 
+        return "/error/error500";
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
+    private void addAttributes(Model model, HttpServletRequest request, Exception ex) {
         model.addAttribute("timestamp", LocalDate.now());
         model.addAttribute("url", request.getRequestURL());
         model.addAttribute("message", ex.getMessage());
         model.addAttribute("error", ex.getCause());
-
-        return "/error/error500";
     }
 }

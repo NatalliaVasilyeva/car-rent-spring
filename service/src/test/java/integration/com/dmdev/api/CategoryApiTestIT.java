@@ -35,13 +35,7 @@ class CategoryApiTestIT extends IntegrationBaseTest {
 
     private final CategoryService categoryService;
     private final MockMvc mockMvc;
-    private HttpHeaders commonHeaders;
-
-    @BeforeEach
-    void beforeEachSetUp() {
-
-        commonHeaders = new HttpHeaders();
-    }
+    private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {

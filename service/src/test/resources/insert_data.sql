@@ -1,4 +1,4 @@
-INSERT INTO car_rent.users (id, login, email, password, role)
+INSERT INTO car_rent.users (id, username, email, password, role)
 VALUES (1, 'Admin', 'admin@gmail.com', 'VmFzaWxlY2hla0JlbDEyMyE=', 'ADMIN'),
        (2, 'Client', 'client@gmail.com', 'VmFzaWxlY2hla0JlbDEyMyE=', 'CLIENT');
 SELECT SETVAL('car_rent.users_id_seq', (SELECT MAX(id) FROM car_rent.users));

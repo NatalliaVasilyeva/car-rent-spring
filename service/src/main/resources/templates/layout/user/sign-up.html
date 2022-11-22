@@ -1,9 +1,9 @@
 
 <form id="sign-up-form" th:action="@{/users}" method="post" modelAttribute="registration" th:fragment="sign-up">
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-login-input">login </label>
-        <input type="text" class="form-control" placeholder="login" id="sign-up-login-input" name="login" required/>
-        <small class="text-danger" id="sign-up-login-error-small"></small>
+        <label class="col-form-label" for="sign-up-username-input">username </label>
+        <input type="text" class="form-control" placeholder="username" id="sign-up-username-input" name="username" required/>
+        <small class="text-danger" id="sign-up-username-error-small"></small>
     </div>
     <div class="form-group">
         <label class="col-form-label" for="sign-up-first-name-input">name </label>

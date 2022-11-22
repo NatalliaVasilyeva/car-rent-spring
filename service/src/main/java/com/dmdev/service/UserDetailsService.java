@@ -11,6 +11,7 @@ import com.dmdev.mapper.userdetails.UserDetailsResponseMapper;
 import com.dmdev.mapper.userdetails.UserDetailsUpdateMapper;
 import com.dmdev.repository.UserDetailsRepository;
 import com.dmdev.repository.UserRepository;
+import com.dmdev.service.exception.ExceptionMessageUtil;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.utils.predicate.UserDetailsPredicateBuilder;
 import lombok.RequiredArgsConstructor;
@@ -41,19 +42,19 @@ public class UserDetailsService {
         var existingUser = getUserByIdOrElseThrow(userDetailsCreateRequestDtoRequestDto.getUserId());
         var userDetails = userDetailsCreateMapper.map(userDetailsCreateRequestDtoRequestDto);
         userDetails.setUser(existingUser);
-        userDetailsRepository.save(userDetails);
-        return Optional.of(userDetailsResponseMapper
-                .map(userDetailsRepository.
-                        save(userDetails)));
+
+        return Optional.of(userDetails)
+                .map(userDetailsRepository::save)
+                .map(userDetailsResponseMapper::map);
+
     }
 
     @Transactional
     public Optional<UserDetailsResponseDto> update(Long id, UserDetailsUpdateRequestDto userDetails) {
         var existingUserDetails = getByIdOrElseThrow(id);
 
-        return Optional.of(userDetailsRepository
-                        .save(userDetailsUpdateMapper
-                                .map(userDetails, existingUserDetails)))
+        return Optional.of(userDetailsUpdateMapper.map(userDetails, existingUserDetails))
+                .map(userDetailsRepository::save)
                 .map(userDetailsResponseMapper::map);
     }
 
@@ -74,24 +75,21 @@ public class UserDetailsService {
 
     @Transactional(readOnly = true)
     public List<UserDetailsResponseDto> getAllByNameAndSurname(String name, String surname) {
-        return userDetailsRepository.findAllByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname)
-                .stream()
+        return userDetailsRepository.findAllByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname).stream()
                 .map(userDetailsResponseMapper::map)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<UserDetailsResponseDto> getAllByRegistrationDate(LocalDate registrationDate) {
-        return userDetailsRepository.findByRegistrationDate(registrationDate)
-                .stream()
+        return userDetailsRepository.findByRegistrationDate(registrationDate).stream()
                 .map(userDetailsResponseMapper::map)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<UserDetailsResponseDto> getAllByRegistrationDates(LocalDate start, LocalDate end) {
-        return userDetailsRepository.findByRegistrationDateBetween(start, end)
-                .stream()
+        return userDetailsRepository.findByRegistrationDateBetween(start, end).stream()
                 .map(userDetailsResponseMapper::map)
                 .collect(Collectors.toList());
     }
@@ -114,11 +112,11 @@ public class UserDetailsService {
 
     private User getUserByIdOrElseThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id %s does not exist.", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User",  "id", id)));
     }
 
     private UserDetails getByIdOrElseThrow(Long id) {
         return userDetailsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("User details with id %s does not exist.", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User details",  "id", id)));
     }
 }
