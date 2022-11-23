@@ -18,24 +18,22 @@ CREATE TABLE IF NOT EXISTS category (
 
 --Model
 CREATE TABLE IF NOT EXISTS model (
-    id           BIGSERIAL PRIMARY KEY,
-    brand_id     BIGINT,
-    category_id  BIGINT,
+    id           BIGSERIAL    PRIMARY KEY,
+    brand_id     BIGINT       NOT NULL,
     name         VARCHAR(255) NOT NULL,
     transmission VARCHAR(128),
     engine_type  VARCHAR(128),
     CONSTRAINT model_brand_fk
-    FOREIGN KEY (brand_id) REFERENCES brand (id)
-    ON UPDATE CASCADE ON DELETE SET NULL,
-    CONSTRAINT model_category_fk
-    FOREIGN KEY (category_id) REFERENCES category (id)
-    ON UPDATE CASCADE ON DELETE SET NULL
+        FOREIGN KEY (brand_id) REFERENCES brand (id)
+            ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 --Car
 CREATE TABLE IF NOT EXISTS car (
     id          BIGSERIAL PRIMARY KEY,
+    brand_id    BIGINT,
     model_id    BIGINT,
+    category_id BIGINT,
     color       VARCHAR(255),
     year        SMALLINT,
     car_number  VARCHAR(16),
@@ -43,8 +41,14 @@ CREATE TABLE IF NOT EXISTS car (
     repaired    BOOLEAN DEFAULT 'TRUE',
     image       TEXT,
     CONSTRAINT car_model_fk
-    FOREIGN KEY (model_id) REFERENCES model (id)
-    ON UPDATE CASCADE ON DELETE SET NULL
+        FOREIGN KEY (model_id) REFERENCES model (id)
+            ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT model_category_fk
+        FOREIGN KEY (category_id) REFERENCES category (id)
+            ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT brand_category_fk
+        FOREIGN KEY (brand_id) REFERENCES category (id)
+            ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 --User
@@ -67,11 +71,11 @@ CREATE TABLE IF NOT EXISTS orders (
     order_status VARCHAR(32)    NOT NULL,
     sum          NUMERIC(10, 2) NOT NULL,
     CONSTRAINT order_user_fk
-    FOREIGN KEY (user_id) REFERENCES users (id)
-    ON UPDATE CASCADE ON DELETE SET NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+            ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT orders_car_fk
-    FOREIGN KEY (car_id) REFERENCES car (id)
-    ON UPDATE CASCADE ON DELETE SET NULL
+        FOREIGN KEY (car_id) REFERENCES car (id)
+            ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 --Accident
@@ -82,8 +86,8 @@ CREATE TABLE IF NOT EXISTS accident (
     description   TEXT,
     damage        NUMERIC(10, 2),
     CONSTRAINT accident_order_fk
-    FOREIGN KEY (order_id) REFERENCES orders (id)
-    ON UPDATE CASCADE ON DELETE SET NULL
+        FOREIGN KEY (order_id) REFERENCES orders (id)
+            ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 --CarRentalTime
@@ -93,8 +97,8 @@ CREATE TABLE IF NOT EXISTS car_rental_time (
     start_rental_date TIMESTAMP NOT NULL,
     end_rental_date   TIMESTAMP NOT NULL,
     CONSTRAINT carrentaltime_order_fk
-    FOREIGN KEY (order_id) REFERENCES orders (id)
-    ON UPDATE CASCADE ON DELETE SET NULL
+        FOREIGN KEY (order_id) REFERENCES orders (id)
+            ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 --UserDetails
@@ -108,8 +112,8 @@ CREATE TABLE IF NOT EXISTS user_details (
     birthday          TIMESTAMP    NOT NULL,
     registration_date TIMESTAMP    NOT NULL DEFAULT now(),
     CONSTRAINT userdetails_user_fk
-    FOREIGN KEY (user_id) REFERENCES users (id)
-    ON UPDATE CASCADE ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES users (id)
+            ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 --DriverLicence
@@ -120,8 +124,8 @@ CREATE TABLE IF NOT EXISTS driver_license (
     issue_date      TIMESTAMP   NOT NULL,
     expired_date    TIMESTAMP   NOT NULL,
     CONSTRAINT driverlicense_user_details_fk
-    FOREIGN KEY (user_details_id) references user_details (id)
-    ON UPDATE CASCADE ON DELETE CASCADE
+        FOREIGN KEY (user_details_id) references user_details (id)
+            ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- rollback drop all;

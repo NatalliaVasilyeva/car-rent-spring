@@ -27,16 +27,14 @@ VALUES (1, 'audi'),
        (2, 'mercedes');
 SELECT SETVAL('car_rent.brand_id_seq', (SELECT MAX(id) FROM car_rent.brand));
 
-INSERT INTO car_rent.model (id, brand_id, category_id, name, transmission, engine_type)
-VALUES (1, (SELECT id FROM car_rent.brand WHERE name = 'audi'),
-        (SELECT id FROM car_rent.category WHERE name = 'ECONOMY'), 'A8', 'MANUAL', 'FUEL'),
-       (2, (SELECT id FROM car_rent.brand WHERE name = 'mercedes'),
-        (SELECT id FROM car_rent.category WHERE name = 'BUSINESS'), 'Benz', 'ROBOT', 'FUEL');
+INSERT INTO car_rent.model (id, brand_id, name, transmission, engine_type)
+VALUES (1, (SELECT id FROM car_rent.brand WHERE name = 'audi'), 'A8', 'MANUAL', 'FUEL'),
+       (2, (SELECT id FROM car_rent.brand WHERE name = 'mercedes'),'Benz', 'ROBOT', 'FUEL');
 SELECT SETVAL('car_rent.model_id_seq', (SELECT MAX(id) FROM car_rent.model));
 
-INSERT INTO car_rent.car (id, model_id, color, year, car_number, vin, repaired)
-VALUES (1, '1', 'WHITE', '2020', '7865AE-7', 'AmhBHqJ8BgD0p3PRgkoi', 'false'),
-       (2, '2', 'RED', '2022', '7834AE-7', 'AmhBdhjJ8BgD0p3PRgkoi', 'false');
+INSERT INTO car_rent.car (id, brand_id, model_id, category_id, color, year, car_number, vin, repaired)
+VALUES (1, (SELECT id FROM car_rent.brand WHERE name = 'audi'), '1', (SELECT id FROM car_rent.category WHERE name = 'ECONOMY'), 'WHITE', '2020', '7865AE-7', 'AmhBHqJ8BgD0p3PRgkoi', 'false'),
+       (2, (SELECT id FROM car_rent.brand WHERE name = 'mercedes'), '2', (SELECT id FROM car_rent.category WHERE name = 'BUSINESS'), 'RED', '2022', '7834AE-7', 'AmhBdhjJ8BgD0p3PRgkoi', 'false');
 SELECT SETVAL('car_rent.car_id_seq', (SELECT MAX(id) FROM car_rent.car));
 
 INSERT INTO car_rent.orders (id, date, user_id, car_id, passport, insurance, order_status, sum)
