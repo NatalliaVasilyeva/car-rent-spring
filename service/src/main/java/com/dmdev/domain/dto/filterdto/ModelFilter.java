@@ -13,7 +13,6 @@ public class ModelFilter {
 
     List<String> brands;
     List<String> models;
-    List<String> categories;
     Transmission transmission;
     EngineType engineType;
 }

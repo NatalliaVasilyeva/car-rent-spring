@@ -33,6 +33,7 @@ public class TestEntityBuilder {
 
     public static Car createCar() {
         return Car.builder()
+                .category(ExistEntityBuilder.getExistCategory())
                 .color(Color.WHITE)
                 .year(2022)
                 .carNumber("AT7654")
@@ -58,7 +59,6 @@ public class TestEntityBuilder {
 
     public static Model createModel() {
         return Model.builder()
-                .category(ExistEntityBuilder.getExistCategory())
                 .name("M3")
                 .engineType(EngineType.DIESEL)
                 .transmission(Transmission.AUTOMATIC)

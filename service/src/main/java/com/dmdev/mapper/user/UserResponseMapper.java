@@ -4,14 +4,14 @@ import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
 import com.dmdev.domain.entity.User;
-import com.dmdev.mapper.Mapper;
+import com.dmdev.mapper.ResponseMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserResponseMapper implements Mapper<User, UserResponseDto> {
+public class UserResponseMapper implements ResponseMapper<User, UserResponseDto> {
 
     @Override
-    public UserResponseDto map(User user) {
+    public UserResponseDto mapToDto(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())

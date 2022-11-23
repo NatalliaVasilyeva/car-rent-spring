@@ -47,7 +47,9 @@ public class ExistEntityBuilder {
     public static Car getExistCar() {
         return Car.builder()
                 .id(TestEntityIdConst.TEST_EXISTS_CAR_ID)
+                .brand(getExistBrand())
                 .model(getExistModel())
+                .category(getExistCategory())
                 .color(Color.RED)
                 .year(2022)
                 .carNumber("7834AE-7")
@@ -87,7 +89,6 @@ public class ExistEntityBuilder {
         return Model.builder()
                 .id(TestEntityIdConst.TEST_EXISTS_MODEL_ID)
                 .brand(getExistBrand())
-                .category(getExistCategory())
                 .name("Benz")
                 .transmission(Transmission.ROBOT)
                 .engineType(EngineType.FUEL)

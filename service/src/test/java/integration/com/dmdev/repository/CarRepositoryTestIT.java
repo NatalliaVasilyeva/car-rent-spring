@@ -5,6 +5,7 @@ import com.dmdev.domain.entity.Car;
 import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.Transmission;
 import com.dmdev.repository.CarRepository;
+import com.dmdev.repository.CategoryRepository;
 import com.dmdev.repository.ModelRepository;
 import com.dmdev.utils.predicate.CarPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_CAR_ID_FOR_DELETE;
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_CAR_ID;
+import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_CATEGORY_ID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,12 +32,15 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
 
     private CarRepository carRepository;
     private ModelRepository modelRepository;
+    private CategoryRepository categoryRepository;
     private CarPredicateBuilder carPredicateBuilder;
 
     @Test
     void shouldSaveCar() {
         var model = ExistEntityBuilder.getExistModel();
+        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         var car = TestEntityBuilder.createCar();
+        car.setCategory(category);
         model.setCar(car);
 
         var savedCar = carRepository.saveAndFlush(car);
@@ -57,9 +62,11 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
     void shouldUpdateCar() {
         var carToUpdate = carRepository.findById(TEST_EXISTS_CAR_ID).get();
         var existModel = modelRepository.findById(1L).get();
+        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         carToUpdate.setColor(Color.BLUE);
         carToUpdate.setYear(2010);
         carToUpdate.setModel(existModel);
+        carToUpdate.setCategory(category);
 
         carRepository.saveAndFlush(carToUpdate);
 
@@ -132,7 +139,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         var carFilter = CarFilter.builder()
                 .brandNames(List.of("mercedes"))
                 .modelNames(List.of("Benz"))
-                .categoryName("BUSINESS")
+                .categoryNames(List.of("BUSINESS"))
                 .build();
 
         Iterable<Car> cars = carRepository.findAll(carPredicateBuilder.build(carFilter));
@@ -146,7 +153,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         var carFilter = CarFilter.builder()
                 .brandNames(List.of("mercedes"))
                 .modelNames(List.of("Benz"))
-                .categoryName("dummy")
+                .categoryNames(List.of("dummy"))
                 .build();
 
         Iterable<Car> cars = carRepository.findAll(carPredicateBuilder.build(carFilter));

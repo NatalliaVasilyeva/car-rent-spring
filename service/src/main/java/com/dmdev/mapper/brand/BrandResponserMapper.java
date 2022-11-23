@@ -2,14 +2,14 @@ package com.dmdev.mapper.brand;
 
 import com.dmdev.domain.dto.brand.response.BrandResponseDto;
 import com.dmdev.domain.entity.Brand;
-import com.dmdev.mapper.Mapper;
+import com.dmdev.mapper.ResponseMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BrandResponserMapper implements Mapper<Brand, BrandResponseDto> {
+public class BrandResponserMapper implements ResponseMapper<Brand, BrandResponseDto> {
 
     @Override
-    public BrandResponseDto map(Brand brand) {
+    public BrandResponseDto mapToDto(Brand brand) {
         return BrandResponseDto.builder()
                 .id(brand.getId())
                 .name(brand.getName())
@@ -17,9 +17,4 @@ public class BrandResponserMapper implements Mapper<Brand, BrandResponseDto> {
                 .build();
     }
 
-    public BrandResponseDto mapNames(Brand brand) {
-        return BrandResponseDto.builder()
-                .name(brand.getName())
-                .build();
-    }
 }

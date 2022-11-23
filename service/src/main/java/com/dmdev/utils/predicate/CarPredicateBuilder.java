@@ -16,7 +16,7 @@ public class CarPredicateBuilder implements PredicateBuilder<Predicate, CarFilte
                 .add(requestFilter.getYear(), car.year::goe)
                 .add(requestFilter.getModelNames(), car.model.name::in)
                 .add(requestFilter.getBrandNames(), car.model.brand.name::in)
-                .add(requestFilter.getCategoryName(), car.model.category.name::eq)
+                .add(requestFilter.getCategoryNames(), car.category.name::in)
                 .add(requestFilter.getTransmission(), car.model.transmission::eq)
                 .add(requestFilter.getEngineType(), car.model.engineType::eq)
                 .buildAnd();

@@ -39,10 +39,10 @@ class UserCreateMapperTest {
                 "+37529111-11-11", LocalDate.now().minusYears(20),
                 "ak874", LocalDate.now().minusYears(6), LocalDate.now().plusYears(4)
         );
-        when(userDetailsCreateMapper.map(createUserRequestDto)).thenReturn(UserDetails.builder().build());
-        when(driverLicenseCreateMapper.map(createUserRequestDto)).thenReturn(DriverLicense.builder().build());
+        when(userDetailsCreateMapper.mapToEntity(createUserRequestDto)).thenReturn(UserDetails.builder().build());
+        when(driverLicenseCreateMapper.mapToEntity(createUserRequestDto)).thenReturn(DriverLicense.builder().build());
 
-        var actualResult = userCreateMapper.map(createUserRequestDto);
+        var actualResult = userCreateMapper.mapToEntity(createUserRequestDto);
 
         assertEquals(actualResult.getEmail(), createUserRequestDto.getEmail());
         assertEquals(actualResult.getUsername(), createUserRequestDto.getUsername());

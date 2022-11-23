@@ -4,11 +4,10 @@ import com.dmdev.domain.dto.category.request.CategoryCreateEditRequestDto;
 import com.dmdev.domain.dto.category.response.CategoryResponseDto;
 import com.dmdev.domain.dto.filterdto.CategoryFilter;
 import com.dmdev.domain.entity.Category;
-import com.dmdev.mapper.category.CategoryCreateEditMapper;
+import com.dmdev.mapper.category.CategoryCreateMapper;
 import com.dmdev.mapper.category.CategoryResponseMapper;
 import com.dmdev.mapper.category.CategoryUpdateMapper;
 import com.dmdev.repository.CategoryRepository;
-import com.dmdev.service.exception.BrandBadRequestException;
 import com.dmdev.service.exception.CategoryBadRequestException;
 import com.dmdev.service.exception.ExceptionMessageUtil;
 import com.dmdev.service.exception.NotFoundException;
@@ -27,7 +26,7 @@ import static java.util.stream.Collectors.toList;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CategoryCreateEditMapper categoryCreateEditMapper;
+    private final CategoryCreateMapper categoryCreateMapper;
     private final CategoryUpdateMapper categoryUpdateMapper;
     private final CategoryResponseMapper categoryResponseMapper;
 
@@ -35,9 +34,9 @@ public class CategoryService {
     public Optional<CategoryResponseDto> create(CategoryCreateEditRequestDto categoryCreateEditRequestDto) {
         checkCategoryNameIsUnique(categoryCreateEditRequestDto.getName());
 
-        return Optional.of(categoryCreateEditMapper.map(categoryCreateEditRequestDto))
+        return Optional.of(categoryCreateMapper.mapToEntity(categoryCreateEditRequestDto))
                 .map(categoryRepository::save)
-                .map(categoryResponseMapper::map);
+                .map(categoryResponseMapper::mapToDto);
 
     }
 
@@ -49,20 +48,20 @@ public class CategoryService {
             checkCategoryNameIsUnique(categoryCreateEditRequestDto.getName());
         }
 
-        return Optional.of(categoryUpdateMapper.map(categoryCreateEditRequestDto, existingCategory))
+        return Optional.of(categoryUpdateMapper.mapToEntity(categoryCreateEditRequestDto, existingCategory))
                 .map(categoryRepository::save)
-                .map(categoryResponseMapper::map);
+                .map(categoryResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<CategoryResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
-                .map(categoryResponseMapper::map);
+                .map(categoryResponseMapper::mapToDto);
     }
     @Transactional(readOnly = true)
     public List<CategoryResponseDto> getAll() {
         return categoryRepository.findAll().stream()
-                .map(categoryResponseMapper::map)
+                .map(categoryResponseMapper::mapToDto)
                 .collect(toList());
     }
 
@@ -97,19 +96,19 @@ public class CategoryService {
 
     private List<CategoryResponseDto> getAllByPriceEquals(BigDecimal price) {
         return categoryRepository.findAllByPrice(price).stream()
-                .map(categoryResponseMapper::map)
+                .map(categoryResponseMapper::mapToDto)
                 .collect(toList());
     }
 
     private List<CategoryResponseDto> getAllByPriceLess(BigDecimal price) {
         return categoryRepository.findAllByPriceLessThanEqual(price).stream()
-                .map(categoryResponseMapper::map)
+                .map(categoryResponseMapper::mapToDto)
                 .collect(toList());
     }
 
     private List<CategoryResponseDto> getAllByPriceGreater(BigDecimal price) {
         return categoryRepository.findAllByPriceGreaterThanEqual(price).stream()
-                .map(categoryResponseMapper::map)
+                .map(categoryResponseMapper::mapToDto)
                 .collect(toList());
     }
 

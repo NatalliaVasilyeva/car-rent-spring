@@ -43,10 +43,8 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldSaveModel() {
         var brand = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
-        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         var modelToSave = TestEntityBuilder.createModel();
         brand.setModel(modelToSave);
-        category.setModel(modelToSave);
 
         var savedModel = modelRepository.saveAndFlush(modelToSave);
 
@@ -56,12 +54,10 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldCreateModelWithNotExistsCar() {
         var brand = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
-        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         var carToSave = TestEntityBuilder.createCar();
         var modelToSave = TestEntityBuilder.createModel();
         modelToSave.setCar(carToSave);
         brand.setModel(modelToSave);
-        category.setModel(modelToSave);
 
         modelRepository.saveAndFlush(modelToSave);
 
@@ -84,9 +80,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateModel() {
         var modelToUpdate = modelRepository.findById(TEST_EXISTS_MODEL_ID).get();
-        var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         modelToUpdate.setEngineType(EngineType.ELECTRIC);
-        modelToUpdate.setCategory(category);
 
         modelRepository.saveAndFlush(modelToUpdate);
 
@@ -187,7 +181,6 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
     void shouldReturnModelsByBrandAndCategoryOrderByBrand() {
         var modelFilter = ModelFilter.builder()
                 .brands(List.of("mercedes"))
-                .categories(List.of("BUSINESS"))
                 .build();
 
         Sort sort = Sort.by("brand").descending();

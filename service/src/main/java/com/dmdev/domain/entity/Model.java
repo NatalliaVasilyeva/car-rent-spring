@@ -41,10 +41,6 @@ public class Model implements BaseEntity<Long> {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     @Column(nullable = false)
     private String name;
 

@@ -40,12 +40,12 @@ public class UserDetailsService {
     @Transactional
     public Optional<UserDetailsResponseDto> create(UserDetailsCreateRequestDto userDetailsCreateRequestDtoRequestDto) {
         var existingUser = getUserByIdOrElseThrow(userDetailsCreateRequestDtoRequestDto.getUserId());
-        var userDetails = userDetailsCreateMapper.map(userDetailsCreateRequestDtoRequestDto);
+        var userDetails = userDetailsCreateMapper.mapToEntity(userDetailsCreateRequestDtoRequestDto);
         userDetails.setUser(existingUser);
 
         return Optional.of(userDetails)
                 .map(userDetailsRepository::save)
-                .map(userDetailsResponseMapper::map);
+                .map(userDetailsResponseMapper::mapToDto);
 
     }
 
@@ -53,15 +53,15 @@ public class UserDetailsService {
     public Optional<UserDetailsResponseDto> update(Long id, UserDetailsUpdateRequestDto userDetails) {
         var existingUserDetails = getByIdOrElseThrow(id);
 
-        return Optional.of(userDetailsUpdateMapper.map(userDetails, existingUserDetails))
+        return Optional.of(userDetailsUpdateMapper.mapToEntity(userDetails, existingUserDetails))
                 .map(userDetailsRepository::save)
-                .map(userDetailsResponseMapper::map);
+                .map(userDetailsResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<UserDetailsResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
-                .map(userDetailsResponseMapper::map);
+                .map(userDetailsResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
@@ -70,34 +70,34 @@ public class UserDetailsService {
         return userDetailsRepository.findAll(
                         userDetailsPredicateBuilder
                                 .build(userDetailsFilter), pageRequest)
-                .map(userDetailsResponseMapper::map);
+                .map(userDetailsResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public List<UserDetailsResponseDto> getAllByNameAndSurname(String name, String surname) {
         return userDetailsRepository.findAllByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname).stream()
-                .map(userDetailsResponseMapper::map)
+                .map(userDetailsResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<UserDetailsResponseDto> getAllByRegistrationDate(LocalDate registrationDate) {
         return userDetailsRepository.findByRegistrationDate(registrationDate).stream()
-                .map(userDetailsResponseMapper::map)
+                .map(userDetailsResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<UserDetailsResponseDto> getAllByRegistrationDates(LocalDate start, LocalDate end) {
         return userDetailsRepository.findByRegistrationDateBetween(start, end).stream()
-                .map(userDetailsResponseMapper::map)
+                .map(userDetailsResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public Optional<UserDetailsResponseDto> getByUserId(Long userId) {
         return Optional.of(userDetailsRepository.findByUserId(userId))
-                .map(userDetailsResponseMapper::map);
+                .map(userDetailsResponseMapper::mapToDto);
     }
 
     @Transactional

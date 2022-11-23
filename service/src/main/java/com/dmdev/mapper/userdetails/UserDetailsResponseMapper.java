@@ -2,14 +2,14 @@ package com.dmdev.mapper.userdetails;
 
 import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
 import com.dmdev.domain.entity.UserDetails;
-import com.dmdev.mapper.Mapper;
+import com.dmdev.mapper.ResponseMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserDetailsResponseMapper implements Mapper<UserDetails, UserDetailsResponseDto> {
+public class UserDetailsResponseMapper implements ResponseMapper<UserDetails, UserDetailsResponseDto> {
 
     @Override
-    public UserDetailsResponseDto map(UserDetails userDetails) {
+    public UserDetailsResponseDto mapToDto(UserDetails userDetails) {
         return UserDetailsResponseDto.builder()
                 .id(userDetails.getId())
                 .userId(userDetails.getUser().getId())

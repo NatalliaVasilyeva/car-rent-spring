@@ -33,20 +33,6 @@ class CategoryRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldCreateCategoryWithNotExistsModel() {
-        var modelToSave = TestEntityBuilder.createModel();
-        var categoryToSave = TestEntityBuilder.createCategory();
-        categoryToSave.setModel(modelToSave);
-
-        categoryRepository.saveAndFlush(categoryToSave);
-
-        assertThat(categoryToSave.getId()).isNotNull();
-        assertThat(modelToSave.getId()).isNotNull();
-        assertThat(categoryToSave.getModels()).contains(modelToSave);
-        assertThat(modelToSave.getCategory().getId()).isEqualTo(categoryToSave.getId());
-    }
-
-    @Test
     void shouldFindByIdCategory() {
         var expectedCategory = Optional.of(ExistEntityBuilder.getExistCategory());
 

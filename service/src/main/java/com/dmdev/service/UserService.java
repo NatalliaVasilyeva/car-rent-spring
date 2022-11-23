@@ -42,16 +42,16 @@ public class UserService {
         this.checkUsernameIsUnique(userRequestDto.getUsername());
         this.checkEmailIsUnique(userRequestDto.getEmail());
 
-        return Optional.of(userCreateMapper.map(userRequestDto))
+        return Optional.of(userCreateMapper.mapToEntity(userRequestDto))
                 .map(userRepository::save)
-                .map(userResponseMapper::map);
+                .map(userResponseMapper::mapToDto);
     }
 
     @Transactional
     public Optional<UserResponseDto> login(LoginRequestDto loginRequestDto) {
         return userRepository.findByUsernameAndPassword(loginRequestDto.getUsername(),
                         SecurityUtils.securePassword(loginRequestDto.getUsername(), loginRequestDto.getPassword()))
-                .map(userResponseMapper::map);
+                .map(userResponseMapper::mapToDto);
     }
 
     @Transactional
@@ -62,15 +62,15 @@ public class UserService {
             checkUsernameIsUnique(user.getEmail());
         }
 
-        return Optional.of(userUpdateMapper.map(user, existingUser))
+        return Optional.of(userUpdateMapper.mapToEntity(user, existingUser))
                 .map(userRepository::save)
-                .map(userResponseMapper::map);
+                .map(userResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<UserResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
-                .map(userResponseMapper::map);
+                .map(userResponseMapper::mapToDto);
     }
 
     @Transactional
@@ -85,7 +85,7 @@ public class UserService {
         }
 
         return Optional.of(userRepository.save(existingUser))
-                .map(userResponseMapper::map);
+                .map(userResponseMapper::mapToDto);
     }
 
     @Transactional
@@ -93,14 +93,14 @@ public class UserService {
         var existingUser = getByIdOrElseThrow(id);
         Optional.of(role).ifPresent(existingUser::setRole);
         return Optional.of(userRepository.save(existingUser))
-                .map(userResponseMapper::map);
+                .map(userResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Page<UserResponseDto> getAll(UserFilter userFilter, Integer page, Integer pageSize) {
         return userFilter.getAllExpiredLicenses() == null || !userFilter.getAllExpiredLicenses()
-                ? userRepository.findAll(userPredicateBuilder.build(userFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname")).map(userResponseMapper::map)
-                : userRepository.findAllWithExpiredDriverLicense(LocalDate.now(), PageableUtils.unSortedPageable(page, pageSize)).map(userResponseMapper::map);
+                ? userRepository.findAll(userPredicateBuilder.build(userFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname")).map(userResponseMapper::mapToDto)
+                : userRepository.findAllWithExpiredDriverLicense(LocalDate.now(), PageableUtils.unSortedPageable(page, pageSize)).map(userResponseMapper::mapToDto);
     }
 
     @Transactional

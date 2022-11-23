@@ -14,10 +14,9 @@ public class UserCreateMapper implements Mapper<UserCreateRequestDto, User> {
     private final UserDetailsFromUserCreateMapper userDetailsCreateMapper;
     private final DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
 
-    @Override
-    public User map(UserCreateRequestDto requestDto) {
-        var driverLicense = driverLicenseCreateMapper.map(requestDto);
-        var userDetails = userDetailsCreateMapper.map(requestDto);
+    public User mapToEntity(UserCreateRequestDto requestDto) {
+        var driverLicense = driverLicenseCreateMapper.mapToEntity(requestDto);
+        var userDetails = userDetailsCreateMapper.mapToEntity(requestDto);
         var user = User.builder()
                 .username(requestDto.getUsername())
                 .email(requestDto.getEmail())
