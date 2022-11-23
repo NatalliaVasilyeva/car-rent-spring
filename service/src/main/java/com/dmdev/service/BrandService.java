@@ -36,9 +36,9 @@ public class BrandService {
     public Optional<BrandResponseDto> create(BrandCreateEditRequestDto brandCreateEditRequestDto) {
         checkBrandNameIsUnique(brandCreateEditRequestDto.getName());
 
-        return Optional.of(brandCreateEditMapper.map(brandCreateEditRequestDto))
+        return Optional.of(brandCreateEditMapper.mapToEntity(brandCreateEditRequestDto))
                 .map(brandRepository::save)
-                .map(brandResponserMapper::map);
+                .map(brandResponserMapper::mapToDto);
     }
 
     @Transactional
@@ -49,28 +49,28 @@ public class BrandService {
             checkBrandNameIsUnique(brandCreateEditRequestDto.getName());
         }
 
-        return Optional.of(brandUpdateMapper.map(brandCreateEditRequestDto, existingBrand))
+        return Optional.of(brandUpdateMapper.mapToEntity(brandCreateEditRequestDto, existingBrand))
                 .map(brandRepository::save)
-                .map(brandResponserMapper::map);
+                .map(brandResponserMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<BrandResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
-                .map(brandResponserMapper::map);
+                .map(brandResponserMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Page<BrandResponseDto> getAll(Integer page, Integer pageSize) {
         var pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "name");
         return brandRepository.findAll(pageRequest)
-                .map(brandResponserMapper::map);
+                .map(brandResponserMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public List<BrandResponseDto> getAll() {
         return brandRepository.findAll().stream()
-                .map(brandResponserMapper::mapNames)
+                .map(brandResponserMapper::mapToDto)
                 .collect(toList());
     }
 
@@ -92,13 +92,13 @@ public class BrandService {
     @Transactional(readOnly = true)
     public Optional<BrandResponseDto> getByName(String name) {
         return brandRepository.findByName(name)
-                .map(brandResponserMapper::map);
+                .map(brandResponserMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public List<BrandResponseDto> getByNames(List<String> names) {
         return brandRepository.findByNameInIgnoringCase(names).stream()
-                .map(brandResponserMapper::map)
+                .map(brandResponserMapper::mapToDto)
                 .collect(toList());
     }
 

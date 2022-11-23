@@ -37,8 +37,16 @@ public class Car implements BaseEntity<Long> {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id")
     private Model model;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     private Color color;
@@ -58,4 +66,14 @@ public class Car implements BaseEntity<Long> {
     @Builder.Default
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
+
+    public void setCategory(Category category) {
+        this.category = category;
+        this.category.getCars().add(this);
+    }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+        this.brand.getCars().add(this);
+    }
 }

@@ -107,12 +107,11 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
         List<BrandFullView> brands = brandRepository.findAllFullView();
         assertThat(brands).hasSize(2);
 
-        List<BigDecimal> prices = brands.stream()
+        List<String> prices = brands.stream()
                 .map(BrandFullView::getModels)
-                .flatMap(model -> model.stream().map(ModelView::getCategory))
-                .map(CategoryView::getPrice)
+                .flatMap(model -> model.stream().map(ModelView::getName))
                 .collect(toList());
-        assertThat(prices).hasSize(2).containsExactlyInAnyOrder(BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
+        assertThat(prices).hasSize(2).containsExactlyInAnyOrder("A8", "Benz");
     }
 
     @Test
@@ -121,19 +120,19 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
 
         assertThat(brand.getName()).isEqualTo("mercedes");
         assertThat(brand.getModels()).hasSize(1);
-        assertThat(brand.getModels().get(0).getCategory().getPrice()).isEqualTo(BigDecimal.valueOf(100.00).setScale(2));
+        assertThat(brand.getModels().get(0).getName()).isEqualTo("Benz");
     }
 
     @Test
     void shouldFindAllByNameBrandFullView() {
         List<BrandFullView> brands = brandRepository.findAllByNameFullView("mercedes");
 
-        List<BigDecimal> prices = brands.stream()
+        List<String> prices = brands.stream()
                 .map(BrandFullView::getModels)
-                .flatMap(model -> model.stream().map(ModelView::getCategory))
-                .map(CategoryView::getPrice)
+                .flatMap(model -> model.stream().map(ModelView::getName))
                 .collect(toList());
-        assertThat(prices).hasSize(1).containsExactlyInAnyOrder(BigDecimal.valueOf(100.00).setScale(2));
+
+        assertThat(prices).hasSize(1).containsExactlyInAnyOrder("Benz");
     }
 
     @Test
@@ -142,12 +141,11 @@ class BrandRepositoryTestIT extends IntegrationBaseTest {
 
         assertThat(actualBrands).hasSize(1);
 
-        List<BigDecimal> prices = actualBrands.stream()
+        List<String> prices = actualBrands.stream()
                 .map(BrandFullView::getModels)
-                .flatMap(model -> model.stream().map(ModelView::getCategory))
-                .map(CategoryView::getPrice)
+                .flatMap(model -> model.stream().map(ModelView::getName))
                 .collect(toList());
 
-        assertThat(prices).hasSize(1).containsExactlyInAnyOrder(BigDecimal.valueOf(100.00).setScale(2));
+        assertThat(prices).hasSize(1).containsExactlyInAnyOrder("Benz");
     }
 }

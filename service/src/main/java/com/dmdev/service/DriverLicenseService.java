@@ -43,12 +43,12 @@ public class DriverLicenseService {
         } else {
             var user = optionalUser.get();
             checkDriverLicenseNumberIsUnique(driverLicenseCreateRequestDto.getDriverLicenseNumber());
-            var driverLicense = driverLicenseCreateMapper.map(driverLicenseCreateRequestDto);
+            var driverLicense = driverLicenseCreateMapper.mapToEntity(driverLicenseCreateRequestDto);
             user.getUserDetails().setDriverLicense(driverLicense);
 
             return Optional.of(driverLicense)
                     .map(driverLicenseRepository::save)
-                    .map(driverLicenseResponseMapper::map);
+                    .map(driverLicenseResponseMapper::mapToDto);
         }
     }
 
@@ -60,28 +60,28 @@ public class DriverLicenseService {
             checkDriverLicenseNumberIsUnique(driverLicenseUpdateRequestDto.getDriverLicenseNumber());
         }
 
-        return Optional.of(driverLicenseUpdateMapper.map(driverLicenseUpdateRequestDto, existingDriverLicense))
+        return Optional.of(driverLicenseUpdateMapper.mapToEntity(driverLicenseUpdateRequestDto, existingDriverLicense))
                 .map(driverLicenseRepository::save)
-                .map(driverLicenseResponseMapper::map);
+                .map(driverLicenseResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<DriverLicenseResponseDto> getById(Long id) {
         return Optional.of(getUserByIdOrElseThrow(id))
-                .map(driverLicenseResponseMapper::map);
+                .map(driverLicenseResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public Page<DriverLicenseResponseDto> getAll(Integer page, Integer pageSize) {
         var pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "number");
         return driverLicenseRepository.findAll(pageRequest)
-                .map(driverLicenseResponseMapper::map);
+                .map(driverLicenseResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public List<DriverLicenseResponseDto> getByNumber(String number) {
         return driverLicenseRepository.findByNumberContainingIgnoreCase(number).stream()
-                .map(driverLicenseResponseMapper::map)
+                .map(driverLicenseResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
@@ -90,14 +90,14 @@ public class DriverLicenseService {
         return driverLicenseRepository.findByUserId(userId).stream()
                 .sorted(Comparator.comparing(DriverLicense::getExpiredDate).reversed())
                 .findFirst()
-                .map(driverLicenseResponseMapper::map);
+                .map(driverLicenseResponseMapper::mapToDto);
     }
 
     @Transactional(readOnly = true)
     public List<DriverLicenseResponseDto> getAllExpiredDriverLicenses() {
         return driverLicenseRepository.findByExpiredDateLessThanEqual(LocalDate.now()).stream()
                 .sorted(Comparator.comparing(DriverLicense::getExpiredDate).reversed())
-                .map(driverLicenseResponseMapper::map)
+                .map(driverLicenseResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 

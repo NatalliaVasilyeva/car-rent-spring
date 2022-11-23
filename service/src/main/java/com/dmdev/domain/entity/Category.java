@@ -15,7 +15,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -40,10 +42,10 @@ public class Category implements BaseEntity<Long> {
 
     @Builder.Default
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private Set<Model> models = new HashSet<>();
+    private Set<Car> cars = new HashSet<>();
 
-    public void setModel(Model model) {
-        models.add(model);
-        model.setCategory(this);
-    }
+//    public void setCar(Car car) {
+//        cars.add(car);
+//        car.setCategory(this);
+//    }
 }

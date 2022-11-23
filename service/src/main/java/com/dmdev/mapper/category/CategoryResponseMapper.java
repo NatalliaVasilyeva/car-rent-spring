@@ -2,14 +2,14 @@ package com.dmdev.mapper.category;
 
 import com.dmdev.domain.dto.category.response.CategoryResponseDto;
 import com.dmdev.domain.entity.Category;
-import com.dmdev.mapper.Mapper;
+import com.dmdev.mapper.ResponseMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CategoryResponseMapper implements Mapper<Category, CategoryResponseDto> {
+public class CategoryResponseMapper implements ResponseMapper<Category, CategoryResponseDto> {
 
     @Override
-    public CategoryResponseDto map(Category category) {
+    public CategoryResponseDto mapToDto(Category category) {
         return CategoryResponseDto.builder()
                 .id(category.getId())
                 .name(category.getName())
@@ -17,9 +17,4 @@ public class CategoryResponseMapper implements Mapper<Category, CategoryResponse
                 .build();
     }
 
-    public CategoryResponseDto mapNames(Category category) {
-        return CategoryResponseDto.builder()
-                .name(category.getName())
-                .build();
-    }
 }
