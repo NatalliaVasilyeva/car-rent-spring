@@ -8,10 +8,8 @@ import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_DRIVER_LICENSE_ID_FOR_DELETE;
 import static java.util.stream.Collectors.toList;
@@ -47,7 +45,7 @@ class DriverLicenseServiceTestIT extends IntegrationBaseTest {
         assertThat(driverLicenses.getTotalElements()).isEqualTo(2L);
         assertThat(driverLicenses.getNumberOfElements()).isEqualTo(2L);
 
-       var addresses = driverLicenses.getContent().stream().map(DriverLicenseResponseDto::getDriverLicenseNumber).collect(toList());
+        var addresses = driverLicenses.getContent().stream().map(DriverLicenseResponseDto::getDriverLicenseNumber).collect(toList());
         assertThat(addresses).containsExactlyInAnyOrder("AB12345", "AB12346");
     }
 

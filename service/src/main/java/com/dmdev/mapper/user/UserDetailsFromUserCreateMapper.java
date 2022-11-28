@@ -1,7 +1,6 @@
 package com.dmdev.mapper.user;
 
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
-import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.domain.entity.UserContact;
 import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.mapper.CreateMapper;

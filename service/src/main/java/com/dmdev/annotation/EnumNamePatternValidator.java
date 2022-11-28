@@ -3,12 +3,11 @@ package com.dmdev.annotation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Optional;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class EnumNamePatternValidator implements ConstraintValidator<EnumNamePattern, Enum<?>> {
+
     private Pattern pattern;
 
     @Override

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_CATEGORY_ID_FOR_DELETE;
 import static java.util.stream.Collectors.toList;

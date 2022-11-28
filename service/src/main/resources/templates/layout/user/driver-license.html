@@ -41,7 +41,8 @@
                                 Number:
                             </label>
                             <div class="col-10">
-                                <input type="text" class="form-control" id="driver-license-driverLicenseNumber-input" name="driverLicenseNumber"
+                                <input type="text" class="form-control" id="driver-license-driverLicenseNumber-input"
+                                       name="driverLicenseNumber"
                                        th:value="*{driverLicenseNumber}" readonly/>
                             </div>
                         </div>
@@ -50,7 +51,8 @@
                                 Issue date:
                             </label>
                             <div class="col-10">
-                                <input type="date" class="form-control" id="driver-license-driverLicenseIssueDate-input" name="driverLicenseIssueDate"
+                                <input type="date" class="form-control" id="driver-license-driverLicenseIssueDate-input"
+                                       name="driverLicenseIssueDate"
                                        th:value="*{driverLicenseIssueDate}" readonly/>
                             </div>
                         </div>
@@ -59,7 +61,9 @@
                                 Expired date:
                             </label>
                             <div class="col-10">
-                                <input type="date" class="form-control" id="driver-license-driverLicenseExpiredDate-input" name="driverLicenseExpiredDate"
+                                <input type="date" class="form-control"
+                                       id="driver-license-driverLicenseExpiredDate-input"
+                                       name="driverLicenseExpiredDate"
                                        th:value="*{driverLicenseExpiredDate}" readonly/>
                             </div>
                         </div>
@@ -69,7 +73,8 @@
                                    onclick="MakeEditableDetails()"
                                    value="Edit">
 
-                            <a th:href="@{'/users/' + *{userId}}" class="from-control btn btn-light btn-lg btn-block" role="button"
+                            <a th:href="@{'/users/' + *{userId}}" class="from-control btn btn-light btn-lg btn-block"
+                               role="button"
                                th:text="|See more info about user|">See info about user</a>
                         </div>
 

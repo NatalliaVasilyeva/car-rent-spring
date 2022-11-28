@@ -1,6 +1,8 @@
 package com.dmdev.domain.entity;
 
 import com.dmdev.domain.model.Color;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +28,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"model", "orders"})
+@ToString(exclude = {"model", "brand", "category", "orders"})
 @EqualsAndHashCode(of = "vin")
 @Builder
 @Entity
@@ -38,14 +40,17 @@ public class Car implements BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
+    @JsonBackReference
     private Brand brand;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id")
+    @JsonBackReference
     private Model model;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @JsonBackReference
     private Category category;
 
     @Enumerated(EnumType.STRING)
@@ -65,6 +70,7 @@ public class Car implements BaseEntity<Long> {
 
     @Builder.Default
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Order> orders = new ArrayList<>();
 
     public void setCategory(Category category) {
@@ -75,5 +81,10 @@ public class Car implements BaseEntity<Long> {
     public void setBrand(Brand brand) {
         this.brand = brand;
         this.brand.getCars().add(this);
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
+        this.model.getCars().add(this);
     }
 }

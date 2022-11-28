@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <script type="text/javascript" th:src="@{/js/car/car.js}"></script>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-12">
+            <form id="user-details-form"
+                  th:action="@{/cars/{carId}/update(carId=${car.id})}" method="POST" th:object="${car}"
+                  enctype="multipart/form-data">
+                <div class="card mb-4">
+                    <div class="card-header content-center">Car info</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label class="col-2 col-form-label">
+                                Image:
+                                <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                                <input type="file" id="image" style="display:none">
+                            </label>
+                            <!--                            <div class="card-img-top col-10">-->
+                            <img id="old_image" class="col-10 card-img-top"
+                                 th:src="@{/api/v1/cars/{carId}/car_image(carId=${car.id})}"
+                                 alt="Car image">
+                            <!--                            </div>-->
+                        </div>
+                        <br>
+                        <div class="form-group row">
+                            <label th:for="car-id-input" class="col-2 col-form-label">
+                                Id:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-id-input" name="id"
+                                       th:value="*{id}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label th:for="car-brand-input" class="col-2 col-form-label">
+                                Brand:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-brand-input" name="brand"
+                                       th:value="*{brand}" readonly/>
+                                <small class="text-danger" id="edit-category-error-small"></small>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label th:for="car-model-input" class="col-2 col-form-label">
+                                Model:
+                            </label>
+                            <div class="col-10">
+                                <select class="form-control" th:id="car-model-input" name="modelId" readonly>
+                                    <option th:id="car-model-input" th:each="model : ${models}" th:value="${model.id}"
+                                            th:text="|${model.name} ${model.transmission} ${model.engineType}|"
+                                            th:selected="${car.model == model.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label th:for="car-color-input" class="col-2 col-form-label">
+                                Color:
+                            </label>
+                            <div class="col-10">
+                                <select class="form-control" th:id="car-color-input" name="color" readonly>
+                                    <option th:id="car-color-input" th:each="color : ${colors}" th:value="${color}"
+                                            th:text="${color.name()}" th:selected="${car.color == color}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="transmission">
+                            <label th:for="car-transmission-input" class="col-2 col-form-label">
+                                Transmission:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-transmission-input"
+                                       name="transmission"
+                                       th:value="*{transmission}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="engineType">
+                            <label th:for="car-engineType-input" class="col-2 col-form-label">
+                                Engine type:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-engineType-input" name="engineType"
+                                       th:value="*{engineType}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label th:for="car-year-input" class="col-2 col-form-label">
+                                Year of production:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-year-input" name="yearOfProduction"
+                                       th:value="*{yearOfProduction}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label th:for="car-number-input" class="col-2 col-form-label">
+                                Number:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-number-input" name="number"
+                                       th:value="*{number}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="vin">
+                            <label th:for="car-vin-input" class="col-2 col-form-label">
+                                Vin:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-vin-input" name="vin"
+                                       th:value="*{vin}" readonly/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label th:for="car-repaired-input" class="col-2 col-form-label" name="isRepaired">
+                                Is under repaired:
+                            </label>
+                            <div class="col-10" th:id="car-repaired-input">
+                                <label class="radio-inline">
+                                    <input type="radio" name="isRepaired" value="true"
+                                           th:checked="${car.repaired}"/>true
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="isRepaired" value="false"
+                                           th:checked="${car.repaired} == false"/>false
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label th:for="car-category-input" class="col-2 col-form-label">
+                                Category:
+                            </label>
+                            <div class="col-10">
+                                <select class="form-control" th:id="car-category-input" name="categoryId" readonly>
+                                    <option th:id="car-category-input" th:each="category : ${categories}"
+                                            th:value="${category.id}"
+                                            th:text="${category.name}" th:selected="${car.category == category.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="price">
+                            <label th:for="car-price-input" class="col-2 col-form-label">
+                                Price:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="car-price-input" name="price"
+                                       th:value="*{price}" readonly/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group row" id="edit-car-button-div"
+                             sec:authorize="hasAnyAuthority('ADMIN')">
+                            <input type="button"
+                                   class="from-control btn btn-light btn-lg btn-block"
+                                   onclick="MakeEditableCar()"
+                                   value="Edit">
+                        </div>
+                        <div class="form-group row" id="edit-manage-car-buttons-div"
+                             style="display: none">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-8">
+                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <span></span>
+                                <input type="reset" class="btn btn-default" onclick="MakeUnEditableCar()"
+                                       value="Cancel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

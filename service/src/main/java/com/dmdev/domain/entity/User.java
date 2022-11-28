@@ -1,6 +1,7 @@
 package com.dmdev.domain.entity;
 
 import com.dmdev.domain.model.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -52,9 +53,11 @@ public class User extends AuditingEntity<Long> {
     private Role role = Role.CLIENT;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private UserDetails userDetails;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Order> orders = new ArrayList<>();
 }

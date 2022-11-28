@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <meta charset="UTF-8">
@@ -61,7 +63,8 @@
                                        th:value="*{price}" readonly/>
                             </div>
                         </div>
-                        <div class="form-group row" id="edit-category-button-div">
+                        <div class="form-group row" id="edit-category-button-div"
+                             sec:authorize="hasAnyAuthority('ADMIN')">
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableCategory()"
@@ -71,7 +74,8 @@
                              style="display: none">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes" onsubmit="editCategory(event)">
+                                <input type="submit" class="btn btn-primary" value="Save Changes"
+                                       onsubmit="editCategory(event)">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableCategory()"
                                        value="Cancel">

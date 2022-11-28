@@ -1,7 +1,6 @@
 package com.dmdev.mapper.user;
 
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
-import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.DriverLicense;
 import com.dmdev.mapper.CreateMapper;
 import org.springframework.stereotype.Component;

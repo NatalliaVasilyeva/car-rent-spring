@@ -114,12 +114,12 @@ public class CategoryService {
 
     private Category getByIdOrElseThrow(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Category",  "id", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Category", "id", id)));
     }
 
     private void checkCategoryNameIsUnique(String categoryName) {
         if (categoryRepository.existsByNameIgnoringCase(categoryName)) {
-            throw new CategoryBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Category",  "name", categoryName)));
+            throw new CategoryBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Category", "name", categoryName)));
         }
     }
 }

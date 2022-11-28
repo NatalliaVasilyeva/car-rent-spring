@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <meta charset="UTF-8">
@@ -44,13 +46,13 @@
                                        th:value="*{role}" readonly/>
                             </div>
                         </div>
-                        <div class="form-group row" id="edit-user-info-button-div">
+                        <div class="form-group row" id="edit-user-info-button-div" sec:authorize="isAuthenticated()">
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block" onclick="MakeEditableInfo()"
                                    value="Edit">
                         </div>
                         <div class="form-group row" id="edit-manage-user-info-buttons-div"
-                             style="display: none">
+                             style="display: none" sec:authorize="isAuthenticated()">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
                                 <input type="submit" class="from control btn btn-primary" value="Save Changes">
@@ -119,18 +121,19 @@
                                 Birthday:
                             </label>
                             <div class="col-10">
-                                <input type="text" class="form-control" id="user-details-registration-input" name="birthday"
+                                <input type="text" class="form-control" id="user-details-registration-input"
+                                       name="birthday"
                                        th:value="*{registrationAt}" readonly/>
                             </div>
                         </div>
-                        <div class="form-group row" id="edit-user-details-button-div">
+                        <div class="form-group row" id="edit-user-details-button-div" sec:authorize="isAuthenticated()">
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableDetails()"
                                    value="Edit">
                         </div>
                         <div class="form-group row" id="edit-manage-user-details-buttons-div"
-                             style="display: none">
+                             style="display: none" sec:authorize="isAuthenticated()">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
                                 <input type="submit" class="btn btn-primary" value="Save Changes">
@@ -146,7 +149,7 @@
                   th:action="@{/driverlicense/{driverLicenseId}/update(driverLicenseId=${user.driverLicenseDto.id})}"
                   method="POST" th:object="${user.driverLicenseDto}">
                 <div class="card mb-4">
-                    <div class="card-header">User details info</div>
+                    <div class="card-header">Driver license info</div>
                     <div class="card-body">
                         <div class="form-group row">
                             <label for="user-license-name-input" class="col-2 col-form-label">
@@ -178,14 +181,14 @@
                                        th:value="*{driverLicenseExpiredDate}" readonly/>
                             </div>
                         </div>
-                        <div class="form-group row" id="edit-license-button-div">
+                        <div class="form-group row" id="edit-license-button-div" sec:authorize="isAuthenticated()">
                             <input type="button"
                                    class="form-control btn btn-light align-content-lg-center"
                                    onclick="MakeEditableLicenses()"
                                    value="Edit">
                         </div>
                         <div class="form-group row" id="edit-manage-license-buttons-div"
-                             style="display: none">
+                             style="display: none" sec:authorize="isAuthenticated()">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
                                 <input type="submit" class="btn btn-primary" value="Save Changes">
@@ -200,6 +203,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>

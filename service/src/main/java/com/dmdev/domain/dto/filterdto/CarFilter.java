@@ -1,6 +1,5 @@
 package com.dmdev.domain.dto.filterdto;
 
-import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.Transmission;

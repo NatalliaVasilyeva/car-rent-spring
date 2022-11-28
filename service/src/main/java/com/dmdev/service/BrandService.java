@@ -113,12 +113,12 @@ public class BrandService {
 
     private Brand getByIdOrElseThrow(Long id) {
         return brandRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Brand",  "id", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Brand", "id", id)));
     }
 
     private void checkBrandNameIsUnique(String brandName) {
         if (brandRepository.existsByNameIgnoringCase(brandName)) {
-            throw new BrandBadRequestException(ExceptionMessageUtil.getAlreadyExistsMessage("Brand",  "name", brandName));
+            throw new BrandBadRequestException(ExceptionMessageUtil.getAlreadyExistsMessage("Brand", "name", brandName));
         }
     }
 }

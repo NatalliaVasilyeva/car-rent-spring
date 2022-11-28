@@ -12,23 +12,43 @@ spring:
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
       physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
   mvc:
-     format:
-       date: iso
-       date-time: iso
-       time: iso
-  open-in-vew: false
+    format:
+      date: iso
+      date-time: iso
+      time: iso
+  open-in-view: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 403754600491-35dvs28kcur3tc7bc2beso18tv3fohkb.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: http://localhost:8030/login/oauth2/code/google
+            scope: openid,email,profile
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: 403754600491-35dvs28kcur3tc7bc2beso18tv3fohkb.apps.googleusercontent.com
+      client-secret: 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
+      scope: openid,email,profile
+    oauth2-redirect-url: http://localhost:8030/swagger-ui/oauth2-redirect.html
 server:
   ssl:
     enabled: false
+  port: 8030
 logging:
   level:
-    root: debug
+    root: WARN
+    org.springframework.boot.autoconfigure.security: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
 car_rent:
   default-schema: car_rent
 apache:
-    catalina:
-      core:
-        AprLifecycleListener: off
+  catalina:
+    core:
+      AprLifecycleListener: off
 app:
   image:
     bucket: /Users/natallia.vasilyeva/myProjects/car-rent/service/src/main/resources/static/images

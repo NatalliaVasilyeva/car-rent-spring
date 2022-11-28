@@ -1,5 +1,6 @@
 package com.dmdev.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,6 +41,7 @@ public class UserDetails extends AuditingEntity<Long> {
     @NotNull
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false)
@@ -61,6 +63,7 @@ public class UserDetails extends AuditingEntity<Long> {
 
     @Builder.Default
     @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private Set<DriverLicense> driverLicenses = new HashSet<>();
 
     public void setDriverLicense(DriverLicense driverLicense) {

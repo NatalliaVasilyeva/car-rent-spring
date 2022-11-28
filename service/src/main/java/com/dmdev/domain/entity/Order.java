@@ -1,6 +1,8 @@
 package com.dmdev.domain.entity;
 
 import com.dmdev.domain.model.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,10 +50,12 @@ public class Order extends AuditingEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id", nullable = false)
+    @JsonBackReference
     private Car car;
 
     @Column(nullable = false)
@@ -69,9 +73,11 @@ public class Order extends AuditingEntity<Long> {
     private BigDecimal sum;
 
     @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+    @JsonManagedReference
     private CarRentalTime carRentalTime;
 
     @Builder.Default
+    @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Accident> accidents = new HashSet<>();
 

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <meta charset="UTF-8">
@@ -14,7 +16,9 @@
     function saveCategory(e) {
         var name = document.getElementById("create-category-name-input").value;
         var categories = [[${categories}]];
-        var categoriesNames = categories.map(function (el) { return el.name; });
+        var categoriesNames = categories.map(function (el) {
+            return el.name;
+        });
         if (categoriesNames.includes(name)) {
             e.preventDefault();
             $("#create-category-name-input").addClass("is-invalid");
@@ -26,15 +30,18 @@
     }
 </script>
 
-<form id="create-category-form" th:action="@{/categories}" method="post" th:object="${category}" onsubmit="saveCategory(event)">
+<form id="create-category-form" th:action="@{/categories}" method="post" th:object="${category}"
+      onsubmit="saveCategory(event)" sec:authorize="hasAnyAuthority('ADMIN')">
     <div class="form-group">
         <label class="col-form-label" for="create-category-name-input">Category name </label>
-        <input type="text" class="form-control" placeholder="name" id="create-category-name-input" name="name" th:field="*{name}" required/>
+        <input type="text" class="form-control" placeholder="name" id="create-category-name-input" name="name"
+               th:field="*{name}" required/>
         <small class="text-danger" id="create-category-error-small"></small>
     </div>
     <div class="form-group">
         <label class="col-form-label" for="create-category-price-input">Category price </label>
-        <input type="number" class="form-control" placeholder="name" id="create-category-price-input" name="price" th:field="*{price}" required/>
+        <input type="number" class="form-control" placeholder="name" id="create-category-price-input" name="price"
+               th:field="*{price}" required/>
     </div>
     <div class="form-group">
         <button type="submit" class="form-control btn btn-light" value="Submit">

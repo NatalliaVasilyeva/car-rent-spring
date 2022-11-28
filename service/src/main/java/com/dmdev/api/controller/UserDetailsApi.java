@@ -7,14 +7,12 @@ import com.dmdev.service.UserDetailsService;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserDetailsBadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +42,7 @@ public class UserDetailsApi {
     }
 
     @PostMapping("/{id}/update")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String update(@PathVariable("id") Long id,
                          @ModelAttribute UserDetailsUpdateRequestDto requestDto) {
         return userDetailsService.update(id, requestDto)
@@ -52,6 +51,7 @@ public class UserDetailsApi {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findById(@PathVariable("id") Long id, Model model) {
         return userDetailsService.getById(id)
                 .map(userDetails -> {
@@ -62,6 +62,7 @@ public class UserDetailsApi {
     }
 
     @GetMapping("/by-user-id")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findByUserId(@RequestParam() Long id, Model model) {
         return userDetailsService.getByUserId(id)
                 .map(userDetails -> {
@@ -72,6 +73,7 @@ public class UserDetailsApi {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAll(Model model,
                           @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
                           @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -84,6 +86,7 @@ public class UserDetailsApi {
     }
 
     @GetMapping("/by-name-surname")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByUserNameAndSurname(Model model,
                                               @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
                                               @RequestParam(required = false) String name,
@@ -97,6 +100,7 @@ public class UserDetailsApi {
     }
 
     @GetMapping("/by-registration-date")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByRegistrationDate(Model model,
                                             @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
                                             @RequestParam(required = false) LocalDate registrationDate) {
@@ -109,6 +113,7 @@ public class UserDetailsApi {
     }
 
     @GetMapping("/by-registration-dates")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByRegistrationDates(Model model,
                                              @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
                                              @RequestParam(required = false) LocalDate from,
@@ -122,6 +127,7 @@ public class UserDetailsApi {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String delete(@PathVariable("id") Long id) {
         if (!userDetailsService.deleteById(id)) {
             throw new NotFoundException(String.format("User details with id %s does not exist.", id));

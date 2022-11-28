@@ -1,24 +1,20 @@
-package integration.com.dmdev.api;
+package integration.com.dmdev.api.controller;
 
+import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
-import com.dmdev.service.UserDetailsService;
+import com.dmdev.service.DriverLicenseService;
 import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;
+import integration.com.dmdev.auth.WithMockCustomUser;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.time.LocalDate;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,16 +28,19 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class UserDetailsApiTestIT extends IntegrationBaseTest {
+class DriverLicenseApiTestIT extends IntegrationBaseTest {
 
-    private static final String ENDPOINT = "/user-details";
+    private static final String ENDPOINT = "/driver-licenses";
 
-    private final UserDetailsService userDetailsService;
+    static final String MOCK_USERNAME = "admin@gmail.com";
+
+    private final DriverLicenseService driverLicenseService;
     private final UserService userService;
     private final MockMvc mockMvc;
     private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/8974239878");
 
@@ -55,19 +54,21 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    void shouldReturnUserDetailsByIdCorrectly() throws Exception {
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+    void shouldReturnDriverLicenseByIdCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
-        var expectedUserDetails = savedUser.get().getUserDetailsDto();
+        var expectedDriverLicense = savedUser.get().getDriverLicenseDto();
 
-        assertExpectedIsSaved(expectedUserDetails, expectedUserDetails.getId());
+        assertExpectedIsSaved(expectedDriverLicense, expectedDriverLicense.getId());
     }
 
     @Test
-    void shouldReturnUserDetailsByUserIdCorrectly() throws Exception {
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+    void shouldReturnDriverLicenseByUserIdCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
-        var expectedUserDetails = savedUser.get().getUserDetailsDto();
+        var expectedDriverLicense = savedUser.get().getDriverLicenseDto();
 
         var uriBuilder = fromUriString(ENDPOINT + "/by-user-id");
         var result = mockMvc.perform(
@@ -77,65 +78,51 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                                 .param("id", String.valueOf(savedUser.get().getId())))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("userDetails"))
+                .andExpect(model().attributeExists("driverLicense"))
                 .andReturn();
 
-        var responseDto = (UserDetailsResponseDto) result.getModelAndView().getModel().get("userDetails");
+        var responseDto = (DriverLicenseResponseDto) result.getModelAndView().getModel().get("driverLicense");
 
-        assertThat(responseDto.getId()).isEqualTo(expectedUserDetails.getId());
-        assertThat(responseDto.getName()).isEqualTo(expectedUserDetails.getName());
-        assertThat(responseDto.getSurname()).isEqualTo(expectedUserDetails.getSurname());
-        assertThat(responseDto.getAddress()).isEqualTo(expectedUserDetails.getAddress());
-        assertThat(responseDto.getPhone()).isEqualTo(expectedUserDetails.getPhone());
-        assertThat(responseDto.getBirthday()).isEqualTo(expectedUserDetails.getBirthday());
+        assertThat(responseDto.getId()).isEqualTo(expectedDriverLicense.getId());
+        assertThat(responseDto.getUserId()).isEqualTo(expectedDriverLicense.getUserId());
+        assertThat(responseDto.getDriverLicenseNumber()).isEqualTo(expectedDriverLicense.getDriverLicenseNumber());
+        assertThat(responseDto.getDriverLicenseIssueDate()).isEqualTo(expectedDriverLicense.getDriverLicenseIssueDate());
+        assertThat(responseDto.getDriverLicenseExpiredDate()).isEqualTo(expectedDriverLicense.getDriverLicenseExpiredDate());
     }
 
     @Test
-    void shouldReturnUserDetailsByNameAndSurnameCorrectly() throws Exception {
-        var uriBuilder = fromUriString(ENDPOINT + "/by-name-surname");
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+    void shouldReturnDriverLicenseByNumberCorrectly() throws Exception {
+        var uriBuilder = fromUriString(ENDPOINT + "/by-number");
         mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("name", "v")
-                                .param("surname", "k"))
+                                .param("number", "AAA*"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("usersDetailsPage"))
+                .andExpect(model().attributeExists("driverLicensesPage"))
                 .andReturn();
     }
 
     @Test
-    void shouldReturnUserDetailsByRegistrationDateCorrectly() throws Exception {
-        var uriBuilder = fromUriString(ENDPOINT + "/by-registration-date");
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+    void shouldReturnAllExpiredDriverLicenseCorrectly() throws Exception {
+        var uriBuilder = fromUriString(ENDPOINT + "/expired");
         mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("registrationDate", LocalDate.now().toString()))
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("usersDetailsPage"))
+                .andExpect(model().attributeExists("driverLicensesPage"))
                 .andReturn();
     }
 
-    @Test
-    void shouldReturnUserDetailsByRegistrationDatesCorrectly() throws Exception {
-        var uriBuilder = fromUriString(ENDPOINT + "/by-registration-dates");
-        mockMvc.perform(
-                        get(uriBuilder.build().encode().toUri())
-                                .headers(commonHeaders)
-                                .accept(MediaType.TEXT_HTML)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("from", LocalDate.now().toString())
-                                .param("to", LocalDate.now().toString()))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("usersDetailsPage"))
-                .andReturn();
-    }
 
     @Test
-    void shouldReturnAllUsersDetails() throws Exception {
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+    void shouldReturnAllDriverLicenses() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT);
         var result = mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
@@ -143,58 +130,60 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("usersDetailsPage"))
+                .andExpect(model().attributeExists("driverLicensesPage"))
                 .andReturn();
 
-        var userDetails = ((Page<UserDetailsResponseDto>) result.getModelAndView().getModel().get("usersDetailsPage")).getContent();
-        assertThat(userDetails).hasSize(2);
+        var driverLicenses = ((Page<UserDetailsResponseDto>) result.getModelAndView().getModel().get("driverLicensesPage")).getContent();
+        assertThat(driverLicenses).hasSize(2);
     }
 
 
     @Test
-    void shouldUpdateUserCorrectly() throws Exception {
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+    void shouldUpdateDriverLicenseCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
-        var expectedUserDetails = savedUser.get().getUserDetailsDto();
+        var expectedDriverLicense = savedUser.get().getDriverLicenseDto();
 
-        assertExpectedIsSaved(expectedUserDetails, expectedUserDetails.getId());
+        assertExpectedIsSaved(expectedDriverLicense, expectedDriverLicense.getId());
 
-        var userDetailsUpdateRequestDTO = TestDtoBuilder.createUserDetailsUpdateRequestDTO();
-        var uriBuilder = fromUriString(ENDPOINT + "/" + expectedUserDetails.getId() + "/update");
+        var driverLicenseUpdateRequestDTO = TestDtoBuilder.createDriverLicenseUpdateRequestDTO();
+        var uriBuilder = fromUriString(ENDPOINT + "/" + expectedDriverLicense.getId() + "/update");
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("name", userDetailsUpdateRequestDTO.getName())
-                                .param("surname", userDetailsUpdateRequestDTO.getSurname())
-                                .param("address", userDetailsUpdateRequestDTO.getAddress())
-                                .param("phone", userDetailsUpdateRequestDTO.getPhone()))
+                                .param("driverLicenseNumber", driverLicenseUpdateRequestDTO.getDriverLicenseNumber())
+                                .param("driverLicenseIssueDate", driverLicenseUpdateRequestDTO.getDriverLicenseIssueDate().toString())
+                                .param("driverLicenseExpiredDate", driverLicenseUpdateRequestDTO.getDriverLicenseExpiredDate().toString()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "/users/" + expectedUserDetails.getId()));
+                .andExpect(header().string("Location", "/users/" + expectedDriverLicense.getUserId()));
     }
 
 
     @Test
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn3xxOnDelete() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
         assertThat(savedUser).isPresent();
-        var expectedUserDetails = savedUser.get().getUserDetailsDto();
+        var expectedDriverLicense = savedUser.get().getUserDetailsDto();
 
-        mockMvc.perform(post(fromUriString(ENDPOINT + "/" + expectedUserDetails.getId() + "/delete").build().encode().toUri())
+        mockMvc.perform(post(fromUriString(ENDPOINT + "/" + expectedDriverLicense.getId() + "/delete").build().encode().toUri())
                         .headers(commonHeaders)
                         .accept(MediaType.TEXT_HTML)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT));
 
-        var result = assertThrowsExactly(NotFoundException.class, () -> userDetailsService.getById(expectedUserDetails.getId()));
+        var result = assertThrowsExactly(NotFoundException.class, () -> driverLicenseService.getById(expectedDriverLicense.getId()));
 
-        assertEquals("404 NOT_FOUND \"User details with id 3 does not exist.\"", result.getMessage());
+        assertEquals("404 NOT_FOUND \"Driver license with id 3 does not exist.\"", result.getMessage());
     }
 
     @Test
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn404onNoDelete() throws Exception {
         mockMvc.perform(post(fromUriString(ENDPOINT + "4782749/delete").build().encode().toUri())
                         .headers(commonHeaders)
@@ -203,7 +192,7 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
                 .andExpect(status().isNotFound());
     }
 
-    private void assertExpectedIsSaved(UserDetailsResponseDto expected, Long id) throws Exception {
+    private void assertExpectedIsSaved(DriverLicenseResponseDto expected, Long id) throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/" + id);
         var result = mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
@@ -211,16 +200,14 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("userDetails"))
+                .andExpect(model().attributeExists("driverLicense"))
                 .andReturn();
 
-        var responseDto = (UserDetailsResponseDto) result.getModelAndView().getModel().get("userDetails");
+        var responseDto = (DriverLicenseResponseDto) result.getModelAndView().getModel().get("driverLicense");
 
         assertThat(responseDto.getId()).isEqualTo(expected.getId());
-        assertThat(responseDto.getName()).isEqualTo(expected.getName());
-        assertThat(responseDto.getSurname()).isEqualTo(expected.getSurname());
-        assertThat(responseDto.getAddress()).isEqualTo(expected.getAddress());
-        assertThat(responseDto.getPhone()).isEqualTo(expected.getPhone());
-        assertThat(responseDto.getBirthday()).isEqualTo(expected.getBirthday());
+        assertThat(responseDto.getDriverLicenseNumber()).isEqualTo(expected.getDriverLicenseNumber());
+        assertThat(responseDto.getDriverLicenseIssueDate()).isEqualTo(expected.getDriverLicenseIssueDate());
+        assertThat(responseDto.getDriverLicenseExpiredDate()).isEqualTo(expected.getDriverLicenseExpiredDate());
     }
 }

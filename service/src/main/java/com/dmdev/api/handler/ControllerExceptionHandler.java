@@ -5,7 +5,6 @@ import com.dmdev.service.exception.CategoryBadRequestException;
 import com.dmdev.service.exception.DriverLicenseBadRequestException;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.OrderBadRequestException;
-import com.dmdev.service.exception.RentCarException;
 import com.dmdev.service.exception.UnauthorizedException;
 import com.dmdev.service.exception.UserBadRequestException;
 import lombok.extern.slf4j.Slf4j;

@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <script type="text/javascript" th:src="@{/js/brand/brand.js}"></script>
     <meta charset="UTF-8">
@@ -16,7 +19,7 @@
                 <span th:size="16" class="mr-2">Search by name</span>
                 <button
                         class="from-control btn btn-light btn-lg btn-block"
-                        onclick="ShowSearchByNameForm()">Search
+                        onclick="ShowSearchByNameForm()">Search by name
                 </button>
             </div>
             <div class="row" id="search-name-form" style="display: none">
@@ -54,15 +57,12 @@
                         </td>
                         <button class="btn btn-light mb-2" type="submit">Search</button>
                     </div>
-<!--                    <div class="col-md-8 mb-3 content-center">-->
-<!--                        <button type="submit">Search</button>-->
-<!--                    </div>-->
                 </form>
             </div>
         </div>
     </div>
     <div>
-        <div class="container my-5">
+        <div class="container my-5" sec:authorize="hasAnyAuthority('ADMIN')">
             <div class="form-group row">
                 <span th:size="16" class="mr-2">Search all full view</span>
             </div>
@@ -106,7 +106,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="form-group row">
+                                    <div class="form-group row" sec:authorize="hasAnyAuthority('ADMIN')">
                                         <form th:action="@{/brands/{brandId}/delete(brandId=${brand.id})}"
                                               method="post">
                                             <button class="btn btn-dark btn-xs">
@@ -115,7 +115,7 @@
                                             </button>
                                         </form>
                                     </div>
-                                    <div class="form-group row">
+                                    <div class="form-group row" sec:authorize="hasAnyAuthority('ADMIN')">
                                         <form th:action="@{/brands/{brandId}(brandId=${brand.id})}"
                                               method="get">
                                             <button class="btn btn-dark btn-xs">

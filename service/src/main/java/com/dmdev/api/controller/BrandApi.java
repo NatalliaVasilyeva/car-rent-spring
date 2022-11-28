@@ -4,17 +4,15 @@ import com.dmdev.domain.dto.brand.request.BrandCreateEditRequestDto;
 import com.dmdev.domain.dto.brand.response.BrandResponseDto;
 import com.dmdev.domain.projection.BrandFullView;
 import com.dmdev.service.BrandService;
-import com.dmdev.service.exception.DriverLicenseBadRequestException;
+import com.dmdev.service.exception.BrandBadRequestException;
 import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Controller
 @RequestMapping(path = "/brands")
 @RequiredArgsConstructor
@@ -38,6 +34,7 @@ public class BrandApi {
     private final BrandService brandService;
 
     @GetMapping("/create")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String createBrand(Model model, @ModelAttribute BrandCreateEditRequestDto brand) {
         model.addAttribute("brand", brand);
         model.addAttribute("brands", brandService.getAll());
@@ -45,24 +42,27 @@ public class BrandApi {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String create(@ModelAttribute BrandCreateEditRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         return brandService.create(requestDto)
                 .map(brand -> {
                     redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "You create brand successfully.");
                     return "redirect:/brands";
-                }).orElseThrow(() -> new DriverLicenseBadRequestException("Can not create brand. Please check input parameters"));
+                }).orElseThrow(() -> new BrandBadRequestException("Can not create brand. Please check input parameters"));
     }
 
     @PostMapping("/{id}/update")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String update(@PathVariable("id") Long id,
                          @ModelAttribute BrandCreateEditRequestDto requestDto) {
         return brandService.update(id, requestDto)
                 .map(driverLicense -> "redirect:/brands/{id}")
-                .orElseThrow(() -> new DriverLicenseBadRequestException("Can not update brand. Please check input parameters"));
+                .orElseThrow(() -> new BrandBadRequestException("Can not update brand. Please check input parameters"));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findById(@PathVariable("id") Long id, Model model) {
         return brandService.getById(id)
                 .map(brand -> {
@@ -74,6 +74,7 @@ public class BrandApi {
     }
 
     @GetMapping("/by-name")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findByName(@RequestParam() String name, Model model) {
         return brandService.getByName(name)
                 .map(brand -> {
@@ -86,6 +87,7 @@ public class BrandApi {
     }
 
     @GetMapping("/by-names")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findByNames(@RequestParam(required = false) List<String> names, Model model) {
         var brands = names != null ? brandService.getByNames(names) : new ArrayList<BrandResponseDto>();
         var brandPage = new PageImpl<>(brands);
@@ -96,6 +98,7 @@ public class BrandApi {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findAll(Model model,
                           @RequestParam(required = false, defaultValue = "1") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
@@ -107,6 +110,7 @@ public class BrandApi {
     }
 
     @GetMapping("/all-full-view")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllFullView(Model model) {
         var brands = brandService.getAllFullView();
         var brandFullViewPage = new PageImpl<>(brands);
@@ -117,6 +121,7 @@ public class BrandApi {
     }
 
     @GetMapping("/by-id-all-full-view")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllFullViewById(Model model, @PathVariable("id") Long id) {
         var brand = brandService.getByIdFullView(id);
         Page<BrandFullView> brandFullViewPage = brand.isEmpty()
@@ -130,6 +135,7 @@ public class BrandApi {
     }
 
     @GetMapping("/by-name-all-full-view")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllFullViewByName(Model model,
                                         @PathVariable("id") String name) {
         var brands = brandService.getByNameFullView(name);
@@ -142,6 +148,7 @@ public class BrandApi {
 
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String delete(@PathVariable("id") Long id) {
         if (!brandService.deleteById(id)) {
             throw new NotFoundException(String.format("Brand with id %s does not exist.", id));

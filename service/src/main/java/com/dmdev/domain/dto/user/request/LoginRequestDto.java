@@ -2,7 +2,6 @@ package com.dmdev.domain.dto.user.request;
 
 import lombok.Value;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -10,7 +9,7 @@ import javax.validation.constraints.Size;
 public class LoginRequestDto {
 
     @NotEmpty
-    String username;
+    String email;
 
     @NotEmpty
     @Size(min = 8, message = "Password should have at least 8 characters")

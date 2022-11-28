@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <script type="text/javascript" th:src="@{/js/user/users.js}"></script>
     <meta charset="UTF-8">
@@ -9,7 +12,7 @@
 
 <body>
 <div th:replace="layout/header/header :: header"/>
-<div class="container-fluid">
+<div class="container-fluid" sec:authorize="hasAnyAuthority('ADMIN')">
     <div class="col-lg-auto">
         <h3 class="text-center">Search Users</h3>
         <div class="container">
