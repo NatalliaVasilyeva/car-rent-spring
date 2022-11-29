@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <meta charset="UTF-8">
@@ -14,7 +16,9 @@
     function saveBrand(e) {
         var name = document.getElementById("create-brand-name-input").value;
         var brands = [[${brands}]];
-        var brandsNames = brands.map(function (el) { return el.name; });
+        var brandsNames = brands.map(function (el) {
+            return el.name;
+        });
         if (brandsNames.includes(name)) {
             e.preventDefault();
             $("#create-brand-name-input").addClass("is-invalid");
@@ -26,10 +30,12 @@
     }
 </script>
 
-<form id="create-brand-form" th:action="@{/brands}" method="post" th:object="${brand}" onsubmit="saveBrand(event)">
+<form id="create-brand-form" sec:authorize="hasAnyAuthority('ADMIN')" th:action="@{/brands}" method="post"
+      th:object="${brand}" onsubmit="saveBrand(event) ">
     <div class="form-group">
         <label class="col-form-label" for="create-brand-name-input">Brand name </label>
-        <input type="text" class="form-control" placeholder="name" id="create-brand-name-input" name="name" th:field="*{name}" required/>
+        <input type="text" class="form-control" placeholder="name" id="create-brand-name-input" name="name"
+               th:field="*{name}" required/>
         <small class="text-danger" id="create-brand-error-small"></small>
     </div>
     <div class="form-group">
@@ -38,5 +44,13 @@
         </button>
     </div>
 </form>
+
+<div>
+    <span>If you do not see necessary model, please add new one</span>
+    <div class="form-group row btn btn-light btn-lg btn-block" id="show-brand-models-button-div">
+        <a th:href="@{/models/create/}"
+           class="btn btn-info" role="button">Create model</a>
+    </div>
+</div>
 </body>
 </html>

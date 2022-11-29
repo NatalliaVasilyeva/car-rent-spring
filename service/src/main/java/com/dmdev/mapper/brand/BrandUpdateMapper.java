@@ -15,7 +15,7 @@ public class BrandUpdateMapper implements UpdateMapper<BrandCreateEditRequestDto
     }
 
     @Override
-   public void merge(BrandCreateEditRequestDto requestDto, Brand existing) {
+    public void merge(BrandCreateEditRequestDto requestDto, Brand existing) {
 
         existing.setName(requestDto.getName());
     }

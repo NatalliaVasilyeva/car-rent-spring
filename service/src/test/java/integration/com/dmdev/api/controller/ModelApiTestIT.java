@@ -1,22 +1,22 @@
-package integration.com.dmdev.api;
+package integration.com.dmdev.api.controller;
 
-import com.dmdev.domain.dto.category.response.CategoryResponseDto;
-import com.dmdev.service.CategoryService;
+import com.dmdev.domain.dto.model.ModelResponseDto;
+import com.dmdev.service.BrandService;
+import com.dmdev.service.CarService;
+import com.dmdev.service.ModelService;
 import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;
+import integration.com.dmdev.auth.WithMockCustomUser;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-
+import static integration.com.dmdev.api.controller.ModelApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -29,13 +29,15 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class CategoryApiTestIT extends IntegrationBaseTest {
+@WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+class ModelApiTestIT extends IntegrationBaseTest {
 
-    private static final String ENDPOINT = "/categories";
-
-    private final CategoryService categoryService;
+    private static final String ENDPOINT = "/models";
+    static final String MOCK_USERNAME = "admin@gmail.com";
+    private final BrandService brandService;
+    private final ModelService modelService;
     private final MockMvc mockMvc;
-    private HttpHeaders commonHeaders = new HttpHeaders();
+    private final HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
@@ -50,57 +52,64 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldCreateCategoryCorrectly() throws Exception {
-        var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
+    void shouldCreateModelCorrectly() throws Exception {
+        var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
+        var savedBrand = brandService.create(brandCreateRequestDto);
+        var modelCreateRequestDto = TestDtoBuilder.createModelRequestDto(savedBrand.get().getId());
         var uriBuilder = fromUriString(ENDPOINT);
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("name", categoryCreateEditRequestDto.getName())
-                                .param("price", categoryCreateEditRequestDto.getPrice().toString()))
+                                .param("brandId", modelCreateRequestDto.getBrandId().toString())
+                                .param("name", modelCreateRequestDto.getName())
+                                .param("transmission", modelCreateRequestDto.getTransmission().name())
+                                .param("engineType", modelCreateRequestDto.getEngineType().name()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "/categories"));
+                .andExpect(header().string("Location", "/models"));
     }
 
     @Test
-    void shouldReturnCategoryByIdCorrectly() throws Exception {
-        var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
-        var saved = categoryService.create(categoryCreateEditRequestDto);
+    void shouldReturnModelByIdCorrectly() throws Exception {
+        var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
+        var savedBrand = brandService.create(brandCreateRequestDto);
+        var modelCreateRequestDto = TestDtoBuilder.createModelRequestDto(savedBrand.get().getId());
+        var saved = modelService.create(modelCreateRequestDto);
         var expected = saved.get();
 
         assertExpectedIsSaved(expected, expected.getId());
     }
 
     @Test
-    void shouldReturnCategoriesByPriceCorrectly() throws Exception {
-        var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
-        var saved = categoryService.create(categoryCreateEditRequestDto);
+    void shouldReturnModelByBrandId() throws Exception {
+        var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
+        var savedBrand = brandService.create(brandCreateRequestDto);
+        var modelCreateRequestDto = TestDtoBuilder.createModelRequestDto(savedBrand.get().getId());
+        var saved = modelService.create(modelCreateRequestDto);
         var expected = saved.get();
 
-        var uriBuilder = fromUriString(ENDPOINT + "/by-price");
+        var uriBuilder = fromUriString(ENDPOINT + "/brand-id");
         var result = mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("price", "120")
-                                .param("type", "equals"))
+                                .param("brandId", savedBrand.get().getId().toString()))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attributeExists("modelPage"))
                 .andReturn();
 
-        var categories = (List<CategoryResponseDto>) result.getModelAndView().getModel().get("categories");
+        var models = ((Page<ModelResponseDto>) result.getModelAndView().getModel().get("modelPage")).getContent();
 
-        assertThat(categories).hasSize(1);
-        assertThat(categories.get(0).getId()).isEqualTo(expected.getId());
-        assertThat(categories.get(0).getName()).isEqualTo(expected.getName());
-        assertThat(categories.get(0).getPrice()).isEqualTo(expected.getPrice());
+        assertThat(models).hasSize(1);
+        assertThat(models.get(0).getId()).isEqualTo(expected.getId());
+        assertThat(models.get(0).getBrand()).isEqualTo(expected.getBrand());
     }
 
+
     @Test
-    void shouldReturnAllCategories() throws Exception {
+    void shouldReturnAllModels() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT);
         var result = mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
@@ -108,38 +117,45 @@ class CategoryApiTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attributeExists("modelPage"))
                 .andReturn();
 
-        var categories = (List<CategoryResponseDto>) result.getModelAndView().getModel().get("categories");
-        assertThat(categories).hasSize(2);
+        var models = ((Page<ModelResponseDto>) result.getModelAndView().getModel().get("modelPage")).getContent();
+        assertThat(models).hasSize(2);
     }
 
 
     @Test
-    void shouldUpdateCategoryCorrectly() throws Exception {
-        var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
-        var saved = categoryService.create(categoryCreateEditRequestDto);
+    void shouldUpdateModelCorrectly() throws Exception {
+        var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
+        var savedBrand = brandService.create(brandCreateRequestDto);
+        var modelCreateRequestDto = TestDtoBuilder.createModelRequestDto(savedBrand.get().getId());
+
+        var saved = modelService.create(modelCreateRequestDto);
         var expected = saved.get();
 
         assertExpectedIsSaved(expected, expected.getId());
 
-        var categoryUpdateRequestDto = TestDtoBuilder.createCategoryUpdateRequestDto();
+        var modelUpdateRequestDto = TestDtoBuilder.createModelUpdateRequestDTO();
         var uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/update");
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("name", categoryUpdateRequestDto.getName()))
+                                .param("name", modelUpdateRequestDto.getName())
+                                .param("transmission", modelUpdateRequestDto.getTransmission().name())
+                                .param("engineType", modelUpdateRequestDto.getEngineType().name()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT + "/" + expected.getId()));
     }
 
     @Test
     void shouldReturn3xxOnDelete() throws Exception {
-        var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
-        var saved = categoryService.create(categoryCreateEditRequestDto);
+        var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
+        var savedBrand = brandService.create(brandCreateRequestDto);
+        var modelCreateRequestDto = TestDtoBuilder.createModelRequestDto(savedBrand.get().getId());
+        var saved = modelService.create(modelCreateRequestDto);
 
         assertThat(saved).isPresent();
 
@@ -150,9 +166,9 @@ class CategoryApiTestIT extends IntegrationBaseTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT));
 
-        var result = assertThrowsExactly(NotFoundException.class, () -> categoryService.getById(saved.get().getId()));
+        var result = assertThrowsExactly(NotFoundException.class, () -> modelService.getById(saved.get().getId()));
 
-        assertEquals("404 NOT_FOUND \"Category with id 3 does not exist.\"", result.getMessage());
+        assertEquals("404 NOT_FOUND \"Model with id 3 does not exist.\"", result.getMessage());
     }
 
     @Test
@@ -164,7 +180,7 @@ class CategoryApiTestIT extends IntegrationBaseTest {
                 .andExpect(status().isNotFound());
     }
 
-    private void assertExpectedIsSaved(CategoryResponseDto expected, Long id) throws Exception {
+    private void assertExpectedIsSaved(ModelResponseDto expected, Long id) throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/" + id);
         var result = mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
@@ -172,12 +188,15 @@ class CategoryApiTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("category"))
+                .andExpect(model().attributeExists("model"))
                 .andReturn();
 
-        var responseDto = (CategoryResponseDto) result.getModelAndView().getModel().get("category");
+        var responseDto = (ModelResponseDto) result.getModelAndView().getModel().get("model");
 
         assertThat(responseDto.getId()).isEqualTo(id);
+        assertThat(responseDto.getBrand()).isEqualTo(expected.getBrand());
         assertThat(responseDto.getName()).isEqualTo(expected.getName());
+        assertThat(responseDto.getTransmission()).isEqualTo(expected.getTransmission());
+        assertThat(responseDto.getEngineType()).isEqualTo(expected.getEngineType());
     }
 }

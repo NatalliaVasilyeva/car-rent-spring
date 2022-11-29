@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS brand (
 --Category
 CREATE TABLE IF NOT EXISTS category (
     id       BIGSERIAL PRIMARY KEY,
-    name     VARCHAR(255) NOT NULL UNIQUE DEFAULT 'economy',
+    name     VARCHAR(255)   NOT NULL UNIQUE            DEFAULT 'economy',
     price    NUMERIC(10, 2) NOT NULL CHECK (price > 0) default '50'
 
 );
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS car (
         FOREIGN KEY (category_id) REFERENCES category (id)
             ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT brand_category_fk
-        FOREIGN KEY (brand_id) REFERENCES category (id)
+        FOREIGN KEY (brand_id) REFERENCES brand (id)
             ON UPDATE CASCADE ON DELETE SET NULL
 );
 

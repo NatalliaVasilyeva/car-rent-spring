@@ -9,9 +9,6 @@ import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_USER_DETAILS_ID_FOR_DELETE;
 import static java.util.stream.Collectors.toList;

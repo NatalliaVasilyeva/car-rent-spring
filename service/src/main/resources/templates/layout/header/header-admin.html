@@ -97,11 +97,12 @@
                 <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" th:href="@{'/users/profile'}">Profile</a>
-                    <a class="dropdown-item" th:href="@{'/settings'}">Settings</a>
-                    <a class="dropdown-item" th:href="@{'/users/logout'}"
-                       class="nav-link d-flex align-items-center">Logout</a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink"
+                     th:with="auth=${#authentication.principal}">
+                    <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}">Profile</a>
+                    <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}">Settings</a>
+                    <a class="dropdown-item nav-link d-flex align-items-center" sec:authorize="isAuthenticated()"
+                       th:href="@{'/logout'}">Logout</a>
                 </div>
             </li>
         </ul>

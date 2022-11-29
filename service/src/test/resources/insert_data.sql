@@ -1,6 +1,6 @@
 INSERT INTO car_rent.users (id, username, email, password, role)
-VALUES (1, 'Admin', 'admin@gmail.com', 'VmFzaWxlY2hla0JlbDEyMyE=', 'ADMIN'),
-       (2, 'Client', 'client@gmail.com', 'VmFzaWxlY2hla0JlbDEyMyE=', 'CLIENT');
+VALUES (1, 'Admin', 'admin@gmail.com', '{noop}TestTest1234!', 'ADMIN'),
+       (2, 'Client', 'client@gmail.com', '{noop}TestTest1234!', 'CLIENT');
 SELECT SETVAL('car_rent.users_id_seq', (SELECT MAX(id) FROM car_rent.users));
 
 INSERT INTO car_rent.user_details (id, user_id, name, surname, address, phone, birthday, registration_date)
@@ -29,12 +29,16 @@ SELECT SETVAL('car_rent.brand_id_seq', (SELECT MAX(id) FROM car_rent.brand));
 
 INSERT INTO car_rent.model (id, brand_id, name, transmission, engine_type)
 VALUES (1, (SELECT id FROM car_rent.brand WHERE name = 'audi'), 'A8', 'MANUAL', 'FUEL'),
-       (2, (SELECT id FROM car_rent.brand WHERE name = 'mercedes'),'Benz', 'ROBOT', 'FUEL');
+       (2, (SELECT id FROM car_rent.brand WHERE name = 'mercedes'), 'Benz', 'ROBOT', 'FUEL');
 SELECT SETVAL('car_rent.model_id_seq', (SELECT MAX(id) FROM car_rent.model));
 
 INSERT INTO car_rent.car (id, brand_id, model_id, category_id, color, year, car_number, vin, repaired)
-VALUES (1, (SELECT id FROM car_rent.brand WHERE name = 'audi'), '1', (SELECT id FROM car_rent.category WHERE name = 'ECONOMY'), 'WHITE', '2020', '7865AE-7', 'AmhBHqJ8BgD0p3PRgkoi', 'false'),
-       (2, (SELECT id FROM car_rent.brand WHERE name = 'mercedes'), '2', (SELECT id FROM car_rent.category WHERE name = 'BUSINESS'), 'RED', '2022', '7834AE-7', 'AmhBdhjJ8BgD0p3PRgkoi', 'false');
+VALUES (1, (SELECT id FROM car_rent.brand WHERE name = 'audi'), '1',
+        (SELECT id FROM car_rent.category WHERE name = 'ECONOMY'), 'WHITE', '2020', '7865AE-7', 'AmhBHqJ8BgD0p3PRgkoi',
+        'false'),
+       (2, (SELECT id FROM car_rent.brand WHERE name = 'mercedes'), '2',
+        (SELECT id FROM car_rent.category WHERE name = 'BUSINESS'), 'RED', '2022', '7834AE-7', 'AmhBdhjJ8BgD0p3PRgkoi',
+        'false');
 SELECT SETVAL('car_rent.car_id_seq', (SELECT MAX(id) FROM car_rent.car));
 
 INSERT INTO car_rent.orders (id, date, user_id, car_id, passport, insurance, order_status, sum)

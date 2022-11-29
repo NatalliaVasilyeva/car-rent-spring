@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(scripts)(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+<div class="container">
+    <form id="sign-in-form" th:action="@{/login}" method="post">
+        <div class="form-group" style="color: red" th:if="${param.error}">
+            Bad credentials
+        </div>
+        <div class="form-group">
+            Email
+            <input type="email" name="email" class="form-control" placeholder="email"
+                   maxlength="40" title="email"
+                   autocomplete="off" id="sign-in-email-input" required/>
+            <small class="text-danger" id="sign-in-email-error-small"></small>
+        </div>
+        <div class="form-group">
+            Password
+            <input type="password" name="password" class="form-control" placeholder="password"
+                   id="sign-in-password-input"
+                   pattern="(?=^.{6,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+                   maxlength="40" title="password"
+                   autocomplete="off" required/>
+            <small class="text-danger" id="sign-in-password-error-small"></small>
+        </div>
+        <div class="form-group mb7-m">
+            <div>Login with:</div>
+            <a href="/oauth2/authorization/google">Google</a>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="form-control btn btn-light signupbtn" value="Submit">
+                Sign in
+            </button>
+        </div>
+    </form>
+</div>
+</body>

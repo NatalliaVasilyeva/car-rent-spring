@@ -1,24 +1,19 @@
 package com.dmdev.api.controller;
 
 import com.dmdev.domain.dto.filterdto.UserFilter;
-import com.dmdev.domain.dto.user.request.LoginRequestDto;
 import com.dmdev.domain.dto.user.request.UserChangePasswordDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
 import com.dmdev.domain.model.Role;
 import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
-import com.dmdev.service.exception.UnauthorizedException;
 import com.dmdev.service.exception.UserBadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 
 @Controller
@@ -37,7 +31,7 @@ public class UserApi {
     private static final String SUCCESS_ATTRIBUTE = "success_message";
     private final UserService userService;
 
-    @PostMapping()
+    @PostMapping("/sing-up")
     public String create(@ModelAttribute("registration") UserCreateRequestDto userCreateRequestDto, BindingResult bindingResult,
                          RedirectAttributes redirectedAttributes) {
 
@@ -52,29 +46,9 @@ public class UserApi {
                 }).orElseThrow(() -> new UserBadRequestException("Can not create user. Please check input parameters"));
     }
 
-    @PostMapping("/sign-in")
-    public String login(@ModelAttribute LoginRequestDto loginRequestDto,
-                        RedirectAttributes redirectedAttributes,
-                        HttpServletRequest request) {
-        return userService.login(loginRequestDto)
-                .map(user -> {
-                            request.getSession().setAttribute("user", user);
-                            redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "Your login was successfully. Now you can choose car");
-                            return "redirect:/welcome";
-                        }
-                ).orElseThrow(() -> new UnauthorizedException("User with these credentials does not exist. Please try again"));
-    }
-
-    @PostMapping("/logout")
-    public String logout(@ModelAttribute LoginRequestDto loginRequestDto,
-                         RedirectAttributes redirectedAttributes,
-                         HttpServletRequest request) {
-        request.getSession().invalidate();
-        redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "You logout successfully");
-        return "redirect:/welcome";
-    }
 
     @PostMapping("/{id}/update")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String update(@PathVariable("id") Long id,
                          @ModelAttribute("updateUser") UserUpdateRequestDto userUpdateRequestDto) {
         return userService.update(id, userUpdateRequestDto)
@@ -83,7 +57,20 @@ public class UserApi {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findById(@PathVariable("id") Long id, Model model) {
+        return userService.getById(id)
+                .map(user -> {
+                    model.addAttribute("user", user);
+                    model.addAttribute("roles", Role.values());
+                    return "layout/user/user";
+                })
+                .orElseThrow(() -> new NotFoundException(String.format("User with id %s does not exist.", id)));
+    }
+
+    @GetMapping("/profile/{id}")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
+    public String findProfileById(@PathVariable("id") Long id, Model model) {
         return userService.getById(id)
                 .map(user -> {
                     model.addAttribute("user", user);
@@ -94,6 +81,7 @@ public class UserApi {
     }
 
     @PostMapping("/{id}/change-password")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String changePassword(@PathVariable("id") Long id,
                                  @ModelAttribute UserChangePasswordDto changedPasswordDto) {
         return userService.changePassword(id, changedPasswordDto)
@@ -102,20 +90,22 @@ public class UserApi {
     }
 
     @PostMapping("/{id}/change-role")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String changeRole(@PathVariable("id") Long id,
-                                 @PathParam(value = "role") Role role) {
+                             @PathParam(value = "role") Role role) {
         return userService.changeRole(id, role)
                 .map(result -> "redirect:/users")
                 .orElseThrow(() -> new UserBadRequestException("Role have not been changed"));
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findAll(Model model,
-                          @ModelAttribute @Nullable UserFilter userFilter,
-                          @RequestParam(required = false, defaultValue = "1") Integer page,
+                          @ModelAttribute UserFilter userFilter,
+                          @RequestParam(required = false, defaultValue = "0") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
 
-        var usersPage = userService.getAll(userFilter, page - 1, size);
+        var usersPage = userService.getAll(userFilter, page, size);
         model.addAttribute("usersPage", usersPage);
         model.addAttribute("filter", userFilter);
         model.addAttribute("roles", Role.values());
@@ -124,6 +114,7 @@ public class UserApi {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String delete(@PathVariable("id") Long id) {
         if (!userService.deleteById(id)) {
             throw new NotFoundException(String.format("User with id %s does not exist.", id));

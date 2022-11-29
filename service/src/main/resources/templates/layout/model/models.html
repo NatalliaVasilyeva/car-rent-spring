@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <script type="text/javascript" th:src="@{/js/car/cars.js}"></script>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+
+<body>
+<div th:replace="layout/header/header :: header"/>
+<div class="container-fluid">
+    <div class="col-lg-auto">
+        <h3 class="text-center">Search models</h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-md-offset-8">
+                    <form class="form ml-3 mt-2" th:action="@{/models}" method="get">
+                        <div class="form-row">
+                            <div class="col-md-3 mb-3">
+                                <label th:for="model-transmission-input">Transmission:</label>
+                                <select class="form-control" th:id="model-transmission-input" name="transmission"
+                                        readonly>
+                                    <option th:id="model-transmission-input" th:each="transmission : ${transmissions}"
+                                            th:value="${transmission}"
+                                            th:text="${transmission.name()}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label th:for="model-transmission-input">Engine type:</label>
+                                <select class="form-control" th:id="model-engine-input" name="engineType" readonly>
+                                    <option th:id="model-engine-input" th:each="engineType : ${engineType}"
+                                            th:value="${engineType}"
+                                            th:text="${engineType.name()}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <p>Models </p>
+                            </br>
+                            <div class="custom-control custom-checkbox custom-control-inline"
+                                 th:each="model: ${models}">
+                                <input type="checkbox" class="custom-control-input" th:id="${model.name}"
+                                       th:value="${model.name}"
+                                       name="models"/>
+                                <label class="custom-control-label" th:for="${model.name}" th:text="${model.name}">Model
+                                    name</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <p>Brands </p>
+                            </br>
+                            <div class="custom-control custom-checkbox custom-control-inline"
+                                 th:each="brand: ${brands}">
+                                <input type="checkbox" class="custom-control-input" th:id="${brand.name}"
+                                       th:value="${brand.name}"
+                                       name="brands"/>
+                                <label class="custom-control-label" th:for="${brand.name}" th:text="${brand.name}">Brand
+                                    name</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <div>
+                                <label for="page">Page(start from 1):</label>
+                                <input id="page" type="number" name="page" min="1"
+                                       th:value="${modelPage.number + 1}">
+                            </div>
+                        </div>
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span th:if="${#lists.isEmpty(modelPage.content)}">There are not available models!</span>
+
+<div th:if="${not #lists.isEmpty(modelPage.content)}">
+    <div class="container-fluid col">
+        <div class="col-lg-auto">
+            <div class="panel panel-default">
+                <h3 class="text-center">Users list</h3>
+                <div class="panel-body table-responsive">
+                    <table class="table table-condensed table-striped text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th></th>
+                            <th scope="col">Id</th>
+                            <th scope="col">Brand</th>
+                            <th scope="col">Model</th>
+                            <th scope="col">Transmission</th>
+                            <th scope="col">EngineType</th>
+                            <th scope="col-2">Action</th>
+                        <tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="model, iStat: ${modelPage.content}"
+                                  th:style="${iStat.odd}? 'font-weight: bold;'"
+                                  th:alt-title="${iStat.even}? 'even' : 'odd'">
+                            <tr>
+                                <td></td>
+                                <td th:text="${model.id}"></td>
+                                <td th:text="${model.brand}"></td>
+                                <td th:text="${model.name}"></td>
+                                <td th:text="${model.transmission.name()}"></td>
+                                <td th:text="${model.engineType.name()}"></td>
+                                <td>
+                                    <form th:action="@{/models/{modelId}/delete(modelId=${model.id})}"
+                                          method="post">
+                                        <button class="btn btn-dark btn-xs">
+                                            <i class="fa fa-trash"
+                                               aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form th:action="@{/models/{modelId}/(modelId=${model.id})}"
+                                          method="get">
+                                        <button class="btn btn-dark btn-xs">
+                                            <i class="fa fa-pencil"
+                                               aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- pagination -->
+                <nav aria-label="Pagination" th:if="${modelPage.totalPages gt 0}">
+                    <ul class="pagination justify-content-center font-weight-bold">
+                        <li class="page-item" th:classappend="${modelPage.number eq 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/cars(page=${modelPage.number lt 2 ? 1 : modelPage.number})}"
+                               aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i eq modelPage.number + 1} ? 'active'"
+                            th:each="i : ${#numbers.sequence( 1, modelPage.totalPages, 1)}">
+                            <a class="page-link" th:href="@{/cars(page=${i})}" th:text="${i}"
+                               th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${modelPage.number + 1 eq modelPage.totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/cars(page=${modelPage.number + 2})}"
+                               aria-label="Next" title="Next Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

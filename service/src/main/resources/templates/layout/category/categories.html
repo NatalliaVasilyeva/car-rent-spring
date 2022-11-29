@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <script type="text/javascript" th:src="@{/js/category/1.js}"></script>
     <meta charset="UTF-8">
@@ -9,41 +12,6 @@
 
 <body>
 <div th:replace="layout/header/header :: header"/>
-
-<!--<div class="container my-5">-->
-<!--    <div class="row">-->
-<!--        <div class="form-row">-->
-<!--            <span th:size="13">Search by price equals</span>-->
-<!--        </div>-->
-
-<!--        <form class="form-inline mt-2" th:action="@{/categories/by-price}" method="get">-->
-<!--            <div class="form-row">-->
-<!--                <label class="mr5-m" for="price">Price:</label>-->
-<!--                <input class="form-control mr5-m" id="price" type="number" name="price">-->
-<!--                <div class="form-check">-->
-<!--                    <label class="form-check-label mr5-m">-->
-<!--                        <input class="form-check-input" type="radio" id="inlineCheckbox1" name="type"-->
-<!--                               value="equals">Equals-->
-<!--                    </label>-->
-<!--                </div>-->
-<!--                <div class="form-check">-->
-<!--                    <label class="form-check-label mr5-m">-->
-<!--                        <input class="form-check-input" type="radio" id="inlineCheckbox2" name="type"-->
-<!--                               value="less">Less-->
-<!--                    </label>-->
-<!--                </div>-->
-<!--                <div class="form-check">-->
-<!--                    <label class="form-check-label mr5-m">-->
-<!--                        <input class="form-check-input" type="radio" id="inlineCheckbox3" name="type"-->
-<!--                               value="greater">Greater-->
-<!--                    </label>-->
-<!--                </div>-->
-<!--                <button class="btn btn-light" type="submit">Search</button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--</div>-->
-
 
 <div>
     <div class="container mt5 ml-auto-m mb5">
@@ -104,7 +72,7 @@
                                 <td th:text="${category.price}"></td>
                                 <td>
                                     <form th:action="@{/categories/{categoryId}/delete(categoryId=${category.id})}"
-                                          method="post">
+                                          method="post" sec:authorize="hasAnyAuthority('ADMIN')">
                                         <button class="btn btn-dark btn-xs">
                                             <i class="fa fa-trash"
                                                aria-hidden="true"></i>
@@ -115,7 +83,7 @@
                                     <form th:action="@{/categories/{categoryId}(categoryId=${category.id})}"
                                           method="get">
                                         <button class="btn btn-dark btn-xs">
-                                            <i class="fa fa-pencil"
+                                            <i class="fa fa-eye"
                                                aria-hidden="true"></i>
                                         </button>
                                     </form>

@@ -9,8 +9,8 @@
             <li class="nav-item active">
                 <a class="nav-link" th:href="@{'/welcome'}">Welcome <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" th:href="@{'/orders/user/' + ${session.user.id}}">Orders</a>
+            <li class="nav-item" th:with="auth=${#authentication.principal}">
+                <a class="nav-link waves-effect waves-light" th:href="@{'/orders/user/' + ${auth.id}}">Orders</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button" id="navbarDropdownMenuLink-3"
@@ -73,12 +73,14 @@
                 <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" th:href="@{'/users/' + ${session.user.id}}">Profile</a>
-                    <a class="dropdown-item" th:href="@{'/settings' + ${session.user.id} }">Settings</a>
-                    <a class="dropdown-item nav-link d-flex align-items-center" href="javascript: document.logoutForm.submit()" role="menuitem"> Logout</a>
-                    <form name="logoutForm" th:action="@{'/users/logout'}" method="post" th:hidden="true">
-                        <input hidden type="submit" value="Log Out"/>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink"
+                     th:with="auth=${#authentication.principal}">
+                    <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}">Profile</a>
+                    <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}">Settings</a>
+                    <a class="dropdown-item nav-link d-flex align-items-center"
+                       href="javascript: document.logoutForm.submit()" role="menuitem"> Logout</a>
+                    <form name="logoutForm" th:action="@{'/logout'}" method="post" sec:authorize="isAuthenticated()">
+                        <input type="submit" value="Log Out"/>
                     </form>
                 </div>
             </li>

@@ -1,25 +1,20 @@
 package com.dmdev.api.controller;
 
 import com.dmdev.domain.dto.category.request.CategoryCreateEditRequestDto;
-import com.dmdev.domain.dto.category.response.CategoryResponseDto;
 import com.dmdev.domain.dto.filterdto.CategoryFilter;
 import com.dmdev.service.CategoryService;
 import com.dmdev.service.exception.CategoryBadRequestException;
 import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import static java.util.stream.Collectors.toList;
 
 @Controller
 @RequestMapping(path = "/categories")
@@ -31,6 +26,7 @@ public class CategoryApi {
     private final CategoryService categoryService;
 
     @GetMapping("/create")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String createCategory(Model model, @ModelAttribute CategoryCreateEditRequestDto category) {
         model.addAttribute("category", category);
         model.addAttribute("categories", categoryService.getAll());
@@ -38,6 +34,7 @@ public class CategoryApi {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String create(@ModelAttribute CategoryCreateEditRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         return categoryService.create(requestDto)
@@ -48,6 +45,7 @@ public class CategoryApi {
     }
 
     @PostMapping("/{id}/update")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String update(@PathVariable("id") Long id,
                          @ModelAttribute CategoryCreateEditRequestDto requestDto) {
         return categoryService.update(id, requestDto)
@@ -56,6 +54,7 @@ public class CategoryApi {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findById(@PathVariable("id") Long id, Model model) {
         return categoryService.getById(id)
                 .map(category -> {
@@ -67,6 +66,7 @@ public class CategoryApi {
     }
 
     @GetMapping("/by-price")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findByPrice(@ModelAttribute() CategoryFilter filter, Model model) {
         var categories = categoryService.getAllByPrice(filter);
         model.addAttribute("categories", categories);
@@ -75,6 +75,7 @@ public class CategoryApi {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findAll(Model model) {
         var categories = categoryService.getAll();
         model.addAttribute("categories", categories);
@@ -84,11 +85,11 @@ public class CategoryApi {
 
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String delete(@PathVariable("id") Long id) {
         if (!categoryService.deleteById(id)) {
             throw new NotFoundException(String.format("Category with id %s does not exist.", id));
         }
         return "redirect:/categories";
     }
-
 }

@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_BRAND_ID;
-import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_CATEGORY_ID;
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_EXISTS_MODEL_ID;
 import static integration.com.dmdev.utils.TestEntityIdConst.TEST_MODEL_ID_FOR_DELETE;
 import static java.util.stream.Collectors.toList;
@@ -33,9 +32,6 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
 
     @Autowired
     private BrandRepository brandRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     @Autowired
     private ModelPredicateBuilder modelPredicateBuilder;
@@ -56,7 +52,7 @@ class ModelRepositoryTestIT extends IntegrationBaseTest {
         var brand = brandRepository.findById(TEST_EXISTS_BRAND_ID).get();
         var carToSave = TestEntityBuilder.createCar();
         var modelToSave = TestEntityBuilder.createModel();
-        modelToSave.setCar(carToSave);
+        carToSave.setModel(modelToSave);
         brand.setModel(modelToSave);
 
         modelRepository.saveAndFlush(modelToSave);

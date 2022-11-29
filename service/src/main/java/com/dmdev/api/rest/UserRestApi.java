@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,6 +55,7 @@ public class UserRestApi {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     @Operation(summary = "Update user")
     public UserResponseDto update(@Parameter(required = true) @PathVariable @Valid @NotNull Long id,
                                   @Parameter(required = true) @RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto) {
@@ -63,14 +65,16 @@ public class UserRestApi {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     @Operation(summary = "Get a user by id")
     public UserResponseDto findById(@Parameter(required = true) @PathVariable @Valid @NotNull Long id) {
         return userService.getById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id %s does not exist.", id)));
     }
 
-    @PostMapping("/{id}/change-password")
+    @PutMapping("/{id}/change-password")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     @Operation(summary = "Update user password")
     public UserResponseDto changePassword(@Parameter(required = true) @PathVariable @Valid @NotNull Long id,
                                           @Parameter(required = true) @RequestBody @Valid UserChangePasswordDto changedPasswordDto) {
@@ -80,6 +84,7 @@ public class UserRestApi {
 
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all users")
     public ApiResponse<UserResponseDto> findAll(@Parameter() @RequestParam(required = false) String username,
@@ -89,7 +94,7 @@ public class UserRestApi {
                                                 @Parameter() @RequestParam(required = false) LocalDate birthday,
                                                 @Parameter() @RequestParam(required = false) LocalDate expiredLicenseDriverDate,
                                                 @Parameter() @RequestParam(required = false) Boolean allExpiredLicenses,
-                                                @Parameter(required = true) @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                @Parameter() @RequestParam(required = false, defaultValue = "1") Integer page,
                                                 @Parameter() @RequestParam(required = false, defaultValue = "20") Integer size) {
 
         var userFilter = UserFilter.builder()
@@ -108,6 +113,7 @@ public class UserRestApi {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(summary = "Delete user by id")
     public ResponseEntity<?> delete(@Parameter(required = true) @PathVariable @Valid Long id) {
         return userService.deleteById(id)

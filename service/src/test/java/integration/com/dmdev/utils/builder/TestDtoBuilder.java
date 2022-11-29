@@ -1,15 +1,22 @@
 package integration.com.dmdev.utils.builder;
 
 import com.dmdev.domain.dto.brand.request.BrandCreateEditRequestDto;
+import com.dmdev.domain.dto.car.CarCreateRequestDto;
+import com.dmdev.domain.dto.car.CarUpdateRequestDto;
 import com.dmdev.domain.dto.category.request.CategoryCreateEditRequestDto;
 import com.dmdev.domain.dto.driverlicense.request.DriverLicenseUpdateRequestDto;
 import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
+import com.dmdev.domain.dto.model.ModelCreateRequestDto;
+import com.dmdev.domain.dto.model.ModelUpdateRequestDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
 import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.domain.dto.userdetails.request.UserDetailsUpdateRequestDto;
 import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
+import com.dmdev.domain.model.Color;
+import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.Role;
+import com.dmdev.domain.model.Transmission;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -21,13 +28,13 @@ public class TestDtoBuilder {
 
     public static UserCreateRequestDto createUserCreateRequestDTO() {
         return new UserCreateRequestDto(
-                "test@gmal.com",
+                "test@gmail.com",
                 "test",
-                "testtesttest",
+                "Testtesttest1",
                 "petia",
                 "petrov",
                 "Minsk",
-                "+37529111111111",
+                "+37529111-11-11",
                 LocalDate.of(2000, 10, 10),
                 "AG67482",
                 LocalDate.of(2020, 10, 10),
@@ -36,6 +43,17 @@ public class TestDtoBuilder {
 
     public static BrandCreateEditRequestDto createBrandCreateEditRequestDto() {
         return new BrandCreateEditRequestDto("toyota");
+    }
+
+    public static CarCreateRequestDto createCarRequestDto(Long brandId, Long modelId) {
+        return new CarCreateRequestDto(brandId, modelId, 1L,
+                Color.BLACK, 2022, "2020-6", "hsjdhfjs2789",
+                false, null);
+    }
+
+    public static ModelCreateRequestDto createModelRequestDto(Long brandId) {
+        return new ModelCreateRequestDto(brandId, "a10",
+                Transmission.AUTOMATIC, EngineType.DIESEL);
     }
 
     public static CategoryCreateEditRequestDto createCategoryCreateEditRequestDto() {
@@ -109,5 +127,15 @@ public class TestDtoBuilder {
         return new CategoryCreateEditRequestDto(
                 "super-econome",
                 BigDecimal.valueOf(150L));
+    }
+
+    public static CarUpdateRequestDto createCarUpdateRequestDTO(Long modelId) {
+        return new CarUpdateRequestDto(modelId, 1L,
+                Color.RED, 2019,
+                "AT653-7", false, null);
+    }
+
+    public static ModelUpdateRequestDto createModelUpdateRequestDTO() {
+        return new ModelUpdateRequestDto("A7", Transmission.AUTOMATIC, EngineType.DIESEL);
     }
 }

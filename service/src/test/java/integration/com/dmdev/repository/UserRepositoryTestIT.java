@@ -113,7 +113,7 @@ class UserRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnUserByEmailAndPassword() {
-        var optionalUser = userRepository.findByEmailAndPassword("client@gmail.com", "VmFzaWxlY2hla0JlbDEyMyE=");
+        var optionalUser = userRepository.findByEmailAndPassword("client@gmail.com", "{noop}TestTest1234!");
 
         assertThat(optionalUser).isNotNull();
         optionalUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(ExistEntityBuilder.getExistUser().getId()));

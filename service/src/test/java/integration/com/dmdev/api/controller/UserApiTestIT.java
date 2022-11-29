@@ -1,42 +1,50 @@
-package integration.com.dmdev.api;
+package integration.com.dmdev.api.controller;
 
 import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;
+import integration.com.dmdev.auth.WithMockCustomUser;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
+import static integration.com.dmdev.api.controller.UserApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class UserApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/users";
 
+    static final String MOCK_USERNAME = "admin@gmail.com";
+
     private final UserService userService;
     private final MockMvc mockMvc;
-    private HttpHeaders commonHeaders = new HttpHeaders();
+    private final HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
@@ -51,9 +59,67 @@ class UserApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
+    void shouldLoginCorrectly() throws Exception {
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
+        userService.create(userCreateRequestDTO).get();
+
+        UriComponentsBuilder uriBuilder = fromUriString("/login");
+
+        mockMvc.perform(
+                        post(uriBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("email", "test@gmail.com")
+                                .param("password", "Testtesttest1"))
+                .andExpect(redirectedUrl("/welcome"))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    void shouldLoginCorrectlyLoginForm() throws Exception {
+        RequestBuilder requestBuilder = formLogin("/login")
+                .user("email", "client@gmail.com")
+                .password("TestTest1234!");
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/welcome"));
+    }
+
+    @Test
+    void shouldLogoutCorrectly() throws Exception {
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
+        userService.create(userCreateRequestDTO).get();
+
+        UriComponentsBuilder uriLoginBuilder = fromUriString("/login");
+
+        mockMvc.perform(
+                        post(uriLoginBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("email", "test@gmail.com")
+                                .param("password", "Testtesttest1"))
+                .andExpect(redirectedUrl("/welcome"))
+                .andExpect(status().is3xxRedirection());
+
+        UriComponentsBuilder uriLogoutBuilder = fromUriString("/logout");
+
+        mockMvc.perform(
+                        post(uriLogoutBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("email", "test@gmail.com")
+                                .param("password", "Testtesttest1"))
+                .andExpect(redirectedUrl("/welcome"))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
     void shouldCreateUserCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
-        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT);
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/sing-up");
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
@@ -101,18 +167,6 @@ class UserApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void mustReturn401IfUnauthorizedLogin() throws Exception {
-        mockMvc.perform(
-                        post(fromUriString(ENDPOINT + "/sign-in").build().encode().toUri())
-                                .headers(commonHeaders)
-                                .accept(MediaType.TEXT_HTML)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .param("username", "test")
-                                .param("password", "test"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
     void shouldReturn200IfUserLoginCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
 
@@ -120,11 +174,11 @@ class UserApiTestIT extends IntegrationBaseTest {
         var expected = saved.get();
         assertExpectedIsSaved(expected, expected.getId());
 
-        mockMvc.perform(post(fromUriString(ENDPOINT + "/sign-in").build().encode().toUri())
+        mockMvc.perform(post(fromUriString("/login").build().encode().toUri())
                         .headers(commonHeaders)
                         .accept(MediaType.TEXT_HTML)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                        .param("username", userCreateRequestDTO.getUsername())
+                        .param("email", userCreateRequestDTO.getEmail())
                         .param("password", userCreateRequestDTO.getPassword()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/welcome"));
@@ -133,7 +187,7 @@ class UserApiTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturn200IfUserLogoutCorrectly() throws Exception {
 
-        mockMvc.perform(post(fromUriString(ENDPOINT + "/logout").build().encode().toUri())
+        mockMvc.perform(post(fromUriString("/logout").build().encode().toUri())
                         .headers(commonHeaders)
                         .accept(MediaType.TEXT_HTML)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
@@ -210,6 +264,27 @@ class UserApiTestIT extends IntegrationBaseTest {
                         .accept(MediaType.TEXT_HTML)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "dummy", authorities = {"DUMMY"})
+    void mustReturn403IfWrongAuthorityUpdate() throws Exception {
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
+
+        var saved = userService.create(userCreateRequestDTO);
+        var expected = saved.get();
+
+        var userUpdateRequestDTO = TestDtoBuilder.createUserUpdateRequestDTO();
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/update");
+        mockMvc.perform(
+                        post(uriBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("email", userUpdateRequestDTO.getEmail())
+                                .param("username", userUpdateRequestDTO.getUsername())
+                                .param("role", userUpdateRequestDTO.getRole().toString()))
+                .andExpect(status().isForbidden());
     }
 
     private void assertExpectedIsSaved(UserResponseDto expected, Long id) throws Exception {

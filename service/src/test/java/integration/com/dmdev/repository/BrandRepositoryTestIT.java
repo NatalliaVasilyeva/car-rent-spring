@@ -3,7 +3,6 @@ package integration.com.dmdev.repository;
 import com.dmdev.domain.entity.Brand;
 import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.projection.BrandFullView;
-import com.dmdev.domain.projection.CategoryView;
 import com.dmdev.domain.projection.ModelView;
 import com.dmdev.repository.BrandRepository;
 import integration.com.dmdev.IntegrationBaseTest;
@@ -12,7 +11,6 @@ import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 

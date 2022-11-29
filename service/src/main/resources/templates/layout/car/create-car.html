@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<script th:inline="javascript">
+    function modelsChange() {
+        var brands = [[${brands}]];
+        var choosenBrandId = $('.my-select').find('option:selected').val();
+        console.log(choosenBrandId)
+        var brand = brands.filter(obj => {
+            return obj.id == choosenBrandId
+        })[0]
+        console.log(brand)
+        console.log(brand.models)
+        var models = brand.models
+
+        for (var i = 0; i < models.length; i++) {
+            $('#modelList option').remove();
+            $('#modelList').append($('<option>').val(models[i].id).text(models[i].name + " " + models[i].transmission + " " + models[i].engineType));
+            $('#modelList option[name="' + "modelId" + '"]').prop('selected', true);
+        }
+
+        $('#modelList').trigger("chosen:updated");
+
+    }
+</script>
+<br>
+<br>
+<form id="create-car-form" class="form-horizontal" method="post" enctype="multipart/form-data" th:object="${car}"
+      th:action="@{/cars}">
+    <div class="card text-white bg-dark mb-10">
+        <div class="card-header">
+            <h2 class="m-0">Create car</h2>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <!-- image -->
+                <label for="create-car-image"> Image:
+                    <input type="file" name="image" id="create-car-image">
+                </label>
+            </div>
+            <!-- image -->
+            <!-- brand -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-brand">Brand: </label>
+                <select class="form-control my-select " id="brandList" th:field="*{brandId}" required
+                        oninput="modelsChange()">
+                    <option selected disable value="">Select brand</option>
+                    <option th:id="create-car-brand" th:each="brand : ${brands}" th:value="${brand.id}"
+                            th:text="${brand.name}" selected></option>
+                </select>
+            </div>
+            <!-- /brand -->
+            <!-- model -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-model">Model: </label>
+                <select class="form-control" id="modelList" th:field="*{modelId}">
+                    <option selected disable value="">Select model</option>
+                    <option id="create-car-model" th:each="model : ${models}" th:value="${model.id}"
+                            th:text="|${model.name} ${model.transmission} ${model.engineType}|"></option>
+                </select>
+            </div>
+            <!--/model -->
+            <!-- category -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-category">Category : </label>
+                <select class="form-control" id="categoryId" th:field="*{categoryId}">
+                    <option th:id="create-car-category" th:each="category : ${categories}" th:value="${category.id}"
+                            th:text="${category.name}" selected></option>
+                </select>
+            </div>
+            <!-- /category -->
+            <!-- color -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-color">Color : </label>
+                <select class="form-control" id="color" th:field="*{color}">
+                    <option th:id="create-car-color" th:each="color : ${colors}" th:value="${color}"
+                            th:text="${color}" selected></option>
+                </select>
+            </div>
+            <!-- /color -->
+            <!-- yearOfProduction -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-year">Year of production: </label>
+                <input type="number" th:field="*{yearOfProduction}" class="form-control" th:id="create-car-year"
+                       required>
+            </div>
+            <!-- /yearOfProduction -->
+            <!-- carNumber -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-number">Car number: </label>
+                <input type="text" th:field="*{number}" class="form-control" th:id="create-car-numbe" required>
+            </div>
+            <!-- /carNumber -->
+            <!-- vin -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-vin">VIN: </label>
+                <input type="text" th:field="*{vin}" class="form-control" th:id="create-car-vin" required>
+            </div>
+            <!-- /vin -->
+            <!-- repaired -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-car-repaired">Repaired: </label>
+                <input th:id="create-car-repaired" type="radio" th:field="*{isRepaired}" th:value="true" checked
+                       th:text="true">
+                <input th:id="create-car-repaired" type="radio" th:field="*{isRepaired}" th:value="false"
+                       th:text="false">
+            </div>
+            <!-- /repaired -->
+        </div>
+        <div class="card-footer" sec:authorize="hasAnyAuthority('ADMIN')">
+            <button type="submit" class="btn btn-primary">
+                Save
+            </button>
+        </div>
+    </div>
+</form>
+
+
+</body>
+</html>

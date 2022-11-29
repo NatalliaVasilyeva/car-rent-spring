@@ -1,23 +1,20 @@
-package integration.com.dmdev.api;
+package integration.com.dmdev.api.controller;
 
 import com.dmdev.domain.dto.brand.response.BrandResponseDto;
 import com.dmdev.service.BrandService;
 import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;
+import integration.com.dmdev.auth.WithMockCustomUser;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-
+import static integration.com.dmdev.api.controller.BrandApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -30,9 +27,11 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = CategoryApiTestIT.MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class BrandApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/brands";
+    static final String MOCK_USERNAME = "admin@gmail.com";
 
     private final BrandService brandService;
     private final MockMvc mockMvc;
@@ -114,7 +113,7 @@ class BrandApiTestIT extends IntegrationBaseTest {
                 .andExpect(model().attributeExists("brandPage"))
                 .andReturn();
 
-       var brands = ((Page<BrandResponseDto>) result.getModelAndView().getModel().get("brandPage")).getContent();
+        var brands = ((Page<BrandResponseDto>) result.getModelAndView().getModel().get("brandPage")).getContent();
 
         assertThat(brands).hasSize(1);
         assertThat(brands.get(0).getId()).isEqualTo(expected.getId());
@@ -136,11 +135,10 @@ class BrandApiTestIT extends IntegrationBaseTest {
                 .andExpect(model().attributeExists("brandFullViewPage"))
                 .andReturn();
 
-       var brands = ((Page<BrandResponseDto>) result.getModelAndView().getModel().get("brandFullViewPage")).getContent();
+        var brands = ((Page<BrandResponseDto>) result.getModelAndView().getModel().get("brandFullViewPage")).getContent();
 
         assertThat(brands).hasSize(2);
     }
-
 
     @Test
     void shouldReturnAllBrands() throws Exception {

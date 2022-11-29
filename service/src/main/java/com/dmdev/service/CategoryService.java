@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -37,7 +38,6 @@ public class CategoryService {
         return Optional.of(categoryCreateMapper.mapToEntity(categoryCreateEditRequestDto))
                 .map(categoryRepository::save)
                 .map(categoryResponseMapper::mapToDto);
-
     }
 
     @Transactional
@@ -53,12 +53,12 @@ public class CategoryService {
                 .map(categoryResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<CategoryResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(categoryResponseMapper::mapToDto);
     }
-    @Transactional(readOnly = true)
+
     public List<CategoryResponseDto> getAll() {
         return categoryRepository.findAll().stream()
                 .map(categoryResponseMapper::mapToDto)
@@ -74,7 +74,7 @@ public class CategoryService {
         return false;
     }
 
-    @Transactional(readOnly = true)
+
     public List<CategoryResponseDto> getAllByPrice(CategoryFilter filter) {
         var price = filter.getPrice();
         var type = filter.getType();
@@ -114,12 +114,12 @@ public class CategoryService {
 
     private Category getByIdOrElseThrow(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Category",  "id", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Category", "id", id)));
     }
 
     private void checkCategoryNameIsUnique(String categoryName) {
         if (categoryRepository.existsByNameIgnoringCase(categoryName)) {
-            throw new CategoryBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Category",  "name", categoryName)));
+            throw new CategoryBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Category", "name", categoryName)));
         }
     }
 }

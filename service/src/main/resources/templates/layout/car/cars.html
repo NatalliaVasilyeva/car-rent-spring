@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <script type="text/javascript" th:src="@{/js/car/cars.js}"></script>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+
+<body>
+<div th:replace="layout/header/header :: header"/>
+<div class="container-fluid">
+    <div class="col-lg-auto">
+        <h3 class="text-center">Search cars</h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-md-offset-8">
+                    <form class="form ml-3 mt-2" th:action="@{/cars}" method="get">
+                        <div class="form-row">
+                            <div class="col-md-3 mb-3">
+                                <label for="color">Color</label>
+                                <input id="color" type="text" class="form-control" name="color"
+                                       th:value="${carFilter.getColor()}">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="year">Year:</label>
+                                <input id="year" type="number" class="form-control" name="year"
+                                       th:value="${carFilter.getYear()}">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="transmission">Transmission:</label>
+                                <input id="transmission" type="text" class="form-control" name="transmission"
+                                       th:value="${carFilter.getTransmission()}">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="engineType">EngineType:</label>
+                                <input id="engineType" type="text" class="form-control" name="engineType"
+                                       th:value="${carFilter.getEngineType()}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <p>Models </p>
+                            </br>
+                            <div class="custom-control custom-checkbox custom-control-inline"
+                                 th:each="model: ${modelNames}">
+                                <input type="checkbox" class="custom-control-input" th:id="${model.name}"
+                                       th:value="${model.name}"
+                                       name="modelNames"/>
+                                <label class="custom-control-label" th:for="${model.name}" th:text="${model.name}">Model
+                                    name</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <p>Brands </p>
+                            </br>
+                            <div class="custom-control custom-checkbox custom-control-inline"
+                                 th:each="brand: ${brandNames}">
+                                <input type="checkbox" class="custom-control-input" th:id="${brand.name}"
+                                       th:value="${brand.name}"
+                                       name="brandNames"/>
+                                <label class="custom-control-label" th:for="${brand.name}" th:text="${brand.name}">Brand
+                                    name</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <p>Category </p>
+                            </br>
+                            <div class="custom-control custom-checkbox custom-control-inline"
+                                 th:each="category: ${categoryNames}">
+                                <input type="checkbox" class="custom-control-input" th:id="${category.name}"
+                                       th:value="${category.name}"
+                                       name="categoryNames"/>
+                                <label class="custom-control-label" th:for="${category.name}"
+                                       th:text="${category.name}">Category name</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <div>
+                                <label for="page">Page(start from 1):</label>
+                                <input id="page" type="number" name="page" min="1"
+                                       th:value="${carPage.number + 1}">
+                            </div>
+                        </div>
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span th:if="${#lists.isEmpty(carPage.content)}">There are not available cars!</span>
+
+<div th:if="${not #lists.isEmpty(carPage.content)}">
+    <div class="container-fluid col">
+        <div class="col-lg-auto">
+            <div class="panel panel-default">
+                <h3 class="text-center">Users list</h3>
+                <div class="panel-body table-responsive">
+                    <table class="table table-condensed table-striped text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th></th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Brand</th>
+                            <th scope="col">Model</th>
+                            <th scope="col">Color</th>
+                            <th scope="col">Transmission</th>
+                            <th scope="col">EngineType</th>
+                            <th scope="col">Year</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Action</th>
+                        <tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="car, iStat: ${carPage.content}"
+                                  th:style="${iStat.odd}? 'font-weight: bold;'"
+                                  th:alt-title="${iStat.even}? 'even' : 'odd'">
+                            <tr data-toggle="collapse" th:attr="data-target='#car_' + ${iStat.index}"
+                                class="accordion-toggle">
+                                <td>
+                                    <button class="btn btn-dark btn-xs">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td><img th:src="@{/api/v1/cars/{carId}/car_image(carId=${car.id})}" alt="Car image">
+                                </td>
+                                <td th:text="${car.brand}"></td>
+                                <td th:text="${car.model}"></td>
+                                <td th:text="${car.color.name()}"></td>
+                                <td th:text="${car.transmission.name()}"></td>
+                                <td th:text="${car.engineType.name()}"></td>
+                                <td th:text="${car.yearOfProduction}"></td>
+                                <td th:text="${car.category}"></td>
+                                <td th:text="${car.price}"></td>
+                                <td>
+                                    <form th:action="@{/orders}" method="post">
+                                        <button class="btn btn-dark btn-xs">
+                                            Make order
+                                        </button>
+                                    </form>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td colspan="12" class="hiddenRow">
+                                    <div class="accordian-body collapse col-lg-auto table-responsive"
+                                         th:id="'car_' + ${iStat.index}">
+                                        <table class="table table-striped text-center" id="innerTable">
+                                            <thead class="thead-dark">
+                                            <tr class="info">
+                                                <th>Id</th>
+                                                <th>Number</th>
+                                                <th>Vin</th>
+                                                <th>Is repaired</th>
+                                                <th colspan="2"></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="info">
+                                                <td th:text="${car.id}"></td>
+                                                <td th:text="${car.number}"></td>
+                                                <td th:text="${car.vin}"></td>
+                                                <td th:text="${car.repaired}"></td>
+                                                <td>
+                                                    <form th:action="@{/cars/{carId}/delete(carId=${car.id})}"
+                                                          method="post">
+                                                        <button class="btn btn-dark btn-xs">
+                                                            <i class="fa fa-trash"
+                                                               aria-hidden="true"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <form th:action="@{/cars/{carId}/(carId=${car.id})}"
+                                                          method="get">
+                                                        <button class="btn btn-dark btn-xs">
+                                                            <i class="fa pencil"
+                                                               aria-hidden="true"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- pagination -->
+                <nav aria-label="Pagination" th:if="${carPage.totalPages gt 0}">
+                    <ul class="pagination justify-content-center font-weight-bold">
+                        <li class="page-item" th:classappend="${carPage.number eq 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/cars(page=${carPage.number lt 2 ? 1 : carPage.number})}"
+                               aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i eq carPage.number + 1} ? 'active'"
+                            th:each="i : ${#numbers.sequence( 1, carPage.totalPages, 1)}">
+                            <a class="page-link" th:href="@{/cars(page=${i})}" th:text="${i}"
+                               th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${carPage.number + 1 eq carPage.totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/cars(page=${carPage.number + 2})}"
+                               aria-label="Next" title="Next Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,10 +1,7 @@
 package com.dmdev.mapper.driverlicense;
 
-import com.dmdev.domain.dto.category.request.CategoryCreateEditRequestDto;
 import com.dmdev.domain.dto.driverlicense.request.DriverLicenseUpdateRequestDto;
-import com.dmdev.domain.entity.Category;
 import com.dmdev.domain.entity.DriverLicense;
-import com.dmdev.mapper.Mapper;
 import com.dmdev.mapper.UpdateMapper;
 import org.springframework.stereotype.Component;
 

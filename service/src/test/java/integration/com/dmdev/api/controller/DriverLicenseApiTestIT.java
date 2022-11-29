@@ -1,4 +1,4 @@
-package integration.com.dmdev.api;
+package integration.com.dmdev.api.controller;
 
 import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
@@ -6,20 +6,17 @@ import com.dmdev.service.DriverLicenseService;
 import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;
+import integration.com.dmdev.auth.WithMockCustomUser;
 import integration.com.dmdev.utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-
+import static integration.com.dmdev.api.controller.DriverLicenseApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -32,9 +29,12 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class DriverLicenseApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/driver-licenses";
+
+    static final String MOCK_USERNAME = "admin@gmail.com";
 
     private final DriverLicenseService driverLicenseService;
     private final UserService userService;

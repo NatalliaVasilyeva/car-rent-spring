@@ -27,15 +27,13 @@ public interface CarRepository extends JpaRepository<Car, Long>, QuerydslPredica
 
     @Query(value = "SELECT c " +
             "FROM Car c " +
-            "JOIN fetch c.orders o " +
-            "JOIN fetch o.accidents a " +
+            "LEFT JOIN fetch c.orders o " +
             "WHERE o.accidents.size > 0 ")
     List<Car> findAllWithAccidents();
 
     @Query(value = "SELECT c " +
             "FROM Car c " +
-            "JOIN fetch c.orders o " +
-            "JOIN fetch o.accidents a " +
+            "LEFT JOIN fetch c.orders o " +
             "WHERE o.accidents.size = 0 ")
     List<Car> findAllWithoutAccidents();
 

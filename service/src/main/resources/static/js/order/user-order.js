@@ -7,9 +7,7 @@ $(function () {
             {
                 orderId: orderId,
             }
-            // function(){
-            //     location.reload();
-            )
+        )
     })
 });
 

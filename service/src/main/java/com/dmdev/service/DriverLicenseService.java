@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DriverLicenseService {
 
     private final DriverLicenseRepository driverLicenseRepository;
@@ -39,7 +40,7 @@ public class DriverLicenseService {
     public Optional<DriverLicenseResponseDto> create(DriverLicenseCreateRequestDto driverLicenseCreateRequestDto) {
         var optionalUser = userRepository.findById(driverLicenseCreateRequestDto.getUserId());
         if (optionalUser.isEmpty()) {
-            throw new DriverLicenseBadRequestException("Can not to create driver license for user." + ExceptionMessageUtil.getNotFoundMessage("User",  "id", driverLicenseCreateRequestDto.getUserId()));
+            throw new DriverLicenseBadRequestException("Can not to create driver license for user." + ExceptionMessageUtil.getNotFoundMessage("User", "id", driverLicenseCreateRequestDto.getUserId()));
         } else {
             var user = optionalUser.get();
             checkDriverLicenseNumberIsUnique(driverLicenseCreateRequestDto.getDriverLicenseNumber());
@@ -65,27 +66,27 @@ public class DriverLicenseService {
                 .map(driverLicenseResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<DriverLicenseResponseDto> getById(Long id) {
         return Optional.of(getUserByIdOrElseThrow(id))
                 .map(driverLicenseResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Page<DriverLicenseResponseDto> getAll(Integer page, Integer pageSize) {
         var pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "number");
         return driverLicenseRepository.findAll(pageRequest)
                 .map(driverLicenseResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public List<DriverLicenseResponseDto> getByNumber(String number) {
         return driverLicenseRepository.findByNumberContainingIgnoreCase(number).stream()
                 .map(driverLicenseResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<DriverLicenseResponseDto> getByUserId(Long userId) {
         return driverLicenseRepository.findByUserId(userId).stream()
                 .sorted(Comparator.comparing(DriverLicense::getExpiredDate).reversed())
@@ -93,7 +94,7 @@ public class DriverLicenseService {
                 .map(driverLicenseResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public List<DriverLicenseResponseDto> getAllExpiredDriverLicenses() {
         return driverLicenseRepository.findByExpiredDateLessThanEqual(LocalDate.now()).stream()
                 .sorted(Comparator.comparing(DriverLicense::getExpiredDate).reversed())
@@ -112,12 +113,12 @@ public class DriverLicenseService {
 
     private DriverLicense getUserByIdOrElseThrow(Long id) {
         return driverLicenseRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Driver license",  "id", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Driver license", "id", id)));
     }
 
     private void checkDriverLicenseNumberIsUnique(String licenseNumber) {
         if (driverLicenseRepository.existsByNumber(licenseNumber)) {
-            throw new DriverLicenseBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Driver license",  "number", licenseNumber)));
+            throw new DriverLicenseBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Driver license", "number", licenseNumber)));
         }
     }
 }

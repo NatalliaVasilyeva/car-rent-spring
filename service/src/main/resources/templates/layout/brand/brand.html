@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <meta charset="UTF-8">
@@ -52,21 +54,19 @@
                                 <small class="text-danger" id="edit-brand-error-small"></small>
                             </div>
                         </div>
-                        <div class="form-group row" id="edit-brand-button-div">
+                        <div class="form-group row" id="edit-brand-button-div" sec:authorize="hasAnyAuthority('ADMIN')">
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableBrands()"
                                    value="Edit">
                         </div>
-                        <div class="form-group row" id="show-brand-models-button-div">
-                            <input type="button"
-                                   class="from-control btn btn-light btn-lg btn-block"
-                                   onclick="ShowBrandModels()"
-                                   value="Show models">
+                        <div class="form-group row btn btn-light btn-lg btn-block" id="show-brand-models-button-div">
+                            <a th:href="@{/models/{brandId}/(brandId=${brand.id})}"
+                               class="btn btn-info" role="button">Show models</a>
                         </div>
 
                         <div class="form-group row" id="edit-manage-brand-buttons-div"
-                             style="display: none">
+                             style="display: none" sec:authorize="hasAnyAuthority('ADMIN')">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
                                 <input type="submit" class="btn btn-primary" value="Save Changes">

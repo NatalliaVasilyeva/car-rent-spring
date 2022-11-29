@@ -22,7 +22,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "models")
+@ToString(exclude = {"models", "cars"})
 @EqualsAndHashCode(of = "name")
 @Builder
 @Entity

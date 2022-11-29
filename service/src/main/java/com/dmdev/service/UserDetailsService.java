@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserDetailsService {
 
     private final UserDetailsRepository userDetailsRepository;
@@ -46,7 +47,6 @@ public class UserDetailsService {
         return Optional.of(userDetails)
                 .map(userDetailsRepository::save)
                 .map(userDetailsResponseMapper::mapToDto);
-
     }
 
     @Transactional
@@ -58,13 +58,13 @@ public class UserDetailsService {
                 .map(userDetailsResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<UserDetailsResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(userDetailsResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Page<UserDetailsResponseDto> getAll(UserDetailsFilter userDetailsFilter, Integer page, Integer pageSize) {
         var pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "surname");
         return userDetailsRepository.findAll(
@@ -73,28 +73,28 @@ public class UserDetailsService {
                 .map(userDetailsResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public List<UserDetailsResponseDto> getAllByNameAndSurname(String name, String surname) {
         return userDetailsRepository.findAllByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname).stream()
                 .map(userDetailsResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+
     public List<UserDetailsResponseDto> getAllByRegistrationDate(LocalDate registrationDate) {
         return userDetailsRepository.findByRegistrationDate(registrationDate).stream()
                 .map(userDetailsResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+
     public List<UserDetailsResponseDto> getAllByRegistrationDates(LocalDate start, LocalDate end) {
         return userDetailsRepository.findByRegistrationDateBetween(start, end).stream()
                 .map(userDetailsResponseMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<UserDetailsResponseDto> getByUserId(Long userId) {
         return Optional.of(userDetailsRepository.findByUserId(userId))
                 .map(userDetailsResponseMapper::mapToDto);
@@ -112,11 +112,11 @@ public class UserDetailsService {
 
     private User getUserByIdOrElseThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User",  "id", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User", "id", id)));
     }
 
     private UserDetails getByIdOrElseThrow(Long id) {
         return userDetailsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User details",  "id", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User details", "id", id)));
     }
 }

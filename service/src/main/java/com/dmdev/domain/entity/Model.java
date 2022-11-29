@@ -27,8 +27,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"brand", "category", "cars"})
-@EqualsAndHashCode(exclude = {"brand", "category", "cars"})
+@ToString(exclude = {"brand", "cars"})
+@EqualsAndHashCode(exclude = {"brand", "cars"})
 @Builder
 @Entity
 public class Model implements BaseEntity<Long> {
@@ -53,9 +53,4 @@ public class Model implements BaseEntity<Long> {
     @Builder.Default
     @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Car> cars = new HashSet<>();
-
-    public void setCar(Car car) {
-        cars.add(car);
-        car.setModel(this);
-    }
 }

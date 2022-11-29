@@ -19,6 +19,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Constraint(validatedBy = EnumNamePatternValidator.class)
 public @interface EnumNamePattern {
+
     String regexp();
 
     String message() default "must match \"{regexp}\"";

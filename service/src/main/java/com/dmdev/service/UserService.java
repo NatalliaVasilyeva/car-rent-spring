@@ -1,5 +1,6 @@
 package com.dmdev.service;
 
+import com.dmdev.domain.UserDetailsImpl;
 import com.dmdev.domain.dto.filterdto.UserFilter;
 import com.dmdev.domain.dto.user.request.LoginRequestDto;
 import com.dmdev.domain.dto.user.request.UserChangePasswordDto;
@@ -16,20 +17,25 @@ import com.dmdev.service.exception.ExceptionMessageUtil;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserBadRequestException;
 import com.dmdev.utils.PageableUtils;
-import com.dmdev.utils.SecurityUtils;
 import com.dmdev.utils.predicate.UserPredicateBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+@Transactional(readOnly = true)
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserCreateMapper userCreateMapper;
@@ -37,10 +43,12 @@ public class UserService {
     private final UserResponseMapper userResponseMapper;
     private final UserPredicateBuilder userPredicateBuilder;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
     public Optional<UserResponseDto> create(UserCreateRequestDto userRequestDto) {
-        this.checkUsernameIsUnique(userRequestDto.getUsername());
         this.checkEmailIsUnique(userRequestDto.getEmail());
+        this.checkUsernameIsUnique(userRequestDto.getUsername());
 
         return Optional.of(userCreateMapper.mapToEntity(userRequestDto))
                 .map(userRepository::save)
@@ -49,8 +57,7 @@ public class UserService {
 
     @Transactional
     public Optional<UserResponseDto> login(LoginRequestDto loginRequestDto) {
-        return userRepository.findByUsernameAndPassword(loginRequestDto.getUsername(),
-                        SecurityUtils.securePassword(loginRequestDto.getUsername(), loginRequestDto.getPassword()))
+        return userRepository.findByEmailAndPassword(loginRequestDto.getEmail(), loginRequestDto.getPassword())
                 .map(userResponseMapper::mapToDto);
     }
 
@@ -59,7 +66,11 @@ public class UserService {
         var existingUser = getByIdOrElseThrow(id);
 
         if (!existingUser.getEmail().equals(user.getEmail())) {
-            checkUsernameIsUnique(user.getEmail());
+            checkEmailIsUnique(user.getEmail());
+        }
+
+        if (!existingUser.getUsername().equals(user.getUsername())) {
+            checkUsernameIsUnique(user.getUsername());
         }
 
         return Optional.of(userUpdateMapper.mapToEntity(user, existingUser))
@@ -67,7 +78,7 @@ public class UserService {
                 .map(userResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<UserResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(userResponseMapper::mapToDto);
@@ -77,10 +88,8 @@ public class UserService {
     public Optional<UserResponseDto> changePassword(Long id, UserChangePasswordDto changedPasswordDto) {
         var existingUser = getByIdOrElseThrow(id);
 
-        if (isExistsByUsernameAndPassword(existingUser.getEmail(),
-                SecurityUtils.securePassword(existingUser.getUsername(), changedPasswordDto.getOldPassword()))) {
-            existingUser.setPassword(
-                    SecurityUtils.securePassword(existingUser.getUsername(), changedPasswordDto.getNewPassword())
+        if (isExistsByEmailAndPassword(existingUser.getEmail(), passwordEncoder.encode(changedPasswordDto.getOldPassword()))) {
+            existingUser.setPassword(passwordEncoder.encode(changedPasswordDto.getNewPassword())
             );
         }
 
@@ -96,7 +105,7 @@ public class UserService {
                 .map(userResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Page<UserResponseDto> getAll(UserFilter userFilter, Integer page, Integer pageSize) {
         return userFilter.getAllExpiredLicenses() == null || !userFilter.getAllExpiredLicenses()
                 ? userRepository.findAll(userPredicateBuilder.build(userFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname")).map(userResponseMapper::mapToDto)
@@ -114,21 +123,33 @@ public class UserService {
 
     private User getByIdOrElseThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User",  "id", id)));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("User", "id", id)));
     }
 
     public void checkUsernameIsUnique(String username) {
         if (userRepository.existsByUsername(username)) {
-            throw new UserBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("User",  "username", username)));
+            throw new UserBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("User", "username", username)));
         }
     }
     public void checkEmailIsUnique(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new UserBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("User",  "email", email)));
+            throw new UserBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("User", "email", email)));
         }
     }
 
-    private boolean isExistsByUsernameAndPassword(String email, String password) {
-        return userRepository.existsByUsernameAndPassword(email, password);
+    private boolean isExistsByEmailAndPassword(String email, String password) {
+        return userRepository.existsByEmailAndPassword(email, password);
+    }
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email)
+                .map(user -> new UserDetailsImpl(
+                        user.getEmail(),
+                        user.getPassword(),
+                        Collections.singleton(user.getRole()),
+                        user.getId(),
+                        user.getUsername()
+                ))
+                .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user with email : " + email));
     }
 }

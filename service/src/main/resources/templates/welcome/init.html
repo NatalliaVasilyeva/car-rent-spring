@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
 <head th:replace="layout/common :: head_common(~{this :: script})">
 </head>
 <body>
@@ -10,5 +13,169 @@
         <p th:text="${success_message}"></p>
     </div>
 </div>
+<div th:if="${param.error}">
+    <div class="alert alert-danger">
+        <p th:text="Error"></p>
+    </div>
+</div>
+<br>
+<br>
+<br>
+
+<div th:if="${not #lists.isEmpty(cars)}">
+    <div class="row">
+        <!--        <c:forEach items="${adminCars}" var="car">-->
+        <th:block th:each="car: ${cars}">
+            <div class="col-sm-6 col-md-4">
+                <div class="col mb-4">
+                    <div class="card h-100">
+                        <img th:src="@{/api/v1/cars/{carId}/car_image(carId=${car.id})}" alt="Car image">
+                        <div class="card-body">
+                            <p hidden class="carId" th:text="${car.id}"></p>
+                            <p hidden class="brand" th:text="${car.brand}"></p>
+                            <p hidden class="model" th:text="${car.model}"></p>
+                            <p hidden class="color" th:text="${car.color}"></p>
+                            <p hidden class="card-text yearOfProduction" th:text="${car.yearOfProduction}"></p>
+                            <p hidden class="card-text transmission" th:text="${car.transmission}"></p>
+                            <p hidden class="card-text engineType" th:text="${car.engineType}"></p>
+                            <p hidden class="card-text carNumber" th:text="${car.number}"></p>
+                            <p hidden class="card-text vin" th:text="${car.vin}"></p>
+                            <p hidden class="card-text isRepaired" th:text="${car.repaired}"></p>
+                            <p hidden class="card-text category" th:text="${car.category}"></p>
+                            <p hidden class="card-text price" th:text="${car.price}"></p>
+
+                            <h5 class="card-title text-center">
+                                Car description: <span th:text="|${car.brand} ${car.model}|"></span>
+                            </h5>
+                            <hr>
+                            <div sec:authorize="hasAnyAuthority('ADMIN')">
+                                <p class="card-text color">
+                                    Color: <span th:text="${car.color}"></span>
+                                </p>
+                                <hr>
+                                <p class="card-text transmission">
+                                    Transmission: <span th:text="${car.transmission}"></span>
+                                </p>
+                                <hr>
+                                <p class="card-text engineType">
+                                    Engine type: <span th:text="${car.engineType}"></span>
+                                </p>
+                                <hr>
+                                <p class="card-text yearOfProduction">
+                                    Year of production: <span th:text="${car.yearOfProduction}"></span>
+                                </p>
+                                <hr>
+                                <p class="card-text carNumber">
+                                    Number: <span th:text="${car.number}"></span>
+                                </p>
+                                <hr>
+                                <p class="card-text vin">
+                                    VIN: <span th:text="${car.vin}"></span>
+                                </p>
+                                <hr>
+                                <p class="card-text isRepaired">
+                                    Repaired: <span th:text="${car.repaired}"></span>
+                                </p>
+                                <hr>
+                                <p class="card-text category">
+                                    Price: <span th:text="${car.category}"></span>
+                                </p>
+                                <hr>
+                            </div>
+                            <p class="card-text pricePerDay">
+                                Price: <span th:text="${car.price}"></span>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <td sec:authorize="hasAnyAuthority('CLIENT')">
+                                <button class="btn btn-dark btn-xs seecarbtn"
+                                        data-toggle="modal"
+                                        data-target="#see-car-modal">
+                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                            <div class="row">
+                                <td sec:authorize="hasAnyAuthority('ADMIN')">
+                                    <a class="btn btn-dark btn-xs" th:href="@{/cars/{carId}(carId=${car.id})}"
+                                       role="button">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    </a>
+                                    <!--                            </td>-->
+                                    <!--                            <td sec:authorize="hasAnyAuthority('ADMIN')">-->
+                                    <form th:action="@{/cars/{carId}/delete(carId=${car.id})}"
+                                          method="post">
+                                        <button class="btn btn-dark btn-xs">
+                                            <i class="fa fa-trash"
+                                               aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </div>
+                            <div sec:authorize="isAnonymous()">
+                                <small class="text-muted">Please login to see more info</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+        <!--        </c:forEach>-->
+    </div>
+</div>
+
+<!-- Attachment Modal -->
+<div class="modal fade" id="see-car-modal" tabindex="-1" role="dialog" aria-labelledby="see-car-modal-label"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="see-car-modal-label">Edit Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="attachment-body-content">
+                <div th:replace="layout/car/see-car :: user-car"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-dark btn-xs showorderform"
+                        data-toggle="modal"
+                        data-target="#create-order-modal">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Make order
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Attachment Modal -->
+
+
+<!-- Attachment Modal -->
+<div class="modal fade" id="create-order-modal" tabindex="-1" role="dialog" aria-labelledby="see-car-modal-label"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="create-order-modal-label">Edit Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="attachment-create-order-body-content">
+                <div th:replace="layout/car/see-car :: create-order"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" form="create-order-form" value="Submit">Create order
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Attachment Modal -->
+
+
 </body>
 </html>

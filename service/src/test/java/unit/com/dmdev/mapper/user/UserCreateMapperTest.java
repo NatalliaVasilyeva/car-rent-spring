@@ -6,12 +6,12 @@ import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.mapper.user.DriverLicenseFromUserCreateMapper;
 import com.dmdev.mapper.user.UserCreateMapper;
 import com.dmdev.mapper.user.UserDetailsFromUserCreateMapper;
-import com.dmdev.utils.SecurityUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -27,6 +27,9 @@ class UserCreateMapperTest {
     @Mock
     DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
 
+    @Mock
+    PasswordEncoder passwordEncoder;
+
     @InjectMocks
     UserCreateMapper userCreateMapper;
 
@@ -41,11 +44,12 @@ class UserCreateMapperTest {
         );
         when(userDetailsCreateMapper.mapToEntity(createUserRequestDto)).thenReturn(UserDetails.builder().build());
         when(driverLicenseCreateMapper.mapToEntity(createUserRequestDto)).thenReturn(DriverLicense.builder().build());
+        when(passwordEncoder.encode(createUserRequestDto.getPassword())).thenReturn("1111");
 
         var actualResult = userCreateMapper.mapToEntity(createUserRequestDto);
 
         assertEquals(actualResult.getEmail(), createUserRequestDto.getEmail());
         assertEquals(actualResult.getUsername(), createUserRequestDto.getUsername());
-        assertEquals(actualResult.getPassword(), SecurityUtils.securePassword(createUserRequestDto.getUsername(), createUserRequestDto.getPassword()));
+        assertEquals(actualResult.getPassword(), "1111");
     }
 }

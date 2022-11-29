@@ -26,7 +26,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"model", "orders"})
+@ToString(exclude = {"model", "brand", "category", "orders"})
 @EqualsAndHashCode(of = "vin")
 @Builder
 @Entity
@@ -75,5 +75,10 @@ public class Car implements BaseEntity<Long> {
     public void setBrand(Brand brand) {
         this.brand = brand;
         this.brand.getCars().add(this);
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
+        this.model.getCars().add(this);
     }
 }

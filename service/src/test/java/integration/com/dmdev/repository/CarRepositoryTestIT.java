@@ -41,7 +41,7 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
         var category = categoryRepository.findById(TEST_EXISTS_CATEGORY_ID).get();
         var car = TestEntityBuilder.createCar();
         car.setCategory(category);
-        model.setCar(car);
+        car.setModel(model);
 
         var savedCar = carRepository.saveAndFlush(car);
 

@@ -1,6 +1,7 @@
-package integration.com.dmdev.api;
+package integration.com.dmdev.api.controller;
 
 import integration.com.dmdev.IntegrationBaseTest;
+import integration.com.dmdev.auth.WithMockCustomUser;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,10 +18,12 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 @RequiredArgsConstructor
 class WelcomeApiTestIT extends IntegrationBaseTest {
 
+    static final String MOCK_USERNAME = "admin@gmail.com";
     private final MockMvc mockMvc;
     private final HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
+    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldRedirectToCorrectPage() throws Exception {
         final UriComponentsBuilder uriBuilder = fromUriString("/welcome");
 
