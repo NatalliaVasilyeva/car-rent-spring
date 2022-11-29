@@ -1,6 +1,5 @@
 package com.dmdev.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +32,6 @@ public class DriverLicense implements BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_details_id", nullable = false)
-    @JsonBackReference
     private UserDetails userDetails;
 
     @Column(nullable = false, unique = true)

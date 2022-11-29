@@ -12,7 +12,6 @@ import com.dmdev.service.exception.CarBadRequestException;
 import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -96,7 +95,7 @@ public class CarApi {
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
     public String findAll(Model model,
-                          @ModelAttribute @Nullable CarFilter carFilter,
+                          @ModelAttribute CarFilter carFilter,
                           @RequestParam(required = false, defaultValue = "1") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
         var carPage = carService.getAll(carFilter, page - 1, size);
@@ -112,7 +111,7 @@ public class CarApi {
     @GetMapping("/with-accidents")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllWithAccidents(Model model,
-                                       @ModelAttribute @Nullable CarFilter carFilter) {
+                                       @ModelAttribute CarFilter carFilter) {
         var cars = carService.getAllWithAccidents();
         var carPage = new PageImpl<>(cars);
         model.addAttribute("carPage", carPage);
@@ -127,7 +126,7 @@ public class CarApi {
     @GetMapping("/without-accidents")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllWithoutAccidents(Model model,
-                                          @ModelAttribute @Nullable CarFilter carFilter) {
+                                          @ModelAttribute CarFilter carFilter) {
         var cars = carService.getAllWithoutAccidents();
         var carPage = new PageImpl<>(cars);
         model.addAttribute("carPage", carPage);
@@ -142,7 +141,7 @@ public class CarApi {
     @GetMapping("/under-repair")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllUnderRepair(Model model,
-                                     @ModelAttribute @Nullable CarFilter carFilter) {
+                                     @ModelAttribute CarFilter carFilter) {
         var cars = carService.getAllAllUnderRepair();
         var carPage = new PageImpl<>(cars);
         model.addAttribute("carPage", carPage);

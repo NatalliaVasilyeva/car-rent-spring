@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static integration.com.dmdev.api.controller.CategoryApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -27,6 +28,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class CategoryApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/categories";
@@ -38,7 +40,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/8974239878");
 
@@ -51,7 +52,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldCreateCategoryCorrectly() throws Exception {
         var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
         var uriBuilder = fromUriString(ENDPOINT);
@@ -67,7 +67,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldReturnCategoryByIdCorrectly() throws Exception {
         var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
         var saved = categoryService.create(categoryCreateEditRequestDto);
@@ -77,7 +76,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldReturnCategoriesByPriceCorrectly() throws Exception {
         var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
         var saved = categoryService.create(categoryCreateEditRequestDto);
@@ -104,7 +102,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldReturnAllCategories() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT);
         var result = mockMvc.perform(
@@ -122,7 +119,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldUpdateCategoryCorrectly() throws Exception {
         var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
         var saved = categoryService.create(categoryCreateEditRequestDto);
@@ -143,7 +139,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldReturn3xxOnDelete() throws Exception {
         var categoryCreateEditRequestDto = TestDtoBuilder.createCategoryCreateEditRequestDto();
         var saved = categoryService.create(categoryCreateEditRequestDto);
@@ -163,7 +158,6 @@ class CategoryApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"USER", "ADMIN"})
     void shouldReturn404onNoDelete() throws Exception {
         mockMvc.perform(post(fromUriString(ENDPOINT + "4782749/delete").build().encode().toUri())
                         .headers(commonHeaders)

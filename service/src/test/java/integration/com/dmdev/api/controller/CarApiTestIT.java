@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static integration.com.dmdev.api.controller.CarApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -29,6 +30,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = CategoryApiTestIT.MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class CarApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/cars";
@@ -41,7 +43,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/8974239878");
 
@@ -54,7 +55,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldCreateCarCorrectly() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -80,7 +80,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnCarByIdCorrectly() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -94,7 +93,7 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+    
     void shouldReturnCarByNumberCorrectly() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -122,7 +121,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllWithAccidents() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -147,7 +145,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllWithoutAccidents() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -172,7 +169,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllUnderRepair() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -197,7 +193,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllCars() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT);
         var result = mockMvc.perform(
@@ -215,7 +210,6 @@ class CarApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldUpdateModelCorrectly() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -246,7 +240,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn3xxOnDelete() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);
@@ -270,7 +263,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn404onNoDelete() throws Exception {
         mockMvc.perform(post(fromUriString(ENDPOINT + "4782749/delete").build().encode().toUri())
                         .headers(commonHeaders)

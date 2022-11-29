@@ -63,7 +63,6 @@ public class UserDetails extends AuditingEntity<Long> {
 
     @Builder.Default
     @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
     private Set<DriverLicense> driverLicenses = new HashSet<>();
 
     public void setDriverLicense(DriverLicense driverLicense) {

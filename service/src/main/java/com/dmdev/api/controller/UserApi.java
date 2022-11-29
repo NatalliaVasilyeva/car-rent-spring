@@ -9,7 +9,6 @@ import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserBadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -102,11 +101,11 @@ public class UserApi {
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String findAll(Model model,
-                          @ModelAttribute @Nullable UserFilter userFilter,
-                          @RequestParam(required = false, defaultValue = "1") Integer page,
+                          @ModelAttribute UserFilter userFilter,
+                          @RequestParam(required = false, defaultValue = "0") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
 
-        var usersPage = userService.getAll(userFilter, page - 1, size);
+        var usersPage = userService.getAll(userFilter, page, size);
         model.addAttribute("usersPage", usersPage);
         model.addAttribute("filter", userFilter);
         model.addAttribute("roles", Role.values());

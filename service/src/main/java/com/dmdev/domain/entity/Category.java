@@ -1,6 +1,5 @@
 package com.dmdev.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,6 +39,5 @@ public class Category implements BaseEntity<Long> {
 
     @Builder.Default
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Set<Car> cars = new HashSet<>();
 }

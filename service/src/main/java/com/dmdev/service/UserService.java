@@ -34,6 +34,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -77,7 +78,7 @@ public class UserService implements UserDetailsService {
                 .map(userResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<UserResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(userResponseMapper::mapToDto);
@@ -104,7 +105,7 @@ public class UserService implements UserDetailsService {
                 .map(userResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Page<UserResponseDto> getAll(UserFilter userFilter, Integer page, Integer pageSize) {
         return userFilter.getAllExpiredLicenses() == null || !userFilter.getAllExpiredLicenses()
                 ? userRepository.findAll(userPredicateBuilder.build(userFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname")).map(userResponseMapper::mapToDto)

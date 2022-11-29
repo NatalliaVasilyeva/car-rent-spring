@@ -8,7 +8,6 @@ import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserDetailsBadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -75,7 +74,7 @@ public class UserDetailsApi {
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAll(Model model,
-                          @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
+                          @ModelAttribute UserDetailsFilter userDetailsFilter,
                           @RequestParam(required = false, defaultValue = "1") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
         var usersDetailsPage = userDetailsService.getAll(userDetailsFilter, page - 1, size);
@@ -88,7 +87,7 @@ public class UserDetailsApi {
     @GetMapping("/by-name-surname")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByUserNameAndSurname(Model model,
-                                              @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
+                                              @ModelAttribute UserDetailsFilter userDetailsFilter,
                                               @RequestParam(required = false) String name,
                                               @RequestParam(required = false) String surname) {
         var usersDetails = userDetailsService.getAllByNameAndSurname(name, surname);
@@ -102,7 +101,7 @@ public class UserDetailsApi {
     @GetMapping("/by-registration-date")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByRegistrationDate(Model model,
-                                            @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
+                                            @ModelAttribute UserDetailsFilter userDetailsFilter,
                                             @RequestParam(required = false) LocalDate registrationDate) {
         var usersDetails = userDetailsService.getAllByRegistrationDate(registrationDate);
         var usersDetailsPage = new PageImpl<>(usersDetails);
@@ -115,7 +114,7 @@ public class UserDetailsApi {
     @GetMapping("/by-registration-dates")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByRegistrationDates(Model model,
-                                             @ModelAttribute @Nullable UserDetailsFilter userDetailsFilter,
+                                             @ModelAttribute UserDetailsFilter userDetailsFilter,
                                              @RequestParam(required = false) LocalDate from,
                                              @RequestParam(required = false) LocalDate to) {
         var usersDetails = userDetailsService.getAllByRegistrationDates(from, to);
@@ -134,5 +133,4 @@ public class UserDetailsApi {
         }
         return "redirect:/user-details";
     }
-
 }

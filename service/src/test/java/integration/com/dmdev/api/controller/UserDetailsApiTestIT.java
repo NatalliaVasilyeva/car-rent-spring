@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
+import static integration.com.dmdev.api.controller.UserDetailsApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -29,6 +30,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class UserDetailsApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/user-details";
@@ -38,10 +40,9 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final MockMvc mockMvc;
-    private HttpHeaders commonHeaders = new HttpHeaders();
+    private final HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/8974239878");
 
@@ -55,7 +56,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnUserDetailsByIdCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -65,7 +65,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnUserDetailsByUserIdCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -93,7 +92,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnUserDetailsByNameAndSurnameCorrectly() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/by-name-surname");
         mockMvc.perform(
@@ -109,7 +107,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnUserDetailsByRegistrationDateCorrectly() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/by-registration-date");
         mockMvc.perform(
@@ -124,7 +121,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnUserDetailsByRegistrationDatesCorrectly() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/by-registration-dates");
         mockMvc.perform(
@@ -140,7 +136,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllUsersDetails() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT);
         var result = mockMvc.perform(
@@ -158,7 +153,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldUpdateUserCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -183,7 +177,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn3xxOnDelete() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -203,7 +196,6 @@ class UserDetailsApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn404onNoDelete() throws Exception {
         mockMvc.perform(post(fromUriString(ENDPOINT + "4782749/delete").build().encode().toUri())
                         .headers(commonHeaders)

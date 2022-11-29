@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static integration.com.dmdev.api.controller.DriverLicenseApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -28,6 +29,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class DriverLicenseApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/driver-licenses";
@@ -40,7 +42,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
     private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/8974239878");
 
@@ -54,7 +55,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnDriverLicenseByIdCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -64,7 +64,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnDriverLicenseByUserIdCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -91,7 +90,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnDriverLicenseByNumberCorrectly() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/by-number");
         mockMvc.perform(
@@ -106,7 +104,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllExpiredDriverLicenseCorrectly() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/expired");
         mockMvc.perform(
@@ -121,7 +118,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllDriverLicenses() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT);
         var result = mockMvc.perform(
@@ -139,7 +135,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldUpdateDriverLicenseCorrectly() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -163,7 +158,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn3xxOnDelete() throws Exception {
         var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
         var savedUser = userService.create(userCreateRequestDTO);
@@ -183,7 +177,6 @@ class DriverLicenseApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn404onNoDelete() throws Exception {
         mockMvc.perform(post(fromUriString(ENDPOINT + "4782749/delete").build().encode().toUri())
                         .headers(commonHeaders)

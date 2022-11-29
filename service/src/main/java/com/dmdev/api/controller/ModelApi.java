@@ -11,7 +11,6 @@ import com.dmdev.service.exception.ModelBadRequestException;
 import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +31,6 @@ public class ModelApi {
 
     private final ModelService modelService;
     private final BrandService brandService;
-
 
     @GetMapping("/create")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -70,7 +68,8 @@ public class ModelApi {
         return modelService.getById(id)
                 .map(carModel -> {
                     model.addAttribute("model", carModel);
-                    model.addAttribute("models", modelService.getAll());
+                    model.addAttribute("transmissions", Transmission.values());
+                    model.addAttribute("engineTypes", EngineType.values());
                     return "layout/model/model";
                 })
                 .orElseThrow(() -> new NotFoundException(String.format("Model with id %s does not exist.", id)));
@@ -79,11 +78,15 @@ public class ModelApi {
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
     public String findAll(Model model,
-                          @ModelAttribute @Nullable ModelFilter modelFilter,
+                          @ModelAttribute ModelFilter modelFilter,
                           @RequestParam(required = false, defaultValue = "1") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
         var modelPage = modelService.getAll(modelFilter, page - 1, size);
         model.addAttribute("modelPage", modelPage);
+        model.addAttribute("models", modelService.getAll());
+        model.addAttribute("brands", brandService.getAll());
+        model.addAttribute("transmissions", Transmission.values());
+        model.addAttribute("engineType", EngineType.values());
         model.addAttribute("filter", modelFilter);
 
         return "layout/model/models";
@@ -93,10 +96,14 @@ public class ModelApi {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByBrandId(Model model,
                                    @RequestParam("brandId") Long brandId,
-                                   @ModelAttribute @Nullable ModelFilter modelFilter) {
+                                   @ModelAttribute ModelFilter modelFilter) {
         var models = modelService.getAllByBrandId(brandId);
         var modelPage = new PageImpl<>(models);
         model.addAttribute("modelPage", modelPage);
+        model.addAttribute("models", modelService.getAll());
+        model.addAttribute("brands", brandService.getAll());
+        model.addAttribute("transmissions", Transmission.values());
+        model.addAttribute("engineType", EngineType.values());
         model.addAttribute("filter", modelFilter);
 
         return "layout/model/models";

@@ -1,6 +1,5 @@
 package com.dmdev.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +32,6 @@ public class CarRentalTime extends AuditingEntity<Long> {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false, unique = true)
-    @JsonBackReference
     private Order order;
 
     @Column(nullable = false)

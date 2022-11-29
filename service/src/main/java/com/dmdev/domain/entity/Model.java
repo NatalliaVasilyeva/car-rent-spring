@@ -2,8 +2,6 @@ package com.dmdev.domain.entity;
 
 import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.Transmission;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +39,6 @@ public class Model implements BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
-    @JsonBackReference
     private Brand brand;
 
     @Column(nullable = false)
@@ -55,6 +52,5 @@ public class Model implements BaseEntity<Long> {
 
     @Builder.Default
     @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private Set<Car> cars = new HashSet<>();
 }

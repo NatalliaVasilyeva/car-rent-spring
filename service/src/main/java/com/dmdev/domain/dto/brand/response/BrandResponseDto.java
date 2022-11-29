@@ -1,6 +1,6 @@
 package com.dmdev.domain.dto.brand.response;
 
-import com.dmdev.domain.entity.Model;
+import com.dmdev.domain.dto.model.ModelResponseDto;
 import lombok.Builder;
 import lombok.Value;
 
@@ -14,5 +14,5 @@ public class BrandResponseDto {
     @NotEmpty
     Long id;
     String name;
-    Set<Model> models;
+    Set<ModelResponseDto> models;
 }

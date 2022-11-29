@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static integration.com.dmdev.api.controller.BrandApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -26,6 +27,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
+@WithMockCustomUser(username = CategoryApiTestIT.MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class BrandApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/brands";
@@ -36,7 +38,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     private HttpHeaders commonHeaders = new HttpHeaders();
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT + "/8974239878");
 
@@ -49,7 +50,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldCreateBrandCorrectly() throws Exception {
         var brandCreateEditRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var uriBuilder = fromUriString(ENDPOINT);
@@ -64,7 +64,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnBrandByIdCorrectly() throws Exception {
         var brandCreateEditRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var saved = brandService.create(brandCreateEditRequestDto);
@@ -74,7 +73,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnBrandByNameCorrectly() throws Exception {
         var brandCreateEditRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var saved = brandService.create(brandCreateEditRequestDto);
@@ -99,7 +97,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnBrandByNamesCorrectly() throws Exception {
         var brandCreateEditRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var saved = brandService.create(brandCreateEditRequestDto);
@@ -124,7 +121,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllBrandsAllView() throws Exception {
         var brandCreateEditRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         brandService.create(brandCreateEditRequestDto);
@@ -145,7 +141,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturnAllBrands() throws Exception {
         var uriBuilder = fromUriString(ENDPOINT);
         var result = mockMvc.perform(
@@ -163,7 +158,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
 
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldUpdateBrandCorrectly() throws Exception {
         var brandCreateEditRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var saved = brandService.create(brandCreateEditRequestDto);
@@ -184,7 +178,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn3xxOnDelete() throws Exception {
         var brandCreateEditRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var saved = brandService.create(brandCreateEditRequestDto);
@@ -204,7 +197,6 @@ class BrandApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    @WithMockCustomUser(username = MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
     void shouldReturn404onNoDelete() throws Exception {
         mockMvc.perform(post(fromUriString(ENDPOINT + "4782749/delete").build().encode().toUri())
                         .headers(commonHeaders)

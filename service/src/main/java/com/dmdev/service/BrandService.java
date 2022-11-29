@@ -25,6 +25,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BrandService {
 
     private final BrandRepository brandRepository;
@@ -54,48 +55,48 @@ public class BrandService {
                 .map(brandResponserMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<BrandResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(brandResponserMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Page<BrandResponseDto> getAll(Integer page, Integer pageSize) {
         var pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "name");
         return brandRepository.findAll(pageRequest)
                 .map(brandResponserMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public List<BrandResponseDto> getAll() {
         return brandRepository.findAll().stream()
                 .map(brandResponserMapper::mapToDto)
                 .collect(toList());
     }
 
-    @Transactional(readOnly = true)
+
     public List<BrandFullView> getAllFullView() {
         return brandRepository.findAllFullView();
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<BrandFullView> getByIdFullView(Long brandId) {
         return brandRepository.findAllByIdFullView(brandId);
     }
 
-    @Transactional(readOnly = true)
+
     public List<BrandFullView> getByNameFullView(String name) {
         return brandRepository.findAllByNameFullView(name);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<BrandResponseDto> getByName(String name) {
         return brandRepository.findByName(name)
                 .map(brandResponserMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public List<BrandResponseDto> getByNames(List<String> names) {
         return brandRepository.findByNameInIgnoringCase(names).stream()
                 .map(brandResponserMapper::mapToDto)

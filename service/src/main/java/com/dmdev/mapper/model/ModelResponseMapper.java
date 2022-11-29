@@ -5,6 +5,9 @@ import com.dmdev.domain.entity.Model;
 import com.dmdev.mapper.ResponseMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Component
 public class ModelResponseMapper implements ResponseMapper<Model, ModelResponseDto> {
 
@@ -17,5 +20,11 @@ public class ModelResponseMapper implements ResponseMapper<Model, ModelResponseD
                 .transmission(model.getTransmission())
                 .engineType(model.getEngineType())
                 .build();
+    }
+
+    public Set<ModelResponseDto> mapToDtos(Set<Model> models) {
+        return models.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toSet());
     }
 }

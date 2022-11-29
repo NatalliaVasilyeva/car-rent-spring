@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 public class ModelResponseDto {
 
     @NotEmpty
-    long id;
+    Long id;
 
     String brand;
     String name;

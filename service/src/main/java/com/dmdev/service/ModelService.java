@@ -26,6 +26,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ModelService {
 
     private final ModelRepository modelRepository;
@@ -52,14 +53,13 @@ public class ModelService {
                 .map(modelResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<ModelResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(modelResponseMapper::mapToDto);
     }
 
 
-    @Transactional(readOnly = true)
     public List<ModelResponseDto> getAll() {
         return modelRepository.findAll().stream()
                 .map(modelResponseMapper::mapToDto)
@@ -75,7 +75,7 @@ public class ModelService {
         return false;
     }
 
-    @Transactional(readOnly = true)
+
     public List<ModelResponseDto> getAllByBrandId(Long id) {
         return modelRepository.findModelsByBrandId(id)
                 .stream()
@@ -84,7 +84,6 @@ public class ModelService {
     }
 
 
-    @Transactional(readOnly = true)
     public Page<ModelResponseDto> getAll(ModelFilter modelFilter, Integer page, Integer pageSize) {
         return modelRepository.findAll(modelPredicateBuilder.build(modelFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "brand_name")).map(modelResponseMapper::mapToDto);
     }

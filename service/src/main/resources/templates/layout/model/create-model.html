@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+<br>
+<br>
+<form id="create-car-form" class="form-horizontal" method="post" enctype="multipart/form-data" th:object="${model}"
+      th:action="@{/models}">
+    <div class="card text-white bg-dark mb-10">
+        <div class="card-header">
+            <h2 class="m-0">Create model</h2>
+        </div>
+        <div class="card-body">
+            <!-- brand -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-model-brand">Brand: </label>
+                <select class="form-control my-select " id="brandList" th:field="*{brandId}" required>
+                    <option selected disable value="">Select brand</option>
+                    <option th:id="create-model-brand" th:each="brand : ${brands}" th:value="${brand.id}"
+                            th:text="${brand.name}" selected></option>
+                </select>
+            </div>
+            <!-- /brand -->
+            <!-- model -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-model-name">Model name: </label>
+                <input type="text" th:field="*{name}" class="form-control" th:id="create-model-name" required>
+            </div>
+            <!--/model -->
+            <!-- transmission -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-model-transmission">Brand: </label>
+                <select class="form-control my-select " id="transmission" th:field="*{transmission}" required>
+                    <option selected disable value="">Select transmission</option>
+                    <option th:id="create-model-transmission" th:each="transmission : ${transmission}"
+                            th:value="${transmission.name()}"
+                            th:text="${transmission.name()}" selected></option>
+                </select>
+            </div>
+            <!-- /transmission -->
+            <!-- transmission -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-model-engineType">Brand: </label>
+                <select class="form-control my-select " id="engineType" th:field="*{engineType}" required>
+                    <option selected disable value="">Select transmission</option>
+                    <option th:id="create-model-engineType" th:each="engineType : ${engineType}"
+                            th:value="${engineType.name()}"
+                            th:text="${engineType.name()}" selected></option>
+                </select>
+            </div>
+            <!-- /transmission -->
+        </div>
+        <div class="card-footer" sec:authorize="hasAnyAuthority('ADMIN')">
+            <button type="submit" class="btn btn-primary">
+                Save
+            </button>
+        </div>
+    </div>
+</form>
+</body>
+</html>

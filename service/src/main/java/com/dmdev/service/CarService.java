@@ -31,6 +31,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CarService {
 
     private final CarRepository carRepository;
@@ -70,21 +71,19 @@ public class CarService {
     }
 
 
-    @Transactional(readOnly = true)
     public Optional<CarResponseDto> getById(Long id) {
         return Optional.of(getByIdOrElseThrow(id))
                 .map(carResponseMapper::mapToDto);
     }
 
 
-    @Transactional(readOnly = true)
     public List<CarResponseDto> getAll() {
         return carRepository.findAll().stream()
                 .map(carResponseMapper::mapToDto)
                 .collect(toList());
     }
 
-    @Transactional(readOnly = true)
+
     public Page<CarResponseDto> getAll(Integer page, Integer pageSize) {
         var pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "number");
         return carRepository.findAll(pageRequest)
@@ -100,13 +99,13 @@ public class CarService {
         return false;
     }
 
-    @Transactional(readOnly = true)
+
     public Optional<CarResponseDto> getByCarNumber(String number) {
         return carRepository.findByCarNumber(number)
                 .map(carResponseMapper::mapToDto);
     }
 
-    @Transactional(readOnly = true)
+
     public List<CarResponseDto> getAllWithAccidents() {
         return carRepository.findAllWithAccidents()
                 .stream()
@@ -114,7 +113,7 @@ public class CarService {
                 .collect(toList());
     }
 
-    @Transactional(readOnly = true)
+
     public List<CarResponseDto> getAllWithoutAccidents() {
         return carRepository.findAllWithoutAccidents()
                 .stream()
@@ -122,7 +121,7 @@ public class CarService {
                 .collect(toList());
     }
 
-    @Transactional(readOnly = true)
+
     public List<CarResponseDto> getAllAvailable() {
         return carRepository.findAllAvailable()
                 .stream()
@@ -130,7 +129,7 @@ public class CarService {
                 .collect(toList());
     }
 
-    @Transactional(readOnly = true)
+
     public List<CarResponseDto> getAllAllUnderRepair() {
         return carRepository.findAllUnderRepair()
                 .stream()
@@ -138,12 +137,12 @@ public class CarService {
                 .collect(toList());
     }
 
-    @Transactional(readOnly = true)
+
     public boolean isCarAvailable(Long id, LocalDate startDate, LocalDate endDate) {
         return carRepository.isCarAvailable(id, startDate, endDate);
     }
 
-    @Transactional(readOnly = true)
+
     public Page<CarResponseDto> getAll(CarFilter carFilter, Integer page, Integer pageSize) {
         return carRepository.findAll(carPredicateBuilder.build(carFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "brand_name")).map(carResponseMapper::mapToDto);
     }
