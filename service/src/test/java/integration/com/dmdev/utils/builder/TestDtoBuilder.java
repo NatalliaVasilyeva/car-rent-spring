@@ -3,11 +3,15 @@ package integration.com.dmdev.utils.builder;
 import com.dmdev.domain.dto.brand.request.BrandCreateEditRequestDto;
 import com.dmdev.domain.dto.car.CarCreateRequestDto;
 import com.dmdev.domain.dto.car.CarUpdateRequestDto;
+import com.dmdev.domain.dto.carrentaltime.CarRentalTimeCreateRequestDto;
+import com.dmdev.domain.dto.carrentaltime.CarRentalTimeUpdateRequestDto;
 import com.dmdev.domain.dto.category.request.CategoryCreateEditRequestDto;
 import com.dmdev.domain.dto.driverlicense.request.DriverLicenseUpdateRequestDto;
 import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.model.ModelCreateRequestDto;
 import com.dmdev.domain.dto.model.ModelUpdateRequestDto;
+import com.dmdev.domain.dto.order.OrderCreateRequestDto;
+import com.dmdev.domain.dto.order.OrderResponseDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
 import com.dmdev.domain.dto.user.response.UserResponseDto;
@@ -21,6 +25,7 @@ import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @UtilityClass
 public class TestDtoBuilder {
@@ -58,6 +63,10 @@ public class TestDtoBuilder {
 
     public static CategoryCreateEditRequestDto createCategoryCreateEditRequestDto() {
         return new CategoryCreateEditRequestDto("super-econome", BigDecimal.valueOf(120L));
+    }
+
+    public static OrderCreateRequestDto createOrderRequestDto(Long userId, Long carId) {
+        return new OrderCreateRequestDto(userId, carId, "passport", true, LocalDateTime.now(), LocalDateTime.now().plusDays(3));
     }
 
 

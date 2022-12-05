@@ -82,14 +82,6 @@ public class CarRentalTimeService {
                 .collect(toList());
     }
 
-
-    public CarRentalTimeResponseDto getByOrderId(Long orderId) {
-        return carRentalTimeRepository.findByOrderId(orderId)
-                .map(carRentalTimeResponseMapper::mapToDto)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Car rental time", "order id", orderId)));
-    }
-
-
     @Transactional
     public boolean deleteById(Long id) {
         if (carRentalTimeRepository.existsById(id)) {
@@ -98,7 +90,6 @@ public class CarRentalTimeService {
         }
         return false;
     }
-
 
     private Order getOrderByIdOrElseThrow(Long id) {
         return orderRepository.findById(id)

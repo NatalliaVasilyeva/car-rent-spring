@@ -179,8 +179,8 @@ public class OrderService {
     }
 
     private void checkIsCarExists(Long carId) {
-        if (carRepository.existsById(carId)) {
-            throw new OrderBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("Car", "id", carId)));
+        if (!carRepository.existsById(carId)) {
+            throw new OrderBadRequestException(String.format(ExceptionMessageUtil.getNotFoundMessage("Car", "id", carId)));
         }
     }
 
@@ -190,8 +190,8 @@ public class OrderService {
     }
 
     private void checkIsUserExists(Long userId) {
-        if (userRepository.existsById(userId)) {
-            throw new OrderBadRequestException(String.format(ExceptionMessageUtil.getAlreadyExistsMessage("User", "id", userId)));
+        if (!userRepository.existsById(userId)) {
+            throw new OrderBadRequestException(String.format(ExceptionMessageUtil.getNotFoundMessage("User", "id", userId)));
         }
     }
 

@@ -37,11 +37,11 @@ public class ReportApi {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public void createUserReport(HttpServletResponse response) throws IOException {
 
-        String reportName = "orders_" + id + "_date_" + LocalDate.now() +".csv";
+        String reportName = "orders_date_" + LocalDate.now() +".csv";
         response.setContentType("text/csv");
 
         response.addHeader("Content-Disposition", "attachment; filename=" + reportName);
 
-        reportService.writeUserReportsToCsv(id, response.getWriter());
+        reportService.writeAdminOrdersReportsToCsv(response.getWriter());
     }
 }
