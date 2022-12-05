@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RequiredArgsConstructor
-class OrderTestIT extends IntegrationBaseTest {
+class OrderServiceTestIT extends IntegrationBaseTest {
 
     private final OrderService orderService;
     private final UserService userService;

@@ -36,7 +36,6 @@ public class OrderApi {
     private static final String ERROR_ATTRIBUTE = "error_message";
     private final OrderService orderService;
     private final CarService carService;
-    private final UserService userService;
 
     @GetMapping("/create")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
