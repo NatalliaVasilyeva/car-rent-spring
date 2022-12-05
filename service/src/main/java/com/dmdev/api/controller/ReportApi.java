@@ -6,7 +6,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +24,7 @@ public class ReportApi {
     public void createUserReport(@PathVariable("id") Long id,
                                  HttpServletResponse response) throws IOException {
 
-        String reportName = "id_" + id + "_date_" + LocalDate.now() +".csv";
+        String reportName = "id_" + id + "_date_" + LocalDate.now() + ".csv";
         response.setContentType("text/csv");
         response.addHeader("Content-Disposition", "attachment; filename=" + reportName);
 
@@ -36,7 +35,7 @@ public class ReportApi {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public void createUserReport(HttpServletResponse response) throws IOException {
 
-        String reportName = "orders_date_" + LocalDate.now() +".csv";
+        String reportName = "orders_date_" + LocalDate.now() + ".csv";
         response.setContentType("text/csv");
 
         response.addHeader("Content-Disposition", "attachment; filename=" + reportName);

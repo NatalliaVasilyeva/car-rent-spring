@@ -41,7 +41,7 @@ class CarRentalTimeServiceTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateCarRentalTimeCorrectly() {
         var carRentalTimeUpdateRequestDto = new CarRentalTimeUpdateRequestDto(
-              LocalDateTime.now(),
+                LocalDateTime.now(),
                 LocalDateTime.now().plusDays(2));
 
         var existsCarRentalTime = carRentalTimeService.getById(TEST_EXISTS_CAR_RENTAL_TIME_ID).get();

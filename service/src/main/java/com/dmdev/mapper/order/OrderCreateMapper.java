@@ -1,20 +1,15 @@
 package com.dmdev.mapper.order;
 
 import com.dmdev.domain.dto.order.OrderCreateRequestDto;
-import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
-import com.dmdev.domain.entity.Brand;
 import com.dmdev.domain.entity.Car;
 import com.dmdev.domain.entity.Order;
 import com.dmdev.domain.entity.User;
 import com.dmdev.domain.model.OrderStatus;
 import com.dmdev.mapper.Mapper;
 import com.dmdev.mapper.carrentaltime.CarRentalTimeFromOrderCreateMapper;
-import com.dmdev.mapper.user.DriverLicenseFromUserCreateMapper;
-import com.dmdev.mapper.user.UserDetailsFromUserCreateMapper;
 import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -52,7 +47,7 @@ public class OrderCreateMapper implements Mapper<OrderCreateRequestDto, Order> {
     }
 
     private Car getCar(Long carId) {
-       return Optional.ofNullable(carId)
+        return Optional.ofNullable(carId)
                 .flatMap(carRepository::findById)
                 .orElse(null);
     }

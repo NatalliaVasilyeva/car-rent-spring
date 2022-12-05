@@ -122,7 +122,6 @@ class OrderApiTestIT extends IntegrationBaseTest {
                                 .param("endRentalDate", orderCreateRequestDTOSame.getEndRentalDate().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/cars"));
-        ;
     }
 
     @Test

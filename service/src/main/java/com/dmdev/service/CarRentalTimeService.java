@@ -3,37 +3,23 @@ package com.dmdev.service;
 import com.dmdev.domain.dto.carrentaltime.CarRentalTimeCreateRequestDto;
 import com.dmdev.domain.dto.carrentaltime.CarRentalTimeResponseDto;
 import com.dmdev.domain.dto.carrentaltime.CarRentalTimeUpdateRequestDto;
-import com.dmdev.domain.dto.filterdto.UserDetailsFilter;
-import com.dmdev.domain.dto.userdetails.request.UserDetailsCreateRequestDto;
-import com.dmdev.domain.dto.userdetails.request.UserDetailsUpdateRequestDto;
-import com.dmdev.domain.dto.userdetails.response.UserDetailsResponseDto;
 import com.dmdev.domain.entity.CarRentalTime;
 import com.dmdev.domain.entity.Order;
-import com.dmdev.domain.entity.User;
-import com.dmdev.domain.entity.UserDetails;
 import com.dmdev.mapper.carrentaltime.CarRentalTimeCreateMapper;
 import com.dmdev.mapper.carrentaltime.CarRentalTimeResponseMapper;
 import com.dmdev.mapper.carrentaltime.CarRentalTimeUpdateMapper;
-import com.dmdev.mapper.driverlicense.DriverLicenseCreateMapper;
-import com.dmdev.mapper.driverlicense.DriverLicenseResponseMapper;
-import com.dmdev.mapper.driverlicense.DriverLicenseUpdateMapper;
 import com.dmdev.repository.CarRentalTimeRepository;
 import com.dmdev.repository.OrderRepository;
 import com.dmdev.service.exception.ExceptionMessageUtil;
 import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +31,6 @@ public class CarRentalTimeService {
     private final CarRentalTimeCreateMapper carRentalTimeCreateMapper;
     private final CarRentalTimeUpdateMapper carRentalTimeUpdateMapper;
     private final CarRentalTimeResponseMapper carRentalTimeResponseMapper;
-
 
 
     @Transactional

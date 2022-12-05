@@ -1,7 +1,5 @@
 package com.dmdev.domain.dto.order;
 
-import com.dmdev.domain.dto.car.CarResponseDto;
-import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.domain.model.Color;
 import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.OrderStatus;

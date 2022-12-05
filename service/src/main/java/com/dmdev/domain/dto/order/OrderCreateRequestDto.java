@@ -26,5 +26,4 @@ public class OrderCreateRequestDto {
 
     @NotNull
     LocalDateTime endRentalDate;
-
 }

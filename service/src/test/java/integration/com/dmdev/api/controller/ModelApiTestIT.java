@@ -2,7 +2,6 @@ package integration.com.dmdev.api.controller;
 
 import com.dmdev.domain.dto.model.ModelResponseDto;
 import com.dmdev.service.BrandService;
-import com.dmdev.service.CarService;
 import com.dmdev.service.ModelService;
 import com.dmdev.service.exception.NotFoundException;
 import integration.com.dmdev.IntegrationBaseTest;

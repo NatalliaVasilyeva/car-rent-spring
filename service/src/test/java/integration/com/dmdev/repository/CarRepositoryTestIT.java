@@ -14,7 +14,6 @@ import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

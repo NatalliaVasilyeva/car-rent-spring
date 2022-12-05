@@ -2,7 +2,6 @@ package com.dmdev.domain.dto.carrentaltime;
 
 import lombok.Value;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -17,5 +16,4 @@ public class CarRentalTimeCreateRequestDto {
 
     @NotNull
     LocalDateTime endRentalDate;
-
 }

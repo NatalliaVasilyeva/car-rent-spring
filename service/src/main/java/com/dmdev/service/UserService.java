@@ -32,9 +32,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -117,9 +116,9 @@ public class UserService implements UserDetailsService {
     }
 
     public List<UserResponseDto> getAllWithoutPage() {
-             return userRepository.findAll().stream()
-                     .map(userResponseMapper::mapToDto)
-                     .collect(toList());
+        return userRepository.findAll().stream()
+                .map(userResponseMapper::mapToDto)
+                .collect(toList());
     }
 
     @Transactional

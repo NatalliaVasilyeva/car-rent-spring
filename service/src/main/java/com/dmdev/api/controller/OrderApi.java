@@ -7,7 +7,6 @@ import com.dmdev.domain.dto.order.OrderUpdateRequestDto;
 import com.dmdev.domain.model.OrderStatus;
 import com.dmdev.service.CarService;
 import com.dmdev.service.OrderService;
-import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserBadRequestException;
 import lombok.RequiredArgsConstructor;

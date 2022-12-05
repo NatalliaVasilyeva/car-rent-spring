@@ -3,15 +3,12 @@ package integration.com.dmdev.utils.builder;
 import com.dmdev.domain.dto.brand.request.BrandCreateEditRequestDto;
 import com.dmdev.domain.dto.car.CarCreateRequestDto;
 import com.dmdev.domain.dto.car.CarUpdateRequestDto;
-import com.dmdev.domain.dto.carrentaltime.CarRentalTimeCreateRequestDto;
-import com.dmdev.domain.dto.carrentaltime.CarRentalTimeUpdateRequestDto;
 import com.dmdev.domain.dto.category.request.CategoryCreateEditRequestDto;
 import com.dmdev.domain.dto.driverlicense.request.DriverLicenseUpdateRequestDto;
 import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.model.ModelCreateRequestDto;
 import com.dmdev.domain.dto.model.ModelUpdateRequestDto;
 import com.dmdev.domain.dto.order.OrderCreateRequestDto;
-import com.dmdev.domain.dto.order.OrderResponseDto;
 import com.dmdev.domain.dto.order.OrderUpdateRequestDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
@@ -70,7 +67,7 @@ public class TestDtoBuilder {
         return new OrderCreateRequestDto(userId, carId, "passport", true, LocalDateTime.now(), LocalDateTime.now().plusDays(3));
     }
 
-    public static OrderCreateRequestDto createOrderRequestDtoWithNecessaryData(Long userId, Long carId, LocalDateTime start,  LocalDateTime end) {
+    public static OrderCreateRequestDto createOrderRequestDtoWithNecessaryData(Long userId, Long carId, LocalDateTime start, LocalDateTime end) {
         return new OrderCreateRequestDto(userId, carId, "passport", true, start, end);
     }
 

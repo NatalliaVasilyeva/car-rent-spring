@@ -19,5 +19,4 @@ public class OrderUpdateRequestDto {
 
     @NotNull
     LocalDateTime endRentalDate;
-
 }

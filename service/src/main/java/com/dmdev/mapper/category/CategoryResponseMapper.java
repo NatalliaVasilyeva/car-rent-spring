@@ -16,5 +16,4 @@ public class CategoryResponseMapper implements ResponseMapper<Category, Category
                 .price(category.getPrice())
                 .build();
     }
-
 }
