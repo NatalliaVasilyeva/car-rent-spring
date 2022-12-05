@@ -15,53 +15,52 @@
 
 <div>
     <div class="container mt5 ml-auto-m mb5">
-        <H3 class="justify-content">Search by price</H3>
+        <H3 class="justify-content" th:text="#{categories.search.price.title}">Search by price</H3>
         <div class="d-flex">
             <form class="form-inline my-2" th:action="@{/categories/by-price}" method="get">
-                <label class="mr-md-3" for="price">Price:
-                    <input class="form-control ml-md-3 mr-md-3 w-100-m" placeholder="Enter price" id="price"
-                           type="number"
-                           name="price">
+                <label class="mr-md-3" for="price" th:text="#{categories.price} + ':'">Price:
+                    <input class="form-control-input ml-md-3 mr-md-3 w-100-m" placeholder="Enter price" id="price"
+                           type="number" name="price">
                 </label>
                 <div class="form-check">
                     <label class="form-check-label mr-md-3">
                         <input class="form-check-input mt-2 mr-md-3" type="radio" id="inlineCheckbox1" name="type"
-                               value="equals"> Equals
+                               value="equals" th:text="#{categories.type.equals}"> Equals
                     </label>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label mr-md-3">
                         <input class="form-check-input mt-2 mr-md-3" type="radio" id="inlineCheckbox2" name="type"
-                               value="less"> Less
+                               value="less" th:text="#{categories.type.less}"> Less
                     </label>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label mr-md-3">
                         <input class="form-check-input mt-2 mr-md-3" type="radio" id="inlineCheckbox3" name="type"
-                               value="greater"> Greater
+                               value="greater" th:text="#{categories.type.greater}"> Greater
                     </label>
                 </div>
-                <button class="btn btn-info mr-md-3" type="submit">Search</button>
+                <button class="btn btn-info mr-md-3" type="submit" th:text="#{categories.search.button}">Search</button>
             </form>
         </div>
     </div>
 </div>
 
-<span th:if="${#lists.isEmpty(categories)}">There are not available categories!</span>
+<span th:if="${#lists.isEmpty(categories)}" th:text="#{categories.no.categories}">There are not available categories!</span>
 
 <div th:if="${not #lists.isEmpty(categories)}">
     <div class="container-fluid col">
         <div class="col-lg-auto">
             <div class="panel panel-default">
-                <h3 class="text-center">Categories list</h3>
+                <h3 class="text-center" th:text="#{categories.header.list}">Categories list</h3>
                 <div class="panel-body table-responsive">
                     <table class="table table-condensed table-striped text-center">
                         <thead class="thead-dark">
                         <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th colspan="2">Action</th>
+                            <th th:text="#{categories.id}">Id</th>
+                            <th th:text="#{categories.name}">Name</th>
+                            <th th:text="#{categories.price}">Price</th>
+                            <th colspan="2" th:text="#{categories.action}">Action</th>
                         </tr>
                         </thead>
                         <tbody>

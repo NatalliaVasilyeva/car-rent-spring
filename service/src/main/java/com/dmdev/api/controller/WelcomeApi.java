@@ -14,7 +14,7 @@ public class WelcomeApi {
 
     private final CarService carService;
 
-    @GetMapping("welcome")
+    @GetMapping({"", "welcome"})
     public String getWelcomePage(Model model) {
         var cars = carService.getAllAvailable();
         model.addAttribute("cars", cars);

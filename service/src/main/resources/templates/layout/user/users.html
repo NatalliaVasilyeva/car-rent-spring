@@ -14,44 +14,44 @@
 <div th:replace="layout/header/header :: header"/>
 <div class="container-fluid" sec:authorize="hasAnyAuthority('ADMIN')">
     <div class="col-lg-auto">
-        <h3 class="text-center">Search Users</h3>
+        <h3 class="text-center" th:text="#{users.search}">Search users</h3>
         <div class="container">
             <div class="row">
                 <div class="col-xs-12 col-xs-offset-8">
                     <form class="form ml-3 mt-2" th:action="@{/users}" method="get">
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label for="username">Username</label>
+                                <label for="username" th:text="#{users.username} + ':'">Username</label>
                                 <input id="username" type="text" name="username" th:value="${filter.getUsername()}">
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="email">Email:</label>
+                                <label for="email" th:text="#{users.email} + ':'">Email:</label>
                                 <input id="email" type="email" name="email" th:value="${filter.getEmail()}">
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="birthday">Birthday:</label>
+                                <label for="birthday" th:text="#{users.birthday} + ':'">Birthday:</label>
                                 <input id="birthday" type="date" name="birthday" th:value="${filter.getBirthday()}">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label for="name">Name:</label>
+                                <label for="name" th:text="#{users.name} + ':'">Name:</label>
                                     <input id="name" type="text" name="name" th:value="${filter.getName()}">
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="surname">Surname:</label>
+                                <label for="surname" th:text="#{users.surname} + ':'">Surname:</label>
                                     <input id="surname" type="text" name="surname"
                                            th:value="${filter.getSurname()}">
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="expiredLicenseDriverDate">Expired driver license date:</label>
+                                <label for="expiredLicenseDriverDate" th:text="#{users.license.expired.date} + ':'">Expired driver license date:</label>
                                     <input id="expiredLicenseDriverDate" type="date" name="expiredLicenseDriverDate"
                                            th:value="${filter.getExpiredLicenseDriverDate()}">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="allExpiredLicense">Choose all users with expired driver licenses:</label>
+                                <label for="allExpiredLicense" th:text="#{users.license.all.expired} + ':'">Choose all users with expired driver licenses:</label>
                                     <input id="allExpiredLicense" type="checkbox" name="allExpiredLicenses"
                                            th:checked="${filter.getAllExpiredLicenses()?: 'false'}">
                             </div>
@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit">Search</button>
+                        <button type="submit" th:text="#{users.button.search}">Search</button>
                     </form>
                 </div>
             </div>
@@ -71,23 +71,23 @@
     </div>
 </div>
 
-<span th:if="${#lists.isEmpty(usersPage.content)}">There are not available users!</span>
+<span th:if="${#lists.isEmpty(usersPage.content)}" th:text="#{users.no.users}">There are not available users!</span>
 
 <div th:if="${not #lists.isEmpty(usersPage.content)}">
     <div class="container-fluid col">
         <div class="col-lg-auto">
             <div class="panel panel-default">
-                <h3 class="text-center">Users list</h3>
+                <h3 class="text-center" th:text="#{users.list}">Users list</h3>
                 <div class="panel-body table-responsive">
                     <table class="table table-condensed table-striped text-center">
                         <thead class="thead-dark">
                         <tr>
                             <th></th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Surname</th>
-                            <th scope="col">Phone</th>
-                            <th scope="col">Registration date</th>
-                            <th scope="col">Role</th>
+                            <th scope="col" th:text="#{users.name}">Name</th>
+                            <th scope="col" th:text="#{users.surname}">Surname</th>
+                            <th scope="col" th:text="#{users.phone}">Phone</th>
+                            <th scope="col" th:text="#{users.registration}">Registration date</th>
+                            <th scope="col" th:text="#{users.role}">Role</th>
                         <tr>
                         </thead>
                         <tbody>
@@ -114,14 +114,14 @@
                                         <table class="table table-striped text-center" id="innerTable">
                                             <thead class="thead-dark">
                                             <tr class="info">
-                                                <th>Id</th>
-                                                <th>Username</th>
-                                                <th>Email</th>
-                                                <th>Address</th>
-                                                <th>Birthday</th>
-                                                <th>Driver license number</th>
-                                                <th>Driver license issue day</th>
-                                                <th>Driver license expired day</th>
+                                                <th th:text="#{users.id}">Id</th>
+                                                <th th:text="#{users.username}">Username</th>
+                                                <th th:text="#{users.email}">Email</th>
+                                                <th th:text="#{users.address}">Address</th>
+                                                <th th:text="#{users.birthday}">Birthday</th>
+                                                <th th:text="#{users.license.number}">Driver license number</th>
+                                                <th th:text="#{users.license.issue}">Driver license issue day</th>
+                                                <th th:text="#{users.license.expired}">Driver license expired day</th>
                                                 <th colspan="2"></th>
                                             </tr>
                                             </thead>
@@ -199,7 +199,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="change-role-label">Choose role:</h5>
+                    <h5 class="modal-title" id="change-role-label" th:text="#{users.choose.role} + ';'">Choose role:</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -209,14 +209,14 @@
                           method="post">
                         <div class="form-group" th:each="role : ${roles}">
                             <input th:id="${role}" type="radio" name="role" th:value="${role}">
-                            <label th:for="${role}" th:text="${role}">Role name</label>
+                            <label th:for="${role}" th:text="${role}" th:text="${users.role.name}">Role name</label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{users.button.close}">Close</button>
                     <button type="submit" form="change-role-form" value="Submit"
-                            class="btn btn-primary">Save changes
+                            class="btn btn-primary" th:text="#{users.button.save}">Save changes
                     </button>
                 </div>
             </div>

@@ -10,44 +10,44 @@
 <div th:replace="layout/header/header :: header"/>
 <div class="container-fluid mb7-l">
     <div class="container my-5">
-        <h5 class="text-center">Search users details by several parameters</h5>
+        <h5 class="text-center" th:text="#{user.details.search.parameters}"> Search users details by several parameters</h5>
         <form th:action="@{/user-details}" method="get">
             <div class="form-row">
                 <div class="col-md-4 mb-3">
-                    <label for="name">Name:</label>
+                    <label for="name" th:text="#{user.details.name} + ':'">Name:</label>
                     <input class="form-control" id="name" type="text" name="name" th:value="${filter.getName()}">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label for="surname">Surname:</label>
+                    <label for="surname" th:text="#{user.details.surname} + ':'">Surname:</label>
                     <input class="form-control" id="surname" type="text" name="surname"
                            th:value="${filter.getSurname()}">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label for="birthdate">Birthdate:</label>
+                    <label for="birthdate" th:text="#{user.details.birthday} + ':'">Birthdate:</label>
                     <input class="form-control" id="birthdate" type="date" name="birthdate"
                            th:value="${filter.getBirthday()}">
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-md-4 mb-3">
-                    <label for="phone">Phone:
+                    <label for="phone" th:text="#{user.details.phone} + ':'">Phone:
                         <input class="form-control" id="phone" type="text" name="phone" th:value="${filter.getPhone()}">
                     </label>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label for="address">Address:
+                    <label for="address" th:text="#{user.details.address} + ':'">Address:
                         <input class="form-control" id="address" type="text" name="address"
                                th:value="${filter.getAddress()}"></label>
                 </div>
                 <div class="col-md-4 mb-3">
                     <div>
-                        <label for="page">Page(start from 1):
+                        <label for="page" th:text="#{user.details.page} + ':'">Page(start from 1):
                             <input class="form-control" id="page" type="number" name="page" min="1"
                                    th:value="${usersDetailsPage.number + 1}"></label>
                     </div>
                 </div>
             </div>
-            <button type="submit">Search</button>
+            <button type="submit" th:text="#{user.details.search.button}">Search</button>
         </form>
     </div>
 </div>
@@ -58,11 +58,11 @@
         <div class="form-group row">
             <button
                     class="from-control btn btn-light btn-lg btn-block"
-                    onclick="ShowSearchDatesForm()">Search by dates
+                    onclick="ShowSearchDatesForm()" th:text="#{user.details.search.date}">Search by dates
             </button>
         </div>
         <div class="row" id="search-dates-form" style="display: none">
-            <span class="mr-2">Search by registration dates</span>
+            <span class="mr-2" th:text="#{user.details.search.registration.dates}">Search by registration dates</span>
             <form th:action="@{/user-details/by-registration-dates}" method="get">
                 <div class="form-row">
                     <div class="col-md-6 mb-3">
@@ -83,20 +83,20 @@
 </div>
 
 
-<span th:if="${#lists.isEmpty(usersDetailsPage.content)}">There are not available users details!</span>
+<span th:if="${#lists.isEmpty(usersDetailsPage.content)}" th:text="#{user.details.no.user.details}">There are not available users details!</span>
 
 <div th:if="${not #lists.isEmpty(usersDetailsPage.content)}">
     <!--    <div class="container-fluid col">-->
     <div class="col-lg-auto my-5">
         <div class="panel panel-default">
-            <h3 class="text-center">Users details list</h3>
+            <h3 class="text-center" th:text="#{user.detail.list}">Users details list</h3>
             <div class="panel-body table-responsive">
                 <table class="table table-condensed table-striped text-center">
                     <thead class="thead-dark">
                     <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Surname</th>
-                        <th scope="col">Phone</th>
+                        <th scope="col" th:text="#{user.detail.name}">Name</th>
+                        <th scope="col" th:text="#{user.detail.surname}">Surname</th>
+                        <th scope="col" th:text="#{user.detail.phone}">Phone</th>
                         <th></th>
                     <tr>
                     </thead>
@@ -110,7 +110,7 @@
                             <td th:text="${userDetails.phone}"></td>
                             <td>
                                 <a th:href="@{'/user-details/' + ${userDetails.id}}"
-                                   th:text="|See more info about details|">User details</a>
+                                   th:text="#{user.detail.see.detail.info}">User details</a>
                             </td>
                         </tr>
                     </th:block>

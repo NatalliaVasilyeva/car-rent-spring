@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <script type="text/javascript" th:src="@{/js/car/cars.js}"></script>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+
+<body>
+<div th:replace="layout/header/header :: header"/>
+<div class="container-fluid">
+    <div class="col-lg-auto" th:with="auth=${#authentication.principal}">
+        <h3 class="text-center" th:text="#{orders.header}">Search orders</h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-md-offset-8">
+                    <form class="form ml-3 mt-2" th:action="@{/orders/user/{userId}(userId=${auth.id})}" method="get">
+                        <div class="form-row">
+                            <div class="col-md-3 mb-3">
+                                <label th:for="status" th:text="#{orders.status} + ':'">Status:</label>
+                                <select class="form-control" th:id="status" name="status">
+                                    <option selected value>Select</option>
+                                    <option th:id="status" th:each="status : ${statuses}"
+                                            th:value="${status}"
+                                            th:text="${status.name()}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label for="sum" th:text="#{orders.sum} + ':'">Sum:</label>
+                                <input id="sum" type="number" class="form-control" name="sum">
+                            </div>
+                        </div>
+                        <button type="submit" th:text="#{orders.button.search}">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span th:if="${#lists.isEmpty(ordersPage.content)}" th:text="#{orders.no.orders}">There are not available orders!</span>
+
+<div th:if="${not #lists.isEmpty(ordersPage.content)}">
+    <div class="container-fluid col">
+        <div class="col-lg-auto">
+            <div class="panel panel-default">
+                <h3 class="text-center" th:text="#{orders.header.list}">Orders list</h3>
+                <div class="panel-body table-responsive">
+                    <table class="table table-condensed table-striped text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th></th>
+                            <th scope="col" th:text="#{orders.number}">Image</th>
+                            <th scope="col" th:text="#{order.date}">Brand</th>
+                            <th scope="col" th:text="#{orders.status}">Brand</th>
+                        <tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="order, iStat: ${ordersPage.content}"
+                                  th:style="${iStat.odd}? 'font-weight: bold;'"
+                                  th:alt-title="${iStat.even}? 'even' : 'odd'">
+                            <tr data-toggle="collapse" th:attr="data-target='#order_' + ${iStat.index}"
+                                class="accordion-toggle">
+                                <td>
+                                    <button class="btn btn-dark btn-xs">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td th:text="${order.id}"></td>
+                                <td th:text="${order.date}"></td>
+                                <td th:if="${order.orderStatus.name() eq 'CONFIRMATION_WAIT'}"
+                                    th:text="#{order.status.confirm}"></td>
+                                <td th:if="${order.orderStatus.name() eq 'DECLINED'}"
+                                    th:text="#{order.status.decline}"></td>
+                                <td th:if="${order.orderStatus.name() eq 'PAYED'}" th:text="#{order.status.payed}"></td>
+                                <td th:if="${order.orderStatus.name() eq 'NOT_PAYED'}"
+                                    th:text="#{order.status.npayed}"></td>
+                                <td th:if="${order.orderStatus.name() eq 'CANCELLED'}"
+                                    th:text="#{order.status.cancelled}"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="12" class="hiddenRow">
+                                    <div class="accordian-body collapse col-lg-auto table-responsive"
+                                         th:id="'order_' + ${iStat.index}">
+                                        <table class="table table-striped text-center" id="innerTable">
+                                            <thead class="thead-dark">
+                                            <tr class="info">
+                                                <th th:text="#{orders.number}">Number</th>
+                                                <th th:text="#{order.date}">Date</th>
+                                                <th th:text="#{orders.status}">Status</th>
+                                                <th th:text="#{order.car}">Car description</th>
+                                                <th th:text="#{orders.start}">Start rental time</th>
+                                                <th th:text="#{orders.end}">End rental time</th>
+                                                <th th:text="#{order.insurance}">Insurance</th>
+                                                <th th:text="#{order.sum}">Sum</th>
+                                                <th colspan="2" th:text="#{order.action}">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="info">
+                                                <td th:text="${order.id}"></td>
+                                                <td th:text="${order.date}"></td>
+                                                <td th:if="${order.orderStatus.name() eq 'CONFIRMATION_WAIT'}"
+                                                    th:text="#{order.status.confirm}"></td>
+                                                <td th:if="${order.orderStatus.name() eq 'DECLINED'}"
+                                                    th:text="#{order.status.decline}"></td>
+                                                <td th:if="${order.orderStatus.name() eq 'PAYED'}"
+                                                    th:text="#{order.status.payed}"></td>
+                                                <td th:if="${order.orderStatus.name() eq 'NOT_PAYED'}"
+                                                    th:text="#{order.status.npayed}"></td>
+                                                <td th:if="${order.orderStatus.name() eq 'CANCELLED'}"
+                                                    th:text="#{order.status.cancelled}"></td>
+                                                <td th:text="|${order.car.brand} ${order.car.model} ${order.car.yearOfProduction} ${order.car.number}|"></td>
+                                                <td th:text="${order.startRentalDate}"></td>
+                                                <td th:text="${order.endRentalDate}"></td>
+                                                <td th:text="${order.insurance}"></td>
+                                                <td th:text="${order.sum}"></td>
+                                                <td>
+                                                    <form th:action="@{/orders/{orderId}(orderId=${order.id})}"
+                                                          method="get">
+                                                        <button class="btn btn-dark btn-xs">
+                                                            <i class="fa fa-pencil"
+                                                               aria-hidden="true"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td th:if="${order.orderStatus.name() eq 'CONFIRMATION_WAIT' or order.orderStatus.name() eq 'NOT_PAYED'}">
+                                                    <form id="decline-order-form" class="form-horizontal"
+                                                          method="POST"
+                                                          th:action="@{/orders/{orderId}/change-status(orderId=${order.id})}">
+                                                        <input type="text" name="status" th:value="CANCELLED"
+                                                               hidden>
+                                                        <button type="submit"
+                                                                class="from-control btn btn-dark btn-lg btn-block">
+                                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- pagination -->
+                <nav aria-label="Pagination" th:if="${ordersPage.totalPages gt 0}">
+                    <ul class="pagination justify-content-center font-weight-bold">
+                        <li class="page-item" th:classappend="${ordersPage.number eq 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/orders(page=${ordersPage.number lt 2 ? 1 : ordersPage.number})}"
+                               aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i eq ordersPage.number + 1} ? 'active'"
+                            th:each="i : ${#numbers.sequence( 1, ordersPage.totalPages, 1)}">
+                            <a class="page-link" th:href="@{/orders(ordersPage=${i})}" th:text="${i}"
+                               th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${ordersPage.number + 1 eq ordersPage.totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/orders(page=${ordersPage.number + 2})}"
+                               aria-label="Next" title="Next Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -12,16 +12,17 @@
 <div th:replace="layout/header/header :: header"/>
 <div class="container-fluid">
     <div class="col-lg-auto">
-        <h3 class="text-center">Search models</h3>
+        <h3 class="text-center" th:text="#{models.search}">Search models</h3>
         <div class="container">
             <div class="row">
                 <div class="col-md-12 col-md-offset-8">
                     <form class="form ml-3 mt-2" th:action="@{/models}" method="get">
                         <div class="form-row">
                             <div class="col-md-3 mb-3">
-                                <label th:for="model-transmission-input">Transmission:</label>
+                                <label th:for="model-transmission-input" th:text="#{model.transmission} + ':'">Transmission:</label>
                                 <select class="form-control" th:id="model-transmission-input" name="transmission"
                                         readonly>
+                                    <option>Select</option>
                                     <option th:id="model-transmission-input" th:each="transmission : ${transmissions}"
                                             th:value="${transmission}"
                                             th:text="${transmission.name()}">
@@ -29,8 +30,9 @@
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label th:for="model-transmission-input">Engine type:</label>
+                                <label th:for="model-transmission-input" th:text="#{model.engine} + ':'">Engine type:</label>
                                 <select class="form-control" th:id="model-engine-input" name="engineType" readonly>
+                                    <option>Select</option>
                                     <option th:id="model-engine-input" th:each="engineType : ${engineType}"
                                             th:value="${engineType}"
                                             th:text="${engineType.name()}">
@@ -77,7 +79,7 @@
     </div>
 </div>
 
-<span th:if="${#lists.isEmpty(modelPage.content)}">There are not available models!</span>
+<span th:if="${#lists.isEmpty(modelPage.content)}" th:text="#{models.no.models}">There are not available models!</span>
 
 <div th:if="${not #lists.isEmpty(modelPage.content)}">
     <div class="container-fluid col">
@@ -89,12 +91,12 @@
                         <thead class="thead-dark">
                         <tr>
                             <th></th>
-                            <th scope="col">Id</th>
-                            <th scope="col">Brand</th>
-                            <th scope="col">Model</th>
-                            <th scope="col">Transmission</th>
-                            <th scope="col">EngineType</th>
-                            <th scope="col-2">Action</th>
+                            <th scope="col" th:text="#{model.id}">Id</th>
+                            <th scope="col" th:text="#{model.brand}">Brand</th>
+                            <th scope="col" th:text="#{models.model}">Model</th>
+                            <th scope="col" th:text="#{model.transmission}">Transmission</th>
+                            <th scope="col" th:text="#{model.engine}">EngineType</th>
+                            <th colspan="2" th:text="#{models.action}">Action</th>
                         <tr>
                         </thead>
                         <tbody>

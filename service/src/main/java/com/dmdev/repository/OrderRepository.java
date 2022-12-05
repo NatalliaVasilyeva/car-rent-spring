@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface OrderRepository extends JpaRepository<Order, Long>, QuerydslPredicateExecutor<Order> {
 
@@ -26,12 +27,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, QuerydslPre
     List<Order> findAllByCarId(@Param("carId") Long carId);
 
     List<Order> findAllByOrderStatus(OrderStatus orderStatus);
-
-    @Query(value = "SELECT o " +
-            "FROM Order o " +
-            "JOIN fetch o.user u " +
-            "WHERE u.id  = :userId")
-    List<Order> findAllByUserId(@Param("userId") Long userId);
 
     List<Order> findAllByDateBetween(LocalDate start, LocalDate end);
 

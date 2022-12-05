@@ -9,18 +9,18 @@
 <div th:replace="layout/header/header :: header"/>
 <div class="container">
     <form id="sign-in-form" th:action="@{/login}" method="post">
-        <div class="form-group" style="color: red" th:if="${param.error}">
+        <div class="form-group" style="color: red" th:if="${param.error}" th:text="#{login.bad.credentials}">
             Bad credentials
         </div>
         <div class="form-group">
-            Email
+            <span th:text="#{login.email}">Email</span>
             <input type="email" name="email" class="form-control" placeholder="email"
                    maxlength="40" title="email"
                    autocomplete="off" id="sign-in-email-input" required/>
             <small class="text-danger" id="sign-in-email-error-small"></small>
         </div>
         <div class="form-group">
-            Password
+            <span th:text="#{login.password}">Password</span>
             <input type="password" name="password" class="form-control" placeholder="password"
                    id="sign-in-password-input"
                    pattern="(?=^.{6,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
@@ -29,11 +29,11 @@
             <small class="text-danger" id="sign-in-password-error-small"></small>
         </div>
         <div class="form-group mb7-m">
-            <div>Login with:</div>
+            <div><span th:text="#{login.with}"></span>Login with:</div>
             <a href="/oauth2/authorization/google">Google</a>
         </div>
         <div class="form-group">
-            <button type="submit" class="form-control btn btn-light signupbtn" value="Submit">
+            <button type="submit" class="form-control btn btn-light signupbtn" value="Submit" th:text="#{login.sign.in}">
                 Sign in
             </button>
         </div>

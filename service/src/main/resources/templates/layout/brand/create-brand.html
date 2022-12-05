@@ -33,23 +33,23 @@
 <form id="create-brand-form" sec:authorize="hasAnyAuthority('ADMIN')" th:action="@{/brands}" method="post"
       th:object="${brand}" onsubmit="saveBrand(event) ">
     <div class="form-group">
-        <label class="col-form-label" for="create-brand-name-input">Brand name </label>
+        <label class="col-form-label" for="create-brand-name-input" th:text="#{create.brand.brand.name}">Brand name </label>
         <input type="text" class="form-control" placeholder="name" id="create-brand-name-input" name="name"
                th:field="*{name}" required/>
         <small class="text-danger" id="create-brand-error-small"></small>
     </div>
     <div class="form-group">
-        <button type="submit" class="form-control btn btn-light" value="Submit">
+        <button type="submit" class="form-control btn btn-light" value="Submit" th:text="#{create.brand.create.button}">
             Create
         </button>
     </div>
 </form>
 
 <div>
-    <span>If you do not see necessary model, please add new one</span>
+    <span th:text="#{create.brand.model.message}">If you do not see necessary model, please add new one</span>
     <div class="form-group row btn btn-light btn-lg btn-block" id="show-brand-models-button-div">
         <a th:href="@{/models/create/}"
-           class="btn btn-info" role="button">Create model</a>
+           class="btn btn-info" role="button" th:text="#{create.brand.create.model.button}">Create model</a>
     </div>
 </div>
 </body>

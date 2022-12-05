@@ -38,22 +38,22 @@
       th:action="@{/cars}">
     <div class="card text-white bg-dark mb-10">
         <div class="card-header">
-            <h2 class="m-0">Create car</h2>
+            <h2 class="m-0" th:text="#{car.create.title}">Create car</h2>
         </div>
         <div class="card-body">
             <div class="form-group">
                 <!-- image -->
-                <label for="create-car-image"> Image:
+                <label for="create-car-image" th:text="#{car.image} + ':'"> Image:
                     <input type="file" name="image" id="create-car-image">
                 </label>
             </div>
             <!-- image -->
             <!-- brand -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-brand">Brand: </label>
+                <label class="col-form-label" th:for="create-car-brand" th:text="#{car.brand} + ':'">Brand: </label>
                 <select class="form-control my-select " id="brandList" th:field="*{brandId}" required
                         oninput="modelsChange()">
-                    <option selected disable value="">Select brand</option>
+                    <option selected disable value="" th:text="#{car.create.select.brand}">Select brand</option>
                     <option th:id="create-car-brand" th:each="brand : ${brands}" th:value="${brand.id}"
                             th:text="${brand.name}" selected></option>
                 </select>
@@ -61,9 +61,9 @@
             <!-- /brand -->
             <!-- model -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-model">Model: </label>
+                <label class="col-form-label" th:for="create-car-model" th:text="#{car.model} + ':'">Model: </label>
                 <select class="form-control" id="modelList" th:field="*{modelId}">
-                    <option selected disable value="">Select model</option>
+                    <option selected disable value="" th:text="#{car.create.select.model}">Select model</option>
                     <option id="create-car-model" th:each="model : ${models}" th:value="${model.id}"
                             th:text="|${model.name} ${model.transmission} ${model.engineType}|"></option>
                 </select>
@@ -71,7 +71,7 @@
             <!--/model -->
             <!-- category -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-category">Category : </label>
+                <label class="col-form-label" th:for="create-car-category" th:text="#{car.category} + ':'">Category: </label>
                 <select class="form-control" id="categoryId" th:field="*{categoryId}">
                     <option th:id="create-car-category" th:each="category : ${categories}" th:value="${category.id}"
                             th:text="${category.name}" selected></option>
@@ -80,7 +80,7 @@
             <!-- /category -->
             <!-- color -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-color">Color : </label>
+                <label class="col-form-label" th:for="create-car-color" th:text="#{car.color} + ':'">Color: </label>
                 <select class="form-control" id="color" th:field="*{color}">
                     <option th:id="create-car-color" th:each="color : ${colors}" th:value="${color}"
                             th:text="${color}" selected></option>
@@ -89,26 +89,26 @@
             <!-- /color -->
             <!-- yearOfProduction -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-year">Year of production: </label>
+                <label class="col-form-label" th:for="create-car-year" th:text="#{car.year} + ':'">Year of production: </label>
                 <input type="number" th:field="*{yearOfProduction}" class="form-control" th:id="create-car-year"
                        required>
             </div>
             <!-- /yearOfProduction -->
             <!-- carNumber -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-number">Car number: </label>
+                <label class="col-form-label" th:for="create-car-number" th:text="#{car.number} + ':'">Number: </label>
                 <input type="text" th:field="*{number}" class="form-control" th:id="create-car-numbe" required>
             </div>
             <!-- /carNumber -->
             <!-- vin -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-vin">VIN: </label>
+                <label class="col-form-label" th:for="create-car-vin" th:text="#{car.vin} + ':'">VIN: </label>
                 <input type="text" th:field="*{vin}" class="form-control" th:id="create-car-vin" required>
             </div>
             <!-- /vin -->
             <!-- repaired -->
             <div class="form-group">
-                <label class="col-form-label" th:for="create-car-repaired">Repaired: </label>
+                <label class="col-form-label" th:for="create-car-repaired" th:text="#{car.repaired} + ':'">Repaired: </label>
                 <input th:id="create-car-repaired" type="radio" th:field="*{isRepaired}" th:value="true" checked
                        th:text="true">
                 <input th:id="create-car-repaired" type="radio" th:field="*{isRepaired}" th:value="false"
@@ -117,7 +117,7 @@
             <!-- /repaired -->
         </div>
         <div class="card-footer" sec:authorize="hasAnyAuthority('ADMIN')">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" th:text="#{car.create.button.save}">
                 Save
             </button>
         </div>

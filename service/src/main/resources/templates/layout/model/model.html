@@ -18,10 +18,10 @@
                   th:action="@{/models/{modelId}/update(modelId=${model.id})}" method="POST" th:object="${model}"
                   enctype="multipart/form-data">
                 <div class="card mb-4">
-                    <div class="card-header content-center">Model info</div>
+                    <div class="card-header content-center" th:text="#{model.header}">Model info</div>
                     <div class="card-body">
                         <div class="form-group row" id="id">
-                            <label th:for="model-id-input" class="col-2 col-form-label">
+                            <label th:for="model-id-input" class="col-2 col-form-label" th:text="#{model.id} + ':'">
                                 Id:
                             </label>
                             <div class="col-10">
@@ -30,7 +30,7 @@
                             </div>
                         </div>
                         <div class="form-group row" id="brand">
-                            <label th:for="model-brand-input" class="col-2 col-form-label">
+                            <label th:for="model-brand-input" class="col-2 col-form-label" th:text="#{model.brand} + ':'">
                                 Brand:
                             </label>
                             <div class="col-10">
@@ -40,7 +40,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="model-name-input" class="col-2 col-form-label">
+                            <label th:for="model-name-input" class="col-2 col-form-label" th:text="#{model.name} + ':'">
                                 Name:
                             </label>
                             <div class="col-10">
@@ -50,8 +50,8 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="mdoel-transmission-input" class="col-2 col-form-label">
-                                Trnasmission:
+                            <label th:for="mdoel-transmission-input" class="col-2 col-form-label" th:text="#{model.transmission} + ':'">
+                                Transmission:
                             </label>
                             <div class="col-10">
                                 <select class="form-control" th:id="model-transmission-input" name="transmission" readonly>
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="model-engine-type-input" class="col-2 col-form-label">
+                            <label th:for="model-engine-type-input" class="col-2 col-form-label" th:text="#{model.engine} + ':'">
                                 Engine type:
                             </label>
                             <div class="col-10">
@@ -80,16 +80,16 @@
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableModel()"
-                                   value="Edit">
+                                   value="Edit" th:text="#{model.button.edit}">
                         </div>
                         <div class="form-group row" id="edit-manage-model-buttons-div"
                              style="display: none">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <input type="submit" class="btn btn-primary" value="Save Changes" th:text="#{model.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableModel()"
-                                       value="Cancel">
+                                       value="Cancel" th:text="#{model.button.cancel}">
                             </div>
                         </div>
                     </div>

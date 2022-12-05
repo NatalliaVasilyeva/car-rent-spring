@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link waves-effect waves-light" th:href="@{'/welcome'}">Welcome<span
+                <a class="nav-link waves-effect waves-light" th:href="@{'/welcome'}" th:text="#{header.guest.welcome}">Welcome<span
                         class="sr-only">(current)</span></a>
             </li>
         </ul>
@@ -16,41 +16,38 @@
                 <a class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button"
                    id="dropdownMenuButton"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="flag-icon flag-icon-us"></span> Language
+                    <span class="flag-icon flag-icon-us" th:text="#{header.guest.language}"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item"
-                       th:href="@{'/languages' + 'US'}"><span
+                       th:href="@{''(lang=en)}" ><span
                             class="flag-icon flag-icon-us"></span>
                         EN</a>
                     <a class="dropdown-item"
-                       th:href="@{'/languages' + 'RU'}"><span
+                       th:href="@{''(lang=ru)}"><span
                             class="flag-icon flag-icon-ru"></span>
                         RU</a>
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" th:href="@{'/login'}">
+                <a class="nav-link waves-effect waves-light"  th:text="#{header.guest.login}" th:href="@{'/login'}">
                     Login
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" href="" data-toggle="modal" data-target="#sign-up-modal">
+                <a class="nav-link waves-effect waves-light" href="" data-toggle="modal" data-target="#sign-up-modal" th:text="#{header.guest.registration}">
                     Registration
                 </a>
             </li>
         </ul>
     </div>
 </nav>
-<div>
-    <span th:if="${#authentication != null}" th:text="${#authentication.principal}">Username</span>
-</div>
 <div class="modal fade" id="sign-up-modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title">
+                <h1 class="modal-title" th:text="#{header.guest.registration}">
                     Registration
                 </h1>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

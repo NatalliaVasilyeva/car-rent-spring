@@ -16,10 +16,10 @@
                   th:action="@{/driver-licenses/{driverLicenseId}/update(driverLicenseId=${driverLicense.id})}"
                   method="POST" th:object="${driverLicense}">
                 <div class="card mb-4">
-                    <div class="card-header">Driver license info</div>
+                    <div class="card-header" th:text="#{driver.license.header}">Driver license info</div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="driver-license-id-input" class="col-2 col-form-label">
+                            <label for="driver-license-id-input" class="col-2 col-form-label" th:text="#{driver.license.id} +':'">
                                 Id:
                             </label>
                             <div class="col-10">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="driver-license-user-id-input" class="col-2 col-form-label">
+                            <label for="driver-license-user-id-input" class="col-2 col-form-label" th:text="#{driver.license.user.id} +':'">
                                 User id:
                             </label>
                             <div class="col-10">
@@ -37,7 +37,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="driver-license-driverLicenseNumber-input" class="col-2 col-form-label">
+                            <label for="driver-license-driverLicenseNumber-input" class="col-2 col-form-label" th:text="#{driver.license.number} +':'">
                                 Number:
                             </label>
                             <div class="col-10">
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="driver-license-driverLicenseIssueDate-input" class="col-2 col-form-label">
+                            <label for="driver-license-driverLicenseIssueDate-input" class="col-2 col-form-label" th:text="#{driver.license.issue.date} +':'">
                                 Issue date:
                             </label>
                             <div class="col-10">
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="driver-license-driverLicenseExpiredDate-input" class="col-2 col-form-label">
+                            <label for="driver-license-driverLicenseExpiredDate-input" class="col-2 col-form-label" th:text="#{driver.license.expired.date} +':'">
                                 Expired date:
                             </label>
                             <div class="col-10">
@@ -71,21 +71,21 @@
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableDetails()"
-                                   value="Edit">
+                                   value="Edit" th:text="#{driver.license.button.edit}">
 
                             <a th:href="@{'/users/' + *{userId}}" class="from-control btn btn-light btn-lg btn-block"
                                role="button"
-                               th:text="|See more info about user|">See info about user</a>
+                               th:text="#{driver.license.see.user.info}">See info about user</a>
                         </div>
 
                         <div class="form-group row" id="edit-manage-driver-license-buttons-div"
                              style="display: none">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <input type="submit" class="btn btn-primary" value="Save Changes" th:text="#{driver.license.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableDetails()"
-                                       value="Cancel">
+                                       value="Cancel" th:text="#{driver.license.button.cancel}">
                             </div>
                         </div>
                     </div>

@@ -52,3 +52,6 @@ apache:
 app:
   image:
     bucket: /Users/natallia.vasilyeva/myProjects/car-rent/service/src/main/resources/static/images
+  report:
+    admin: /Users/natallia.vasilyeva/myProjects/car-rent/service/src/main/resources/static/report/admin
+    client: /Users/natallia.vasilyeva/myProjects/car-rent/service/src/main/resources/static/report/client

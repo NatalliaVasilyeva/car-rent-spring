@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<br>
+<form id="create-order-form" class="form-horizontal" method="post" th:object="${order}"
+      th:action="@{/orders}">
+    <div class="card text-white bg-dark mb-10">
+        <div class="card-header">
+            <h2 class="m-0" th:text="#{order.create.title}">Create order</h2>
+        </div>
+        <div class="card-body">
+            <!-- user -->
+            <div class="form-group" th:with="auth=${#authentication.principal}" hidden>
+                <label class="col-form-label" th:for="create-order-user"
+                       th:text="#{order.create.user.description} + ':'">User id: </label>
+                <input type="number" name="userId" class="form-control" th:id="create-order-user" th:value="${auth.id}"
+                       required>
+            </div>
+            <!-- /user -->
+            <!-- car -->
+            <div class="form-group" hidden>
+                <label class="col-form-label" th:for="create-order-car" th:text="#{order.create.car.description} + ':'">Car
+                    description: </label>
+                <input type="text" name="carId" class="form-control" th:id="create-order-car"
+                       th:text="|${car.getBrand()} ${car.getModel()}|" th:value="${car.getId()}"
+                       required>
+            </div>
+            <!-- /car -->
+            <!-- passport -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-order-passport" th:text="#{order.create.passport} + ':'">Passport: </label>
+                <input type="text" th:field="*{passport}" class="form-control" th:id="create-car-passport"
+                       required>
+            </div>
+            <!-- /passport -->
+            <!-- insurance -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-order-insurance" th:text="#{order.create.insurance} + ':'">Insurance
+                    is needed: </label>
+                <input th:id="create-order-insurance" type="radio" th:field="*{insurance}" th:value="true" checked
+                       th:text="true">
+                <input th:id="create-order-insurance" type="radio" th:field="*{insurance}" th:value="false"
+                       th:text="false">
+            </div>
+            <!-- /insurance -->
+            <!-- start -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-order-start" th:text="#{order.create.start} + ':'">Start
+                    rental date: </label>
+                <input type="datetime-local" th:field="*{startRentalDate}" class="form-control"
+                       th:id="create-order-start" required>
+            </div>
+            <!-- /start -->
+            <!-- start -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-order-end" th:text="#{order.create.end} + ':'">End rental
+                    date: </label>
+                <input type="datetime-local" th:field="*{endRentalDate}" class="form-control" th:id="create-end-start"
+                       required>
+            </div>
+            <!-- /start -->
+        </div>
+        <div class="card-footer" sec:authorize="hasAnyAuthority('CLIENT')">
+            <button type="submit" class="btn btn-primary" th:text="#{order.create.button.save}">
+                Save
+            </button>
+        </div>
+    </div>
+</form>
+
+
+</body>
+</html>

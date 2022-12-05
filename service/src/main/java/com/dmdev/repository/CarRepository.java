@@ -9,6 +9,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +51,16 @@ public interface CarRepository extends JpaRepository<Car, Long>, QuerydslPredica
     @Query(value = "SELECT count(o.id) = 0 " +
             "FROM orders o " +
             "JOIN car c on o.car_id = c.id " +
-            "WHERE c.id = :id AND o.id IN (SELECT order_id FROM car_rental_time crt WHERE crt.start_rental_date <= :endDate AND " +
+            "WHERE c.id = :id  AND o.order_status NOT IN ('DECLINED', 'CANCELLED') AND o.id IN (SELECT order_id FROM car_rental_time crt WHERE crt.start_rental_date <= :endDate AND " +
             "crt.end_rental_date >= :startDate)", nativeQuery = true)
-    boolean isCarAvailable(@Param("id") Long id, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    boolean isCarAvailable(@Param("id") Long id, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = "SELECT count(o.id) = 0 " +
+            "FROM orders o " +
+            "JOIN car c on o.car_id = c.id " +
+            "WHERE c.id = :carId " +
+            "AND o.id != :orderId " +
+            "AND o.order_status NOT IN ('DECLINED', 'CANCELLED') AND o.id IN (SELECT order_id FROM car_rental_time crt WHERE crt.start_rental_date <= :endDate AND " +
+            "crt.end_rental_date >= :startDate)", nativeQuery = true)
+    boolean isCarAvailableByOrderId(@Param("orderId") Long orderId, @Param("carId") Long carId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

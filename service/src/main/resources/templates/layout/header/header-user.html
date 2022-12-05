@@ -7,24 +7,19 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent-3">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" th:href="@{'/welcome'}">Welcome <span class="sr-only">(current)</span></a>
+                <a class="nav-link" th:href="@{'/welcome'}" th:text="#{header.user.welcome}"><span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item" th:with="auth=${#authentication.principal}">
-                <a class="nav-link waves-effect waves-light" th:href="@{'/orders/user/' + ${auth.id}}">Orders</a>
+                <a class="nav-link waves-effect waves-light" th:href="@{'/orders/user/' + ${auth.id}}" th:text="#{header.user.orders}">My orders</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button" id="navbarDropdownMenuLink-3"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Find car/>
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.user.cars}">Cars
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="navbarDropdownMenuLink-3">
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-brand-modal">Find by brand/></a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-category-modal">Find by category/></a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-year-modal">Find by year</a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-years-modal">Find by years</a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-filter">Find by filter</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-by-category-modal">Find by category></a>
+                    <a class="dropdown-item" th:href="@{'/cars'}" th:text="#{header.user.all.cars}">See all cars</a>
+                    <a class="dropdown-item" th:href="@{'/cars'}" th:text="#{header.user.search.cars}">Search cars</a>
                 </div>
             </li>
         </ul>
@@ -32,16 +27,16 @@
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button" id="dropdownMenuButton"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="flag-icon flag-icon-us"></span> Language
+                    <span class="flag-icon flag-icon-us" th:text="#{header.user.language}"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item"
-                       th:href="@{'/languages' + 'US'}"><span
+                       th:href="@{''(lang=en)}"><span
                             class="flag-icon flag-icon-us"></span>
-                        US</a>
+                        EN</a>
                     <a class="dropdown-item"
-                       th:href="@{'/languages' + 'RU'}"><span
+                       th:href="@{''(lang=ru)}"><span
                             class="flag-icon flag-icon-ru"></span>
                         RU</a>
                 </div>
@@ -50,23 +45,23 @@
             <li class="nav-item dropdown">
                 <button class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button" id="dropdownMenuButton1"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="flag-icon flag-icon-us"></span> About
+                    <span class="flag-icon flag-icon-us" th:text="#{header.user.about}"></span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="dropdownMenuButton1">
                     <a class="dropdown-item"
                        th:href="@{'/payment'}"><span
-                            class="flag-icon flag-icon-us"></span>
+                            class="flag-icon flag-icon-us" th:text="#{header.user.payments}"></span>
                        Payments</a>
                     <a class="dropdown-item"
-                       th:href="@{'/roads'}"><span
+                       th:href="@{'/roads'}" th:text="#{header.user.road}"><span
                             class="flag-icon flag-icon-ru"></span>
                        Road</a>
                 </div>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" th:href="@{'/contacts'}">
+                <a class="nav-link waves-effect waves-light" th:href="@{'/contacts'}" th:text="#{header.user.contacts}">
                 Contacts</a>
             </li>
             <li class="nav-item dropdown">
@@ -75,105 +70,15 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink"
                      th:with="auth=${#authentication.principal}">
-                    <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}">Profile</a>
-                    <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}">Settings</a>
-                    <a class="dropdown-item nav-link d-flex align-items-center"
-                       href="javascript: document.logoutForm.submit()" role="menuitem"> Logout</a>
-                    <form name="logoutForm" th:action="@{'/logout'}" method="post" sec:authorize="isAuthenticated()">
-                        <input type="submit" value="Log Out"/>
+                    <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}" th:text="#{header.user.profile}">Profile</a>
+                    <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}" th:text="#{header.user.settings}">Settings</a>
+                    <a class="dropdown-item" th:href="@{'/reports/orders_report/' + ${auth.id}}" th:text="#{header.user.report}">Download report</a>
+                    <form name="logoutFormUser" th:action="@{'/logout'}" method="post">
+                    <a class="dropdown-item"
+                       href="javascript: document.logoutFormUser.submit()" role="menuitem" th:text="#{header.user.logout}"> Logout</a>
                     </form>
                 </div>
             </li>
         </ul>
     </div>
 </nav>
-
-<div class="modal fade" id="find-by-brand-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by brand
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-brand.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-category-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by category
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-category.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-year-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Find car by year
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-year.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-years-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Find car by years
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-years.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-filter-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by years
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-filter.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>

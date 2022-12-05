@@ -1,41 +1,32 @@
-$(function () {
-    $(".cancelledbtn").click(function () {
-        const currentTds = $(this).closest("tr").find("td");
-        const orderId = $(currentTds).eq(0).text();
+const MakeEditableOrder = () => {
+    setOrderInputsReadOnly(false);
+    $('#edit-order-button-div').hide();
+    $('#cancelled-car-button-div').hide();
+    $('#edit-manage-order-buttons-div').show();
+    $('#date').hide();
+    $('#user').hide();
+    $('#status').hide();
+    $('#sum').hide();
+};
 
-        $.post("user-cancel-order",
-            {
-                orderId: orderId,
-            }
-        )
-    })
-});
-
-$(function () {
-    $(".editbtn").click(function () {
-        var currentTds = $(this).closest("tr").find("td");
-        var id = $(currentTds).eq(0).text();
-        var date = $.trim((currentTds).eq(1).text().replace(/(\r\n|\n|\r)/gm, ""));
-        var status = $.trim((currentTds).eq(2).text().replace(/(\r\n|\n|\r)/gm, ""));
-        var description = $(currentTds).eq(3).text();
-        var startRentalDate = $.trim((currentTds).eq(4).text().replace(/(\r\n|\n|\r)/gm, ""));
-        var endRentalDate = $.trim((currentTds).eq(5).text().replace(/(\r\n|\n|\r)/gm, ""));
-        var insurance = $(currentTds).eq(6).text();
-        var accident = $(currentTds).eq(7).text();
-        var sum = $(currentTds).eq(8).text();
+const MakeUnEditableOrder = () => {
+    setOrderInputsReadOnly(true);
+    $('#edit-order-button-div').show();
+    $('#cancelled-car-button-div').show();
+    $('#edit-manage-order-buttons-div').hide();
+    $('#date').show();
+    $('#user').show();
+    $('#status').show();
+    $('#sum').show();
+};
 
 
-        $('#edit-order-id').val(id);
-        $('#edit-date').val(date);
-        $('#edit-status').val(status);
-        $('#edit-description').val(description);
-        $('#edit-start-date').val(startRentalDate);
-        $('#edit-end-date').val(endRentalDate);
-        $('#edit-ensurance').val(insurance);
-        $('#edit-accident').val(accident);
-        $('#edit-sum').val(sum);
-    })
-});
+function setOrderInputsReadOnly(isReadOnly) {
+    $('#order-date-input').prop('readonly', isReadOnly);
+    $('#order-start-date-input').prop('readonly', isReadOnly);
+    $('#order-end-date-input').prop('readonly', isReadOnly);
+    $('#order-insurance-input').prop('readonly', isReadOnly);
+}
 
 $(function () {
     $(".showorderform").click(function () {

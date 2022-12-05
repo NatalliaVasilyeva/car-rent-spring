@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <body>
 <form id="see-car-form" class="form-horizontal" th:fragment="user-car">
     <div class="card text-white bg-dark mb-0">
         <div class="card-header">
-            <h2 class="m-0">Car info</h2>
+            <h2 class="m-0" th:text="#{car.header}">Car info</h2>
         </div>
         <div class="card-body">
             <img width="250" height="250" class="card-img-top" scr=""
@@ -19,49 +20,49 @@
             <!-- /id -->
             <!-- brand -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-brand">Brand </label>
+                <label class="col-form-label" for="see-car-brand" th:text="#{car.brand}">Brand </label>
                 <input type="text" name="brand" class="form-control" id="see-car-brand" required readonly>
             </div>
             <!-- /brand -->
             <!-- model -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-model">Model </label>
+                <label class="col-form-label" for="see-car-model" th:text="#{car.model}">Model </label>
                 <input type="text" name="model" class="form-control" id="see-car-model" required readonly>
             </div>
             <!-- /model -->
             <!-- color -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-color">Color</label>
+                <label class="col-form-label" for="see-car-color" th:text="#{car.color}">Color</label>
                 <input type="text" name="color" class="form-control" id="see-car-color" required readonly>
             </div>
             <!-- /color -->
             <!-- yearOfProduction -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-yearOfProduction">Year of production </label>
+                <label class="col-form-label" for="see-car-yearOfProduction" th:text="#{car.year}">Year of production </label>
                 <input type="text" name="yearOfProduction" class="form-control" id="see-car-yearOfProduction" required
                        readonly>
             </div>
             <!-- /yearOfProduction -->
             <!-- transmission -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-transmission">Transmission </label>
+                <label class="col-form-label" for="see-car-transmission" th:text="#{car.transmission}">Transmission </label>
                 <input type="text" name="transmission" class="form-control" id="see-car-transmission" required readonly>
             </div>
             <!-- /transmission -->
             <!-- engineType -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-engineType">Engine type </label>
+                <label class="col-form-label" for="see-car-engineType" th:text="#{car.engine}">Engine type </label>
                 <input type="text" name="engineType" class="form-control" id="see-car-engineType" required readonly>
             </div>
             <!-- /engineType -->
             <!-- category -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-category">Price</label>
+                <label class="col-form-label" for="see-car-category" th:text="#{car.category}">Category</label>
                 <input type="text" name="category" class="form-control" id="see-car-category" required readonly>
             </div>
             <!-- pricePerDay -->
             <div class="form-group">
-                <label class="col-form-label" for="see-car-pricePerDay">Price</label>
+                <label class="col-form-label" for="see-car-pricePerDay" th:text="#{car.price}">Price</label>
                 <input type="text" name="pricePerDay" class="form-control" id="see-car-pricePerDay" required readonly>
             </div>
         </div>
@@ -72,24 +73,30 @@
 <form id="create-order-form" class="form-horizontal" th:fragment="create-order" method="POST" th:action="@{/orders}">
     <div class="card text-white bg-dark mb-0">
         <div class="card-header">
-            <h2 class="m-0">Create order</h2>
+            <h2 class="m-0" th:text="#{car.see.create.order}">Create order</h2>
         </div>
         <div class="card-body">
-            <!-- id -->
+            <!-- user id -->
+            <div sec:authorize="isAuthenticated()" class="form-group" hidden th:with="auth=${#authentication.principal}">
+                <label class="col-form-label" for="create-order-user-id" th:text="#{user.id}">Id </label>
+                <input type="text" name="carId" class="form-control" id="create-order-user-id" th:value="${auth.id}" required>
+            </div>
+            <!-- /user id -->
+            <!-- car id -->
             <div class="form-group" hidden>
-                <label class="col-form-label" for="create-order-car-id">Id </label>
+                <label class="col-form-label" for="create-order-car-id" th:text="#{car.id}">Id </label>
                 <input type="text" name="carId" class="form-control" id="create-order-car-id" required>
             </div>
-            <!-- /id -->
+            <!-- /car id -->
             <!-- /passport -->
             <div class="form-group">
-                <label class="col-form-label" for="create-order-passport">Passport </label>
+                <label class="col-form-label" for="create-order-passport" th:text="#{car.see.passport}">Passport </label>
                 <input type="text" name="passport" class="form-control" id="create-order-passport" required>
             </div>
             <!-- /passport -->
             <!-- /insurance -->
             <div class="form-group">
-                <label class="col-form-label" for="create-order-insurance">Is insurance necessary </label>
+                <label class="col-form-label" for="create-order-insurance" th:text="#{car.see.insurance}">Is insurance necessary </label>
                 <select name="isInsuranceNeeded" class="form-control" id="create-order-insurance" required autofocus>
                     <option value="true">true</option>
                     <option value="false">false</option>
@@ -98,14 +105,14 @@
             <!-- /insurance -->
             <!-- start date -->
             <div class="form-group">
-                <label class="col-form-label" for="create-order-start-date">Start date </label>
+                <label class="col-form-label" for="create-order-start-date" th:text="#{car.see.start.date}">Start date </label>
                 <input type="datetime-local" name="startRentalDate" class="form-control" id="create-order-start-date"
                        required>
             </div>
             <!-- /start date -->
             <!-- end date -->
             <div class="form-group">
-                <label class="col-form-label" for="create-order-end-date">End date </label>
+                <label class="col-form-label" for="create-order-end-date" th:text="#{car.see.end.date}">End date </label>
                 <input type="datetime-local" name="endRentalDate" class="form-control" id="create-order-end-date"
                        required>
             </div>

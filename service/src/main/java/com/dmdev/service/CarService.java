@@ -137,12 +137,6 @@ public class CarService {
                 .collect(toList());
     }
 
-
-    public boolean isCarAvailable(Long id, LocalDate startDate, LocalDate endDate) {
-        return carRepository.isCarAvailable(id, startDate, endDate);
-    }
-
-
     public Page<CarResponseDto> getAll(CarFilter carFilter, Integer page, Integer pageSize) {
         return carRepository.findAll(carPredicateBuilder.build(carFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "brand_name")).map(carResponseMapper::mapToDto);
     }

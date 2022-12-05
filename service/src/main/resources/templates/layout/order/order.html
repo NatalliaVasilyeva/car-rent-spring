@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+>
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-12">
+            <form id="order-form"
+                  th:action="@{/orders/{orderId}/update(orderId=${order.id})}" method="POST" th:object="${order}">
+                <div class="card mb-4">
+                    <div class="card-header content-center" th:text="#{order.header}">Order info</div>
+                    <div class="card-body">
+                        <!-- id -->
+                        <div class="form-group row">
+                            <label th:for="order-id-input" class="col-2 col-form-label"
+                                   th:text="#{order.id} + ':'">Id:</label>
+                            <div class="col-10"><input type="text" class="form-control" th:id="order-id-input"
+                                                       th:name="id"
+                                                       th:value="*{id}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /id -->
+                        <!-- date -->
+                        <div class="form-group row" id="date">
+                            <label th:for="order-date-input" class="col-2 col-form-label" th:text="#{order.date} + ':'">
+                                Date:
+                            </label>
+                            <div class="col-10">
+                                <input type="date" class="form-control" th:id="order-date-input" th:name="date"
+                                       th:value="*{date}" readonly/>
+                                <small class="text-danger" id="edit-order-error-small"></small>
+                            </div>
+                        </div>
+                        <!-- /date -->
+                        <!-- start date -->
+                        <div class="form-group row">
+                            <label class="col-2 col-form-label" th:for="order-start-date-input"
+                                   th:text="#{order.create.start} + ':'"> Start rental date </label>
+                            <div class="col-10">
+                                <input type="datetime-local" th:name="startRentalDate" class="form-control"
+                                       th:id="order-start-date-input" th:value="*{startRentalDate}" readonly required>
+                            </div>
+                        </div>
+                        <!-- /start date -->
+                        <!-- end date -->
+                        <div class="form-group row">
+                            <label class="col-2 col-form-label" th:for="order-end-date-input"
+                                   th:text="#{order.create.end} + ':'"> End rental date </label>
+                            <div class="col-10">
+                                <input type="datetime-local" th:name="endRentalDate" class="form-control"
+                                       th:id="order-end-date-input" th:value="*{endRentalDate}" readonly required>
+                            </div>
+                        </div>
+                        <!-- /end date -->
+                        <!-- car-->
+                        <div class="form-group row">
+                            <label th:for="order-car-input" class="col-2 col-form-label" th:text="#{order.car} + ':'">
+                                Car:
+                            </label>
+                            <div class="col-10">
+                                <select class="form-control" th:id="order-car-input" th:name="carId" readonly>
+                                    <option th:id="order-car-input" th:each="car : ${cars}" th:value="${car.id}"
+                                            th:text="|${car.brand} ${car.model} ${car.transmission} ${car.engineType} ${car.color}|"
+                                            th:selected="${order.car.id == car.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- /car -->
+                        <!-- user-->
+                        <div class="form-group row" id="user">
+                            <label th:for="order-user-input" class="col-2 col-form-label" th:text="#{order.user} + ':'">
+                                User:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" th:name="user" class="form-control" th:id="order-user-input"
+                                       th:value="|${order.user.userDetailsDto.name} ${order.user.userDetailsDto.surname}|"
+                                       required readonly>
+                            </div>
+                        </div>
+                        <!-- /user -->
+                        <!-- ensurance -->
+                        <div class="form-group row">
+                            <label th:for="order-insurance-input" class="col-2 col-form-label" name="isRepaired"
+                                   th:text="#{order.insurance} + ':'">
+                                Is insurance needed:
+                            </label>
+                            <div class="col-10" th:id="order-insurance-input">
+                                <label class="radio-inline">
+                                    <input type="radio" th:name="insurance" value="true"
+                                           th:checked="${order.insurance}"/>true
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" th:name="insurance" value="false"
+                                           th:checked="${order.insurance} == false"/>false
+                                </label>
+                            </div>
+                        </div>
+                        <!-- /ensurance -->
+                        <!-- status -->
+                        <div class="form-group row" id="status">
+                            <label th:for="order-status-input" class="col-2 col-form-label"
+                                   th:text="#{order.orderStatus} + ':'">Order status:</label>
+                            <div class="col-10"><input type="text" class="form-control" th:id="order-status-input"
+                                                       name="orderStatus"
+                                                       th:value="*{orderStatus}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /status -->
+                        <!-- sum -->
+                        <div class="form-group row" id="sum">
+                            <label th:for="order-sum-input" class="col-2 col-form-label" th:text="#{order.sum} + ':'">Sum:</label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="order-sum-input" name="sum"
+                                       th:value="*{sum}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /sum -->
+                    </div>
+                    <div sec:authorize="hasAuthority('CLIENT')">
+                        <div th:insert="layout/footer/footer-user"></div>
+                    </div>
+                </div>
+            </form>
+            <div class="card-footer"></div>
+
+            <div class="card-footer" sec:authorize="hasAuthority('ADMIN')">
+                <div th:if="${order.orderStatus.name() eq 'CONFIRMATION_WAIT'}" class="form-group row">
+                    <div class="form-group col-5" id="order-change-status-decline">
+                        <form id="decline-order-form" class="form-horizontal" method="POST"
+                              th:action="@{/orders/{orderId}/change-status(orderId=${order.id})}">
+                            <input type="text" name="status" th:value="DECLINED" hidden>
+                            <button type="submit" class="from-control btn btn-dark btn-lg btn-block"
+                                    th:text="#{order.button.decline}">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="form-group col-5" id="order-change-status-confirm">
+                        <form id="confirm-order-form" class="form-horizontal" th:action="@{/orders/{orderId}/change-status(orderId=${order.id})}"
+                              method="post">
+                            <input type="text" name="status" th:value="NOT_PAYED" hidden>
+                            <button type="submit" class="from-control btn btn-dark btn-lg btn-block"
+                                    th:text="#{order.button.confirm}">
+                                <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${order.orderStatus.name() eq 'NOT_PAYED'}">
+                    <div class="form-group row col-10" id="order-change-status-payed">
+                        <form id="payed-order-form" class="form-horizontal" th:action="@{/orders/{orderId}/change-status(orderId=${order.id})}"
+                              method="post">
+                            <input type="text" name="status" th:value="PAYED" hidden>
+                            <button type="submit" class="from-control btn btn-dark btn-lg btn-block"
+                                    th:text="#{order.button.payed}">
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
