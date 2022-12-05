@@ -11,7 +11,6 @@ import com.dmdev.service.UserService;
 import com.dmdev.service.exception.NotFoundException;
 import com.dmdev.service.exception.UserBadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.validation.constraints.NotNull;
-import javax.websocket.server.PathParam;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -138,7 +135,7 @@ public class OrderApi {
                                   @RequestParam @Nullable OrderStatus status,
                                   @RequestParam @Nullable BigDecimal sum) {
 
-        var userOrders = orderService.findAllByUserId(id, status, sum);
+        var userOrders = orderService.getAllByUserId(id, status, sum);
         var ordersPage = new PageImpl<>(userOrders);
         model.addAttribute("ordersPage", ordersPage);
         model.addAttribute("statuses", OrderStatus.values());

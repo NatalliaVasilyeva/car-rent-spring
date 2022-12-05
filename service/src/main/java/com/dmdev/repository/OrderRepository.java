@@ -26,6 +26,12 @@ public interface OrderRepository extends JpaRepository<Order, Long>, QuerydslPre
             "WHERE c.id  = :carId")
     List<Order> findAllByCarId(@Param("carId") Long carId);
 
+    @Query(value = "SELECT o " +
+            "FROM Order o " +
+            "JOIN fetch o.user u " +
+            "WHERE u.id  = :userId")
+    List<Order> findAllByUserId(@Param("userId") Long userId);
+
     List<Order> findAllByOrderStatus(OrderStatus orderStatus);
 
     List<Order> findAllByDateBetween(LocalDate start, LocalDate end);

@@ -72,7 +72,7 @@
                      th:with="auth=${#authentication.principal}">
                     <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}" th:text="#{header.user.profile}">Profile</a>
                     <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}" th:text="#{header.user.settings}">Settings</a>
-                    <a class="dropdown-item" th:href="@{'/reports/orders_report/' + ${auth.id}}" th:text="#{header.user.report}">Download report</a>
+                    <a class="dropdown-item" th:href="@{/reports/{userId}/create(userId=${auth.id})}" th:text="#{header.user.report}">Download report</a>
                     <form name="logoutFormUser" th:action="@{'/logout'}" method="post">
                     <a class="dropdown-item"
                        href="javascript: document.logoutFormUser.submit()" role="menuitem" th:text="#{header.user.logout}"> Logout</a>

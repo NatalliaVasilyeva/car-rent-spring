@@ -20,13 +20,24 @@ public class ReportApi {
 
     private final ReportService reportService;
 
-
     @GetMapping("/{id}/create")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public void createUserReport(@PathVariable("id") Long id,
                                  HttpServletResponse response) throws IOException {
 
         String reportName = "id_" + id + "_date_" + LocalDate.now() +".csv";
+        response.setContentType("text/csv");
+
+        response.addHeader("Content-Disposition", "attachment; filename=" + reportName);
+
+        reportService.writeUserReportsToCsv(id, response.getWriter());
+    }
+
+    @GetMapping("/orders")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public void createUserReport(HttpServletResponse response) throws IOException {
+
+        String reportName = "orders_" + id + "_date_" + LocalDate.now() +".csv";
         response.setContentType("text/csv");
 
         response.addHeader("Content-Disposition", "attachment; filename=" + reportName);

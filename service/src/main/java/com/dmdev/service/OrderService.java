@@ -141,6 +141,13 @@ public class OrderService {
                 .map(orderResponseMapper::mapToDto);
     }
 
+    public List<OrderResponseDto> getAll() {
+        return orderRepository.findAll()
+                .stream()
+                .map(orderResponseMapper::mapToDto)
+                .collect(toList());
+    }
+
     public List<OrderResponseDto> getAllByStatus(OrderStatus status) {
         return orderRepository.findAllByOrderStatus(status)
                 .stream()
@@ -148,15 +155,15 @@ public class OrderService {
                 .collect(toList());
     }
 
-    public List<OrderResponseDto> findAllByUserId(Long userId, OrderStatus status, BigDecimal sum) {
+    public List<OrderResponseDto> getAllByUserId(Long userId, OrderStatus status, BigDecimal sum) {
         return StreamSupport.stream(orderRepository.findAll(
                         orderPredicateBuilder.usersBuild(userId, status, sum)).spliterator(), false)
                 .map(orderResponseMapper::mapToDto)
                 .collect(toList());
     }
 
-    public List<OrderUserReportDto> findAllByUserId(Long userId) {
-        return orderRepository.findAll()
+    public List<OrderUserReportDto> getAllByUserId(Long userId) {
+        return orderRepository.findAllByUserId(userId)
                 .stream()
                 .map(orderReportMapper::mapToDto)
                 .collect(toList());
