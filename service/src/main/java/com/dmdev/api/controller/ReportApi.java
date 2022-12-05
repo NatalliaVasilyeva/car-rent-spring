@@ -27,7 +27,6 @@ public class ReportApi {
 
         String reportName = "id_" + id + "_date_" + LocalDate.now() +".csv";
         response.setContentType("text/csv");
-
         response.addHeader("Content-Disposition", "attachment; filename=" + reportName);
 
         reportService.writeUserReportsToCsv(id, response.getWriter());

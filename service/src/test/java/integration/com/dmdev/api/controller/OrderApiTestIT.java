@@ -1,8 +1,6 @@
 package integration.com.dmdev.api.controller;
 
-import com.dmdev.domain.dto.filterdto.OrderFilter;
 import com.dmdev.domain.dto.order.OrderResponseDto;
-import com.dmdev.domain.dto.user.response.UserResponseDto;
 import com.dmdev.domain.model.OrderStatus;
 import com.dmdev.service.BrandService;
 import com.dmdev.service.CarService;
@@ -22,16 +20,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static integration.com.dmdev.api.controller.OrderApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -124,7 +121,8 @@ class OrderApiTestIT extends IntegrationBaseTest {
                                 .param("startRentalDate", orderCreateRequestDTOSame.getStartRentalDate().toString())
                                 .param("endRentalDate", orderCreateRequestDTOSame.getEndRentalDate().toString()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", "/cars"));;
+                .andExpect(header().string("Location", "/cars"));
+        ;
     }
 
     @Test
@@ -183,6 +181,23 @@ class OrderApiTestIT extends IntegrationBaseTest {
         assertThat(orders).isEmpty();
     }
 
+    @Test
+    void shouldReturnAllOrdersByUserId() throws Exception {
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/user/1");
+        MvcResult result = mockMvc.perform(
+                        get(uriBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("status", OrderStatus.DECLINED.name())
+                                .param("sum", BigDecimal.ZERO.toString()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("ordersPage"))
+                .andReturn();
+
+        List<OrderResponseDto> orders = ((Page<OrderResponseDto>) result.getModelAndView().getModel().get("ordersPage")).getContent();
+        assertThat(orders).isEmpty();
+    }
 
     @Test
     void shouldUpdateOrderCorrectly() throws Exception {
@@ -335,6 +350,5 @@ class OrderApiTestIT extends IntegrationBaseTest {
 
         assertThat(responseDto.getUser().getUsername()).isEqualTo(expected.getUser().getUsername());
         assertThat(responseDto.getUser().getEmail()).isEqualTo(expected.getUser().getEmail());
-
     }
 }
