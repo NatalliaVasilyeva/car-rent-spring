@@ -36,7 +36,7 @@ public class ReportService {
     @SneakyThrows
     public void writeAdminOrdersReportsToCsv(Writer writer) {
 
-        List<OrderResponseDto> orders = orderService.getAll();
+        List<OrderResponseDto> orders = orderService.findAllLimitByDate();
         CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
 
         printer.printRecord("Id", "Date", "Start rental time", "End rental time", "Brand", "Model", "Color", "Transmission",
@@ -47,7 +47,7 @@ public class ReportService {
                     order.getCar().getBrand(), order.getCar().getModel(), order.getCar().getColor(), order.getCar().getTransmission(), order.getCar().getEngineType(),
                     order.getCar().getYearOfProduction(), order.getCar().getVin(), order.getCar().getNumber(),
                     order.getCar().getCategory(), order.getCar().getPrice(), order.getInsurance(), order.getOrderStatus(), order.getSum(),
-                    order.getUser().getEmail(), order.getUser().getUserDetailsDto().getName() + order.getUser().getUserDetailsDto().getSurname(), order.getUser().getUserDetailsDto().getPhone());
+                    order.getUser().getEmail(), order.getUser().getUserDetailsDto().getName() + " " + order.getUser().getUserDetailsDto().getSurname(), order.getUser().getUserDetailsDto().getPhone());
         }
     }
 }

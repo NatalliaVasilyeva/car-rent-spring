@@ -62,6 +62,7 @@ public class CarService {
                 .map(dto -> {
                     if (dto.getImage() != null) {
                         downloadImage(dto.getImage());
+                        imageService.delete(existingCar.getImage());
                     }
                     return carUpdateMapper.mapToEntity(dto, existingCar);
                 })

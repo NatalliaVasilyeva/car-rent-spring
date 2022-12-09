@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping(path = "/driver-licenses")
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class DriverLicenseApi {
 
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('CLIENT')")
-    public String create(@ModelAttribute DriverLicenseCreateRequestDto requestDto,
+    public String create(@ModelAttribute @Valid DriverLicenseCreateRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         return driverLicenseService.create(requestDto)
                 .map(driverLicense -> {
@@ -41,7 +43,7 @@ public class DriverLicenseApi {
     @PostMapping("/{id}/update")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public String update(@PathVariable("id") Long id,
-                         @ModelAttribute DriverLicenseUpdateRequestDto requestDto) {
+                         @ModelAttribute @Valid DriverLicenseUpdateRequestDto requestDto) {
         return driverLicenseService.update(id, requestDto)
                 .map(driverLicense -> "redirect:/users/" + driverLicense.getUserId())
                 .orElseThrow(() -> new DriverLicenseBadRequestException("Can not update user details. Please check input parameters"));

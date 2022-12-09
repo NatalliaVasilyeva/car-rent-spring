@@ -31,9 +31,9 @@ public class ReportApi {
         reportService.writeUserReportsToCsv(id, response.getWriter());
     }
 
-    @GetMapping("/orders")
+    @GetMapping("/orders_report")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public void createUserReport(HttpServletResponse response) throws IOException {
+    public void createOrdersReport(HttpServletResponse response) throws IOException {
 
         String reportName = "orders_date_" + LocalDate.now() + ".csv";
         response.setContentType("text/csv");

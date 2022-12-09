@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Car rent</a>
+    <a class="navbar-brand waves-effect waves-light fa fa-leaf" href="#">Car rent</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-3"
             aria-controls="navbarSupportedContent-3" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -71,7 +71,7 @@
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink"
                      th:with="auth=${#authentication.principal}">
                     <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}" th:text="#{header.user.profile}">Profile</a>
-                    <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}" th:text="#{header.user.settings}">Settings</a>
+                    <a class="dropdown-item" th:href="@{'/users/change-password'}" th:text="#{header.user.settings}">Change password</a>
                     <a class="dropdown-item" th:href="@{/reports/{userId}/create(userId=${auth.id})}" th:text="#{header.user.report}">Download report</a>
                     <form name="logoutFormUser" th:action="@{'/logout'}" method="post">
                     <a class="dropdown-item"

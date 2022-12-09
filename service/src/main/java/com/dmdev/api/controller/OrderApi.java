@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ public class OrderApi {
 
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('CLIENT')")
-    public String create(@ModelAttribute OrderCreateRequestDto requestDto,
+    public String create(@ModelAttribute @Valid OrderCreateRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         Optional<OrderResponseDto> order = orderService.create(requestDto);
         if (order.isEmpty()) {
@@ -62,13 +63,13 @@ public class OrderApi {
     @PostMapping("/{id}/update")
     @PreAuthorize("hasAnyAuthority('CLIENT')")
     public String update(@PathVariable("id") Long id,
-                         @ModelAttribute OrderUpdateRequestDto orderUpdateRequestDto,
+                         @ModelAttribute @Valid OrderUpdateRequestDto orderUpdateRequestDto,
                          Model model,
                          RedirectAttributes redirectedAttributes) {
         Optional<OrderResponseDto> order = orderService.update(id, orderUpdateRequestDto);
 
         if (order.isEmpty()) {
-            redirectedAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Car is unavailable for these dates. Please choose other dates or car");
+            redirectedAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Order can not be updated");
         }
         model.addAttribute("cars", carService.getAll());
         return "redirect:/orders/{id}";
@@ -89,7 +90,7 @@ public class OrderApi {
     @PostMapping("/{id}/change-status")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String changeStatus(@PathVariable("id") Long id,
-                               @RequestParam OrderStatus status) {
+                               @RequestParam @Valid OrderStatus status) {
         return orderService.changeOrderStatus(id, status)
                 .map(result -> "redirect:/orders/{id}")
                 .orElseThrow(() -> new UserBadRequestException("Order status has not been changed"));
@@ -115,7 +116,7 @@ public class OrderApi {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String findAllByStatus(Model model,
                                   @ModelAttribute OrderFilter orderFilter,
-                                  @RequestParam OrderStatus status) {
+                                  @RequestParam @Valid OrderStatus status) {
 
         var orders = orderService.getAllByStatus(status);
         var ordersPage = new PageImpl<>(orders);

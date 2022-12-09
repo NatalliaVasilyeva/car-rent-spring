@@ -1,5 +1,6 @@
 package com.dmdev.api.controller;
 
+import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,9 +17,7 @@ public class WelcomeApi {
 
     @GetMapping({"", "welcome"})
     public String getWelcomePage(Model model) {
-        var cars = carService.getAllAvailable();
-        model.addAttribute("cars", cars);
-
+        model.addAttribute("cars", carService.getAllAvailable());
         return "welcome/init";
     }
 }

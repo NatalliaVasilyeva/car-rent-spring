@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
@@ -122,6 +123,40 @@ class OrderApiTestIT extends IntegrationBaseTest {
                                 .param("endRentalDate", orderCreateRequestDTOSame.getEndRentalDate().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/cars"));
+    }
+
+    @Test
+    void shouldCreateOrderIfPreviousCarOrdersWasCancelledCorrectly() throws Exception {
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateRequestDTO();
+        var actualUser = userService.create(userCreateRequestDTO);
+        var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
+        var savedBrand = brandService.create(brandCreateRequestDto);
+        var modelCreateRequestDto = TestDtoBuilder.createModelRequestDto(savedBrand.get().getId());
+        var savedModel = modelService.create(modelCreateRequestDto);
+        var carCreateRequestDto = TestDtoBuilder.createCarRequestDto(savedBrand.get().getId(), savedModel.get().getId());
+        var actualCar = carService.create(carCreateRequestDto);
+
+        var orderCreateRequestDTO = TestDtoBuilder.createOrderRequestDto(actualUser.get().getId(), actualCar.get().getId());
+        var saved = orderService.create(orderCreateRequestDTO);
+        orderService.changeOrderStatus(saved.get().getId(), OrderStatus.CANCELLED);
+
+        var orderCreateRequestDTOSame = TestDtoBuilder.createOrderRequestDtoWithNecessaryData(actualUser.get().getId(), actualCar.get().getId(), orderCreateRequestDTO.getStartRentalDate(), orderCreateRequestDTO.getEndRentalDate());
+
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT);
+        mockMvc.perform(
+                        post(uriBuilder.build().encode().toUri())
+                                .headers(commonHeaders)
+                                .accept(MediaType.TEXT_HTML)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                .param("userId", orderCreateRequestDTOSame.getUserId().toString())
+                                .param("carId", orderCreateRequestDTOSame.getCarId().toString())
+                                .param("passport", orderCreateRequestDTOSame.getPassport())
+                                .param("insurance", orderCreateRequestDTOSame.getInsurance().toString())
+                                .param("startRentalDate", orderCreateRequestDTOSame.getStartRentalDate().toString())
+                                .param("endRentalDate", orderCreateRequestDTOSame.getEndRentalDate().toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/orders/{\\d*}"));
+
     }
 
     @Test

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping(path = "/categories")
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class CategoryApi {
 
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public String create(@ModelAttribute CategoryCreateEditRequestDto requestDto,
+    public String create(@ModelAttribute @Valid CategoryCreateEditRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         return categoryService.create(requestDto)
                 .map(category -> {
@@ -47,7 +49,7 @@ public class CategoryApi {
     @PostMapping("/{id}/update")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String update(@PathVariable("id") Long id,
-                         @ModelAttribute CategoryCreateEditRequestDto requestDto) {
+                         @ModelAttribute @Valid CategoryCreateEditRequestDto requestDto) {
         return categoryService.update(id, requestDto)
                 .map(categories -> "redirect:/categories/{id}")
                 .orElseThrow(() -> new CategoryBadRequestException("Can not update category. Please check input parameters"));

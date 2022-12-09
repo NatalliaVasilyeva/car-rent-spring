@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Car rent</a>
+    <a class="navbar-brand waves-effect waves-light fa fa-leaf" href="#">Car rent</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-3"
             aria-controls="navbarSupportedContent-3" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -16,10 +16,20 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="navbarDropdownMenuLink-order">
-                    <a class="dropdown-item" th:href="@{'/orders'}">All orders</a>
+                    <a class="dropdown-item" th:href="@{'/orders'}" th:text="#{header.admin.all.orders}">All orders</a>
                     <a class="dropdown-item" th:href="@{'/orders/by-status?status=CONFIRMATION_WAIT'}" th:text="#{header.admin.not.confirm.orders}">All not confirm
                         orders</a>
                     <a class="dropdown-item" th:href="@{'/orders/by-status?status=NOT_PAYED'}" th:text="#{header.admin.not.paid.orders}">All not paid orders</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
+                   id="navbarDropdownMenuLink-accident"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.accident}">Accidents
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="navbarDropdownMenuLink-order">
+                    <a class="dropdown-item" th:href="@{'/accidents'}" th:text="#{header.admin.all.accidents}">All accidents</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -72,7 +82,7 @@
                 <a class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button"
                    id="dropdownMenuButton"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="flag-icon flag-icon-us" th:text="#{header.admin.language}"></span> Language
+                    <span class="flag-icon flag-icon-us" th:text="#{header.admin.language}"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="dropdownMenuButton">
@@ -105,7 +115,7 @@
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink"
                      th:with="auth=${#authentication.principal}">
                     <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}" th:text="#{header.admin.profile}">Profile</a>
-                    <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}" th:text="#{header.admin.settings}">Settings</a>
+                    <a class="dropdown-item" th:href="@{'/users/change-password'}" th:text="#{header.admin.settings}">Change password</a>
                     <form name="logoutFormAdmin" th:action="@{'/logout'}" method="post">
                         <a class="dropdown-item"
                            href="javascript: document.logoutFormAdmin.submit()" role="menuitem" th:text="#{header.admin.logout}"> Logout</a>

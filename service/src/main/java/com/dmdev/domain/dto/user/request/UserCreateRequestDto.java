@@ -13,42 +13,42 @@ import java.time.LocalDate;
 @Value
 public class UserCreateRequestDto {
 
-    @NotBlank(message = "Email is mandatory")
+    @NotBlank(message = "{email.notempty}")
     @Email
     String email;
 
-    @NotBlank(message = "Username is mandatory")
-    @Size(min = 2, message = "Username should have at least 2 characters")
+    @NotBlank(message = "{username.notempty}")
+    @Size(min = 2, message = "{username.size}")
     String username;
 
-    @NotEmpty
-    @Size(min = 8, message = "Password should have at least 8 characters")
-    @Pattern(regexp = "(?=^.{6,40}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$", message = "Password should have at least 8 characters")
+    @NotEmpty(message = "{password.notempty}")
+    @Size(min = 8, message = "{password.size}")
+    @Pattern(regexp = "(?=^.{6,40}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$", message = "{password.pattern}")
     String password;
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "{name.notempty}")
     String name;
 
-    @NotBlank(message = "Surname is mandatory")
+    @NotBlank(message = "{surname.notempty}")
     String surname;
 
-    @NotBlank(message = "Address is mandatory")
+    @NotBlank(message = "{address.notempty}")
     String address;
 
-    @NotBlank(message = "Phone is mandatory")
-    @Pattern(regexp = "(\\+?(375|80)?\\s?)?\\(?(17|29|33|44|25)\\)?\\s?(\\d{3})[-|\\s]?(\\d{2})[-|\\s]?(\\d{2})")
+    @NotBlank(message = "{phone.notempty}")
+    @Pattern(regexp = "(\\+?(375|80)?\\s?)?\\(?(17|29|33|44|25)\\)?\\s?(\\d{3})[-|\\s]?(\\d{2})[-|\\s]?(\\d{2})", message = "{phone.pattern}")
     String phone;
 
-    @NotNull
+    @NotNull(message = "{birthday.notempty}")
     LocalDate birthday;
 
-    @NotBlank(message = "Driver license number is mandatory")
-    @Size(min = 4, message = "Driver license number should have at least 2 characters")
+    @NotBlank(message = "{licensenumber.notempty}")
+    @Size(min = 4, message = "{licensenumber.size}")
     String driverLicenseNumber;
 
-    @NotNull
+    @NotNull(message = "{licenseisseuedate.notempty}")
     LocalDate driverLicenseIssueDate;
 
-    @NotNull
+    @NotNull(message = "{licenseexpireredate.notempty}")
     LocalDate driverLicenseExpiredDate;
 }

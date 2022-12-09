@@ -32,21 +32,31 @@
 
 <form id="create-category-form" th:action="@{/categories}" method="post" th:object="${category}"
       onsubmit="saveCategory(event)" sec:authorize="hasAnyAuthority('ADMIN')">
-    <div class="form-group">
-        <label class="col-form-label" for="create-category-name-input" th:text="#{category.create.name}">Category name </label>
-        <input type="text" class="form-control" placeholder="name" id="create-category-name-input" name="name"
-               th:field="*{name}" required/>
-        <small class="text-danger" id="create-category-error-small"></small>
-    </div>
-    <div class="form-group">
-        <label class="col-form-label" for="create-category-price-input" th:text="#{category.create.price}">Category price </label>
-        <input type="number" class="form-control" placeholder="name" id="create-category-price-input" name="price"
-               th:field="*{price}" required/>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="form-control btn btn-light" value="Submit" th:text="#{category.create.button}">
-            Create
-        </button>
+    <div class="card text-white bg-dark mb-10">
+        <div class="card-header">
+            <h2 class="m-0" th:text="#{category.create.title}">Create category</h2>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label class="col-form-label" for="create-category-name-input" th:text="#{category.create.name}">Category
+                    name </label>
+                <input type="text" class="form-control" placeholder="name" id="create-category-name-input" name="name"
+                       th:field="*{name}" required/>
+                <small class="text-danger" id="create-category-error-small"></small>
+            </div>
+            <div class="form-group">
+                <label class="col-form-label" for="create-category-price-input" th:text="#{category.create.price}">Category
+                    price </label>
+                <input type="number" class="form-control" placeholder="name" id="create-category-price-input"
+                       name="price"
+                       th:field="*{price}" required/>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="form-control btn btn-light" value="Submit" th:text="#{category.create.button}">
+                Create
+            </button>
+        </div>
     </div>
 </form>
 </body>

@@ -29,7 +29,7 @@ public class OrderUpdateMapper implements UpdateMapper<OrderUpdateRequestDto, Or
     public void merge(OrderUpdateRequestDto requestDto, Order existing) {
         existing.setCar(getCar(requestDto.getCarId()));
         existing.setInsurance(requestDto.getInsurance());
-        var carRentalTime = getCarRentalTime(existing.getId());
+        var carRentalTime = getCarRentalTime(existing.getCarRentalTime().getId());
         carRentalTime.setStartRentalDate(requestDto.getStartRentalDate());
         carRentalTime.setEndRentalDate(requestDto.getEndRentalDate());
         carRentalTime.setOrder(existing);

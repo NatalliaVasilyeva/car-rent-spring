@@ -66,7 +66,7 @@ function validateSignUpForm(username, name, surname, email, phone, address, birt
 }
 
 function showSignUpErrors(usernameMsg, nameMsg, surnameMsg, emailMsg, phoneMsg, addressMsg, birthdayMsg, driverNumberMsg, issueDateMsg, expireDateMsg, passwordMsg, repeat_passwordMsg) {
-    showOneError($("#sign-up-username-input"), $("#sign-up-username-error-small"), usernameMsg);
+    showOneError($("#sign-up-username-input"), $("#ss"), usernameMsg);
     showOneError($("#sign-up-first-name-input"), $("#sign-up-first-name-error-small"), nameMsg);
     showOneError($("#sign-up-surname-input"), $("#sign-up-surname-error-small"), surnameMsg);
     showOneError($("#sign-up-email-input"), $("#sign-up-email-error-small"), emailMsg);
@@ -82,9 +82,11 @@ function showSignUpErrors(usernameMsg, nameMsg, surnameMsg, emailMsg, phoneMsg, 
 
 function showOneError(input, error, msg) {
     if (msg) {
+        error.show();
         input.addClass("is-invalid");
         error.text(msg);
     } else {
+        error.hide();
         input.removeClass("is-invalid");
         error.text("");
     }

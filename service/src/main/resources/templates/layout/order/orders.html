@@ -37,7 +37,7 @@
                             <div class="col-md-3 mb-3">
                                 <label th:for="status" th:text="#{orders.status} + ':'">Status:</label>
                                 <select class="form-control" th:id="status" name="orderStatus">
-                                    <option selected value>Select</option>
+                                    <option selected value th:text="#{orders.status.select}">Select</option>
                                     <option th:id="status" th:each="status : ${statuses}"
                                             th:value="${status}"
                                             th:text="${status.name()}">
@@ -129,7 +129,7 @@
                                                 <th th:text="#{orders.end}">End rental time</th>
                                                 <th th:text="#{order.insurance}">Insurance</th>
                                                 <th th:text="#{order.sum}">Sum</th>
-                                                <th colspan="2" th:text="#{order.action}">Action</th>
+                                                <th colspan="3" th:text="#{order.action}">Action</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -150,7 +150,8 @@
                                                 <td th:text="|${order.user.email} ${order.user.userDetailsDto.name} ${order.user.userDetailsDto.surname} ${order.user.userDetailsDto.phone}|"></td>
                                                 <td th:text="${order.startRentalDate}"></td>
                                                 <td th:text="${order.endRentalDate}"></td>
-                                                <td th:text="${order.insurance}"></td>
+                                                <td th:if="${order.insurance eq 'true'}" th:text="#{orders.insurance.true}"></td>
+                                                <td th:if="${order.insurance eq 'false'}" th:text="#{orders.insurance.false}"></td>
                                                 <td th:text="${order.sum}"></td>
                                                 <td th:if="${order.orderStatus.name() eq 'CONFIRMATION_WAIT'}">
                                                     <form id="decline-order-form" class="form-horizontal"
@@ -186,6 +187,17 @@
                                                         <button type="submit"
                                                                 class="from-control btn btn-dark btn-lg btn-block">
                                                             <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <form id="order-add-accident-form" class="form-horizontal"
+                                                          th:action="@{/accidents/create}"
+                                                          method="get">
+                                                        <input type="text" name="orderId" th:value="${order.id}"
+                                                               hidden>
+                                                        <button type="submit"
+                                                                class="from-control btn btn-dark btn-lg btn-block" th:text="#{orders.order.create}">
                                                         </button>
                                                     </form>
                                                 </td>

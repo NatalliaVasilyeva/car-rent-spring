@@ -6,7 +6,7 @@ import com.dmdev.domain.model.OrderStatus;
 import lombok.Builder;
 import lombok.Value;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class OrderResponseDto {
 
-    @NotEmpty
+    @NotNull
     Long id;
 
     LocalDate date;

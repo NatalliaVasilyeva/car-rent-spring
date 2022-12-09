@@ -26,6 +26,7 @@ import com.dmdev.service.exception.OrderBadRequestException;
 import com.dmdev.utils.PageableUtils;
 import com.dmdev.utils.predicate.OrderPredicateBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +47,8 @@ import static java.util.stream.Collectors.toList;
 @Transactional(readOnly = true)
 public class OrderService {
 
-    private static final int INSURANCE_PERCENT = 5;
+    @Value("${app.insurance.percent}")
+    private final int insurance_percent;
     private final OrderRepository orderRepository;
     private final CarRepository carRepository;
     private final UserRepository userRepository;
@@ -143,6 +146,13 @@ public class OrderService {
 
     public List<OrderResponseDto> getAll() {
         return orderRepository.findAll()
+                .stream()
+                .map(orderResponseMapper::mapToDto)
+                .collect(toList());
+    }
+
+    public List<OrderResponseDto> findAllLimitByDate() {
+        return orderRepository.findAllLimitByDate(LocalDate.now().minusDays(30))
                 .stream()
                 .map(orderResponseMapper::mapToDto)
                 .collect(toList());
@@ -255,7 +265,7 @@ public class OrderService {
     }
 
     private BigDecimal calculateInsuranceSum(long days, BigDecimal rentCarPricePerDay) {
-        long insurance = rentCarPricePerDay.intValue() * days * INSURANCE_PERCENT / 100;
+        long insurance = rentCarPricePerDay.intValue() * days * insurance_percent / 100;
         return new BigDecimal(insurance);
     }
 }

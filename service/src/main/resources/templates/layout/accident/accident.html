@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Accident</title>
+    <script type="text/javascript" th:src="@{/js/accident/accident.js}"></script>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-12">
+            <form id="order-form"
+                  th:action="@{/accidents/{accidentId}/update(accidentId=${accident.id})}" method="POST" th:object="${accident}">
+                <div class="card mb-4">
+                    <div class="card-header content-center" th:text="#{accident.header}">Accident info</div>
+                    <div class="card-body">
+                        <!-- id -->
+                        <div class="form-group row" hidden>
+                            <label th:for="accident-id-input" class="col-2 col-form-label"
+                                   th:text="#{accident.id} + ':'">Id:</label>
+                            <div class="col-10"><input type="text" class="form-control" th:id="accident-id-input"
+                                                       th:name="id"
+                                                       th:value="*{id}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /id -->
+                        <!-- order id -->
+                        <div class="form-group row">
+                            <label th:for="accident-order-id-input" class="col-2 col-form-label"
+                                   th:text="#{accidents.orderNumber} + ':'">Order number:</label>
+                            <div class="col-10"><input type="text" class="form-control" th:id="accident-order-id-input"
+                                                       th:name="id"
+                                                       th:value="*{orderNumber}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /order id -->
+                        <!-- date -->
+                        <div class="form-group row"  id="date">
+                            <label th:for="accident-date-input" class="col-2 col-form-label" th:text="#{accident.date} + ':'">
+                                Date:
+                            </label>
+                            <div class="col-10">
+                                <input type="date" class="form-control" th:id="accident-date-input" th:name="date"
+                                       th:value="*{date}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /date -->
+                        <!-- brand -->
+                        <div class="form-group row" id="brand">
+                            <label th:for="accident-brand-input" class="col-2 col-form-label" th:text="#{accident.brand} + ':'">
+                                Brand:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="accident-brand-input" th:name="brand"
+                                       th:value="*{brand}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /brand -->
+                        <!-- model -->
+                        <div class="form-group row" id="model">
+                            <label th:for="accident-model-input" class="col-2 col-form-label" th:text="#{accident.model} + ':'">
+                                Model:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="accident-model-input" th:name="model"
+                                       th:value="*{model}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /model -->
+                        <!-- carNumber -->
+                        <div class="form-group row" id="carNumber">
+                            <label th:for="accident-carNumber-input" class="col-2 col-form-label" th:text="#{accident.carNumber} + ':'">
+                                Car number:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="accident-carNumber-input" th:name="carNumber"
+                                       th:value="*{carNumber}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /carNumber -->
+                        <!-- userFirstName -->
+                        <div class="form-group row" id="userFirstName">
+                            <label th:for="accident-userFirstName-input" class="col-2 col-form-label" th:text="#{accident.userFirstName} + ':'">
+                                User firstname:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="accident-userFirstName-input" th:name="userFirstName"
+                                       th:value="*{userFirstName}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /userFirstName -->
+                        <!-- userLastName -->
+                        <div class="form-group row" id="userLastName">
+                            <label th:for="accident-userLastName-input" class="col-2 col-form-label" th:text="#{accident.userLastName} + ':'">
+                                User lastname:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="accident-userLastName-input" th:name="userLastName"
+                                       th:value="*{userLastName}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /userLastName -->
+                        <!-- description -->
+                        <div class="form-group row">
+                            <label th:for="accident-description-input" class="col-2 col-form-label" th:text="#{accident.description} + ':'">
+                                Description:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="accident-description-input" th:name="description"
+                                       th:value="*{description}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /description -->
+                        <!-- damage -->
+                        <div class="form-group row">
+                            <label th:for="accident-damage-input" class="col-2 col-form-label" th:text="#{accident.damage} + ':'">
+                                Damage:
+                            </label>
+                            <div class="col-10">
+                                <input type="text" class="form-control" th:id="accident-damage-input" th:name="damage"
+                                       th:value="*{damage}" readonly/>
+                            </div>
+                        </div>
+                        <!-- /damage -->
+                    </div>
+                </div>
+            </form>
+            <div class="card-footer">
+                <div class="form-group row" id="edit-accident-button-div">
+                    <input type="button"
+                           class="from-control btn btn-light btn-lg btn-block"
+                           onclick="MakeEditableAccident()"
+                           th:value="#{accident.button.edit}">
+                </div>
+                <div class="form-group row" id="edit-manage-accident-buttons-div"
+                     style="display: none">
+                    <label class="col-md-3 control-label"></label>
+                    <div class="col-md-8">
+                        <input type="submit" class="btn btn-primary" th:value="#{accident.button.save}">
+                        <span></span>
+                        <input type="reset" class="btn btn-default" onclick="MakeUnEditableAccident()"
+                               th:value="#{accident.button.cancel}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
