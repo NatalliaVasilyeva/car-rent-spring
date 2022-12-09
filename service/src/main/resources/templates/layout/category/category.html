@@ -33,10 +33,10 @@
                   th:action="@{/categories/{categoryId}/update(categoryId=${category.id})}"
                   method="POST" th:object="${category}">
                 <div class="card mb-4">
-                    <div class="card-header">Category info</div>
+                    <div class="card-header" th:text="#{category.header}">Category info</div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="category-id-input" class="col-2 col-form-label">
+                            <label for="category-id-input" class="col-2 col-form-label" th:text="#{categories.id} + ':'">
                                 Id:
                             </label>
                             <div class="col-10">
@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="category-name-input" class="col-2 col-form-label">
+                            <label for="category-name-input" class="col-2 col-form-label" th:text="#{categories.name} + ':'">
                                 Name:
                             </label>
                             <div class="col-10">
@@ -55,8 +55,8 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="category-price-input" class="col-2 col-form-label">
-                                Name:
+                            <label for="category-price-input" class="col-2 col-form-label" th:text="#{categories.price} + ':'">
+                                Price:
                             </label>
                             <div class="col-10">
                                 <input type="number" class="form-control" id="category-price-input" name="price"
@@ -68,17 +68,17 @@
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableCategory()"
-                                   value="Edit">
+                                   value="Edit" th:text="#{category.button.edit}">
                         </div>
                         <div class="form-group row" id="edit-manage-category-buttons-div"
                              style="display: none">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
                                 <input type="submit" class="btn btn-primary" value="Save Changes"
-                                       onsubmit="editCategory(event)">
+                                       onsubmit="editCategory(event)" th:text="#{category.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableCategory()"
-                                       value="Cancel">
+                                       value="Cancel" th:text="#{category.button.cancel}">
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+<div th:replace="layout/header/header :: header"/>
+
+<br>
+<form id="create-order-form" class="form-horizontal" method="post" th:object="${accident}"
+      th:action="@{/accidents}">
+    <div class="card text-white bg-dark mb-10">
+        <div class="card-header">
+            <h2 class="m-0" th:text="#{accident.create.title}">Create accident</h2>
+        </div>
+        <div class="card-body">
+            <!-- car -->
+            <div class="form-group" hidden>
+                <label class="col-form-label" th:for="create-accident-order" th:text="#{accident.create.order} + ':'">Order: </label>
+                <input type="text" name="orderId" class="form-control" th:id="create-order-order" th:value="${order.getId()}"
+                       required>
+            </div>
+            <!-- /car -->
+            <!-- data -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-accident-date" th:text="#{accident.create.data} + ':'">Data: </label>
+                <input type="datetime-local" th:field="*{accidentDate}" class="form-control"
+                       th:id="create-accident-date" required>
+            </div>
+            <!-- /data -->
+            <!-- description -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-accident-description" th:text="#{accident.create.description} + ':'">Description: </label>
+                <input type="text" th:field="*{description}" class="form-control" th:id="create-accident-description"
+                       required>
+            </div>
+            <!-- /description -->
+            <!-- damage -->
+            <div class="form-group">
+                <label class="col-form-label" th:for="create-accident-damage" th:text="#{accident.create.damage} + ':'">Damage: </label>
+                <input type="text" th:field="*{damage}" class="form-control" th:id="create-accident-damage"
+                       required>
+            </div>
+            <!-- /damage -->
+        </div>
+        <div class="card-footer" sec:authorize="hasAnyAuthority('ADMIN')">
+            <button type="submit" class="btn btn-primary" th:text="#{accident.create.button.save}">
+                Save
+            </button>
+        </div>
+    </div>
+</form>
+
+
+</body>
+</html>

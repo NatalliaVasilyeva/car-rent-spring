@@ -16,10 +16,10 @@
                   th:action="@{/user-details/{userDetailsId}/update(userDetailsId=${userDetails.id})}"
                   method="POST" th:object="${userDetails}">
                 <div class="card mb-4">
-                    <div class="card-header">User details info</div>
+                    <div class="card-header" th:text="#{user.detail.header}">User details info</div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="user-details-id-input" class="col-2 col-form-label">
+                            <label for="user-details-id-input" class="col-2 col-form-label" th:text="#{user.details.id} + ':'">
                                 Id:
                             </label>
                             <div class="col-10">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-user-id-input" class="col-2 col-form-label">
+                            <label for="user-details-user-id-input" class="col-2 col-form-label" th:text="#{user.details.user.id} + ':'">
                                 User id:
                             </label>
                             <div class="col-10">
@@ -37,7 +37,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-name-input" class="col-2 col-form-label">
+                            <label for="user-details-name-input" class="col-2 col-form-label" th:text="#{user.details.name} + ':'">
                                 Name:
                             </label>
                             <div class="col-10">
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-surname-input" class="col-2 col-form-label">
+                            <label for="user-details-surname-input" class="col-2 col-form-label" th:text="#{user.details.surname} + ':'">
                                 Surname:
                             </label>
                             <div class="col-10">
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-address-input" class="col-2 col-form-label">
+                            <label for="user-details-address-input" class="col-2 col-form-label" th:text="#{user.details.address} + ':'">
                                 Address:
                             </label>
                             <div class="col-10">
@@ -64,7 +64,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-phone-input" class="col-2 col-form-label">
+                            <label for="user-details-phone-input" class="col-2 col-form-label" th:text="#{user.details.phone} + ':'">
                                 Phone:
                             </label>
                             <div class="col-10">
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-birthday-input" class="col-2 col-form-label">
+                            <label for="user-details-birthday-input" class="col-2 col-form-label" th:text="#{user.details.birthday} + ':'">
                                 Birthday:
                             </label>
                             <div class="col-10">
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-registration-input" class="col-2 col-form-label">
+                            <label for="user-details-registration-input" class="col-2 col-form-label" th:text="#{user.details.registration} + ':'">
                                 Registration date:
                             </label>
                             <div class="col-10">
@@ -95,16 +95,16 @@
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableDetails()"
-                                   value="Edit">
+                                   value="Edit" th:text="#{user.details.button.edit}">
                         </div>
                         <div class="form-group row" id="edit-manage-user-details-buttons-div"
                              style="display: none">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <input type="submit" class="btn btn-primary" value="Save Changes" th:text="#{user.details.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableDetails()"
-                                       value="Cancel">
+                                       value="Cancel" th:text="#{user.details.button.cancel}">
                             </div>
                         </div>
                     </div>

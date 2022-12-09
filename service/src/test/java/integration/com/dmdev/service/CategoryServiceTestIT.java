@@ -55,7 +55,7 @@ class CategoryServiceTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnBrandsByPrice() {
+    void shouldReturnCategoriesByPrice() {
         var categoryCreateRequestDTO = TestDtoBuilder.createCategoryCreateEditRequestDto();
         var expectedCategory = categoryService.create(categoryCreateRequestDTO).get();
         var filter = CategoryFilter.builder()

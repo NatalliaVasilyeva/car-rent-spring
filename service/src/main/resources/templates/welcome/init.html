@@ -4,6 +4,7 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
+    <script th:src="@{/assets/intl-tel-input/js/intlTelInput-jquery.js}"></script>
 </head>
 <body>
 
@@ -13,23 +14,25 @@
         <p th:text="${success_message}"></p>
     </div>
 </div>
-<div th:if="${param.error}">
+<div th:if="${userCreateRequestDto != null}">
     <div class="alert alert-danger">
-        <p th:text="Error"></p>
+        <ul>
+            <li th:each="err : ${#fields.errors('userCreateRequestDto.*')}" th:text="${err}" />
+        </ul>
     </div>
 </div>
+
 <br>
 <br>
 <br>
 
 <div th:if="${not #lists.isEmpty(cars)}">
     <div class="row">
-        <!--        <c:forEach items="${adminCars}" var="car">-->
         <th:block th:each="car: ${cars}">
             <div class="col-sm-6 col-md-4">
                 <div class="col mb-4">
                     <div class="card h-100">
-                        <img th:src="@{/api/v1/cars/{carId}/car_image(carId=${car.id})}" alt="Car image">
+                        <img th:src="@{/api/v1/cars/{carId}/car_image(carId=${car.id})}" alt="Car image" height="300">
                         <div class="card-body">
                             <p hidden class="carId" th:text="${car.id}"></p>
                             <p hidden class="brand" th:text="${car.brand}"></p>
@@ -45,45 +48,50 @@
                             <p hidden class="card-text price" th:text="${car.price}"></p>
 
                             <h5 class="card-title text-center">
-                                Car description: <span th:text="|${car.brand} ${car.model}|"></span>
+                                <span th:text="#{init.description} + ': ' + |${car.brand} ${car.model}|"></span>
                             </h5>
                             <hr>
                             <div sec:authorize="hasAnyAuthority('ADMIN')">
                                 <p class="card-text color">
-                                    Color: <span th:text="${car.color}"></span>
+                                    <span th:text="#{init.color} + ': '"></span><span th:text="${car.color}"></span>
                                 </p>
                                 <hr>
                                 <p class="card-text transmission">
-                                    Transmission: <span th:text="${car.transmission}"></span>
+                                    <span th:text="#{init.transmission} + ': '"></span><span
+                                        th:text="${car.transmission}"></span>
                                 </p>
                                 <hr>
                                 <p class="card-text engineType">
-                                    Engine type: <span th:text="${car.engineType}"></span>
+                                    <span th:text="#{init.engine} +': '"></span><span
+                                        th:text="${car.engineType}"></span>
                                 </p>
                                 <hr>
                                 <p class="card-text yearOfProduction">
-                                    Year of production: <span th:text="${car.yearOfProduction}"></span>
+                                    <span th:text="#{init.year} +': '"></span><span
+                                        th:text="${car.yearOfProduction}"></span>
                                 </p>
                                 <hr>
                                 <p class="card-text carNumber">
-                                    Number: <span th:text="${car.number}"></span>
+                                    <span th:text="#{init.number} +': '"></span><span th:text="${car.number}"></span>
                                 </p>
                                 <hr>
                                 <p class="card-text vin">
-                                    VIN: <span th:text="${car.vin}"></span>
+                                    <span th:text="#{init.vin} +': '"></span><span th:text="${car.vin}"></span>
                                 </p>
                                 <hr>
                                 <p class="card-text isRepaired">
-                                    Repaired: <span th:text="${car.repaired}"></span>
+                                    <span th:text="#{init.repaired} +': '"></span><span
+                                        th:text="${car.repaired}"></span>
                                 </p>
                                 <hr>
                                 <p class="card-text category">
-                                    Price: <span th:text="${car.category}"></span>
+                                    <span th:text="#{init.category} +': '"></span><span
+                                        th:text="${car.category}"></span>
                                 </p>
                                 <hr>
                             </div>
                             <p class="card-text pricePerDay">
-                                Price: <span th:text="${car.price}"></span>
+                                <span th:text="#{init.price} +': '"></span><span th:text="${car.price}"></span>
                             </p>
                         </div>
                         <div class="card-footer">
@@ -100,8 +108,6 @@
                                        role="button">
                                         <i class="fa fa-pencil" aria-hidden="true"></i>
                                     </a>
-                                    <!--                            </td>-->
-                                    <!--                            <td sec:authorize="hasAnyAuthority('ADMIN')">-->
                                     <form th:action="@{/cars/{carId}/delete(carId=${car.id})}"
                                           method="post">
                                         <button class="btn btn-dark btn-xs">
@@ -112,7 +118,8 @@
                                 </td>
                             </div>
                             <div sec:authorize="isAnonymous()">
-                                <small class="text-muted">Please login to see more info</small>
+                                <small class="text-muted" th:text="#{init.see.car.info}">Please login to see more
+                                    info</small>
                             </div>
                         </div>
                     </div>
@@ -129,7 +136,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="see-car-modal-label">Edit Data</h5>
+                <h5 class="modal-title" id="see-car-modal-label" th:text="#{init.edit.data}">Edit Data</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span>
                 </button>
@@ -140,11 +147,13 @@
             <div class="modal-footer">
                 <button class="btn btn-dark btn-xs showorderform"
                         data-toggle="modal"
-                        data-target="#create-order-modal">
+                        data-target="#create-order-modal" th:text="#{init.button.make.order}">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Make order
                 </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{init.button.close}">
+                    Close
+                </button>
             </div>
         </div>
     </div>
@@ -158,7 +167,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="create-order-modal-label">Edit Data</h5>
+                <h5 class="modal-title" id="create-order-modal-label" th:text="#{init.edit.data}">Edit Data</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span>
                 </button>
@@ -167,15 +176,20 @@
                 <div th:replace="layout/car/see-car :: create-order"></div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" form="create-order-form" value="Submit">Create order
+                <button type="submit" class="btn btn-primary" form="create-order-form" value="Submit"
+                        th:text="#{init.button.make.order}">Create order
                 </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{init.button.close}">
+                    Close
+                </button>
             </div>
         </div>
     </div>
 </div>
 <!-- /Attachment Modal -->
 
-
+<script>
+    $("#sign-up-phone-input").intlTelInput();
+</script>
 </body>
 </html>

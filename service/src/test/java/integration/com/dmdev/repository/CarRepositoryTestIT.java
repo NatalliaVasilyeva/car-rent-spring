@@ -14,7 +14,7 @@ import integration.com.dmdev.utils.builder.TestEntityBuilder;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -199,14 +199,14 @@ class CarRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnIfCarNotAvailableForNecessaryDates() {
-        var result = carRepository.isCarAvailable(TEST_EXISTS_CAR_ID, LocalDate.of(2022, 9, 3), LocalDate.of(2022, 9, 5));
+        var result = carRepository.isCarAvailable(TEST_EXISTS_CAR_ID, LocalDateTime.of(2022, 9, 3, 0, 0), LocalDateTime.of(2022, 9, 5, 23, 59));
 
         assertFalse(result);
     }
 
     @Test
     void shouldReturnIfCarAvailableForNecessaryDates() {
-        var result = carRepository.isCarAvailable(TEST_EXISTS_CAR_ID, LocalDate.of(2022, 9, 5), LocalDate.of(2022, 9, 10));
+        var result = carRepository.isCarAvailable(TEST_EXISTS_CAR_ID, LocalDateTime.of(2022, 9, 5, 0, 0), LocalDateTime.of(2022, 9, 10, 23, 59));
 
         assertTrue(result);
     }

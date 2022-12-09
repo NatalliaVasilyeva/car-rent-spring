@@ -1,8 +1,11 @@
 package com.dmdev.utils.predicate;
 
 import com.dmdev.domain.dto.filterdto.OrderFilter;
+import com.dmdev.domain.model.OrderStatus;
 import com.querydsl.core.types.Predicate;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 import static com.dmdev.domain.entity.QOrder.order;
 
@@ -17,6 +20,14 @@ public class OrderPredicateBuilder implements PredicateBuilder<Predicate, OrderF
                 .add(requestFilter.getCarNumber(), order.car.carNumber::equalsIgnoreCase)
                 .add(requestFilter.getOrderStatus(), order.orderStatus::eq)
                 .add(requestFilter.getSum(), order.sum::goe)
+                .buildAnd();
+    }
+
+    public Predicate usersBuild(Long userId, OrderStatus status, BigDecimal sum) {
+        return QPredicate.builder()
+                .add(userId, order.user.id::eq)
+                .add(status, order.orderStatus::eq)
+                .add(sum, order.sum::goe)
                 .buildAnd();
     }
 }

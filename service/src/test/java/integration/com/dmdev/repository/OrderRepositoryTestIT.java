@@ -141,10 +141,10 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnOrdersByUserId() {
-        List<Order> orders = orderRepository.findAllByUserId(TEST_EXISTS_USER_ID);
+        Iterable<Order> orders = orderRepository.findAll(orderPredicateBuilder.usersBuild(TEST_EXISTS_USER_ID, null, null));
 
         assertThat(orders).hasSize(1);
-        assertThat(orders.get(0)).isEqualTo(ExistEntityBuilder.getExistOrder());
+        assertThat(orders.iterator().next()).isEqualTo(ExistEntityBuilder.getExistOrder());
     }
 
     @Test

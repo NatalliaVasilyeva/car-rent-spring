@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping(path = "/models")
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class ModelApi {
 
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public String create(@ModelAttribute ModelCreateRequestDto requestDto,
+    public String create(@ModelAttribute @Valid ModelCreateRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         return modelService.create(requestDto)
                 .map(car -> {
@@ -56,7 +58,7 @@ public class ModelApi {
     @PostMapping("/{id}/update")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String update(@PathVariable("id") Long id,
-                         @ModelAttribute ModelUpdateRequestDto requestDto) {
+                         @ModelAttribute @Valid ModelUpdateRequestDto requestDto) {
         return modelService.update(id, requestDto)
                 .map(driverLicense -> "redirect:/models/{id}")
                 .orElseThrow(() -> new ModelBadRequestException("Can not update model. Please check input parameters"));

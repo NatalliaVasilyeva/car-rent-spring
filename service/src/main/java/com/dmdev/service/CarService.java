@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +62,7 @@ public class CarService {
                 .map(dto -> {
                     if (dto.getImage() != null) {
                         downloadImage(dto.getImage());
+                        imageService.delete(existingCar.getImage());
                     }
                     return carUpdateMapper.mapToEntity(dto, existingCar);
                 })
@@ -136,12 +136,6 @@ public class CarService {
                 .map(carResponseMapper::mapToDto)
                 .collect(toList());
     }
-
-
-    public boolean isCarAvailable(Long id, LocalDate startDate, LocalDate endDate) {
-        return carRepository.isCarAvailable(id, startDate, endDate);
-    }
-
 
     public Page<CarResponseDto> getAll(CarFilter carFilter, Integer page, Integer pageSize) {
         return carRepository.findAll(carPredicateBuilder.build(carFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "brand_name")).map(carResponseMapper::mapToDto);

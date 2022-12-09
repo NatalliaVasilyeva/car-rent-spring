@@ -1,70 +1,77 @@
 
-<form id="sign-up-form" th:action="@{/users}" method="post" modelAttribute="registration" th:fragment="sign-up">
+<form id="sign-up-form" th:action="@{/users/sing-up}" method="post" modelAttribute="registration" th:fragment="sign-up">
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-username-input">username </label>
-        <input type="text" class="form-control" placeholder="username" id="sign-up-username-input" name="username" required/>
-        <small class="text-danger" id="sign-up-username-error-small"></small>
+        <label class="col-form-label" for="sign-up-username-input" th:text="#{sing.up.username}">username </label>
+        <input type="text" class="form-control" th:placeholder="#{sing.up.username}" id="sign-up-username-input" name="username" required/>
+        <small class="text-danger" id="sign-up-username-error-small" th:text="#{sing.up.username.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-first-name-input">name </label>
-        <input type="text" class="form-control" placeholder="name" id="sign-up-first-name-input" name="name" required/>
-        <small class="text-danger" id="sign-up-first-name-error-small"></small>
+        <label class="col-form-label" for="sign-up-first-name-input" th:text="#{sing.up.name}">name </label>
+        <input type="text" class="form-control" th:placeholder="#{sing.up.name}" id="sign-up-first-name-input" name="name" required/>
+        <small class="text-danger" id="sign-up-first-name-error-small" th:text="#{sing.up.name.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-surname-input">surname </label>
-        <input type="text" class="form-control" placeholder="surname" id="sign-up-surname-input" name="surname" required/>
-        <small class="text-danger" id="sign-up-surname-error-small"></small>
+        <label class="col-form-label" for="sign-up-surname-input" th:text="#{sing.up.surname}">surname </label>
+        <input type="text" class="form-control" th:placeholder="#{sing.up.surname}" id="sign-up-surname-input" name="surname" required/>
+        <small class="text-danger" id="sign-up-surname-error-small" th:text="#{sing.up.surname.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-email-input">email </label>
-        <input type="email" class="form-control" placeholder="email" id="sign-up-email-input" name="email" required/>
-        <small class="text-danger" id="sign-up-email-error-small"></small>
+        <label class="col-form-label" for="sign-up-email-input" th:text="#{sing.up.email}">email </label>
+        <input type="email" class="form-control" th:placeholder="#{sing.up.email}" id="sign-up-email-input" name="email" required/>
+        <small class="text-danger" id="sign-up-email-error-small" th:text="#{sing.up.email.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-phone-input">phone </label>
-        <input type="text" class="form-control" placeholder="phone" id="sign-up-phone-input" name="phone" required/>
-        <small class="text-danger" id="sign-up-phone-error-small"></small>
+        <label class="col-form-label" for="sign-up-phone-input" th:text="#{sing.up.phone}">phone </label>
+        <input type="text" class="form-control" th:placeholder="#{sing.up.phone}" id="sign-up-phone-input" name="phone"
+               pattern="(\\+?(375|80)?\\s?)?\\(?(17|29|33|44|25)\\)?\\s?(\\d{3})[-|\\s]?(\\d{2})[-|\\s]?(\\d{2}))" autocomplete="off" required/>
+        <small class="text-danger" id="sign-up-phone-error-small" th:text="#{sing.up.phone.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-address-input">address </label>
-        <input type="text" class="form-control" placeholder="address" id="sign-up-address-input" name="address" required/>
-        <small class="text-danger" id="sign-up-address-error-small"></small>
+        <label class="col-form-label" for="sign-up-address-input" th:text="#{sing.up.address}">address </label>
+        <input type="text" class="form-control" th:placeholder="#{sing.up.address}" id="sign-up-address-input" name="address" required/>
+        <small class="text-danger" id="sign-up-address-error-small" th:text="#{sing.up.address.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-birthday-input">birthday </label>
-        <input type="date" class="form-control" placeholder="birthday" id="sign-up-birthday-input" name="birthday"
+        <label class="col-form-label" for="sign-up-birthday-input" th:text="#{sing.up.birthday}">birthday </label>
+        <input type="date" class="form-control" th:placeholder="#{sing.up.birthday}" id="sign-up-birthday-input" name="birthday"
                required/>
-        <small class="text-danger" id="sign-up-birthday-error-small"></small>
+        <small class="text-danger" id="sign-up-birthday-error-small" th:text="#{sing.up.birthday.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-driver-license-input">driver_license </label>
-        <input type="text" class="form-control" placeholder="driver_license" id="sign-up-driver-license-input" name="driverLicenseNumber" required/>
-        <small class="text-danger" id="sign-up-driver-license-error-small"></small>
+        <label class="col-form-label" for="sign-up-driver-license-input" th:text="#{sing.up.driver.license.number}">driver_license </label>
+        <input type="text" class="form-control" th:placeholder="#{sing.up.driver.license.number}" id="sign-up-driver-license-input" name="driverLicenseNumber" required/>
+        <small class="text-danger" id="sign-up-driver-license-error-small" th:text="#{sing.up.driverLicenseNumber.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-issue-date-input">driver_license_issue_date </label>
-        <input type="date" class="form-control" placeholder="driver_license_issue_date" name="driverLicenseIssueDate"
-               id="sign-up-issue-date-input" required/>
-        <small class="text-danger" id="sign-up-issue-date-error-small"></small>
+        <label class="col-form-label" for="sign-up-issue-date-input" th:text="#{sing.up.driver.license.issue}">driver_license_issue_date </label>
+        <input type="date" class="form-control" placeholder="#{sing.up.driver.license.issue}" name="driverLicenseIssueDate"
+               id="sign-up-issue-date-input" th:required/>
+        <small class="text-danger" id="sign-up-issue-date-error-small" th:text="#{sing.up.driverLicenseIssueDate.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-expired-date-input">driver_license_expired_date</label>
-        <input type="date" class="form-control" placeholder="driver_license_expired_date"
+        <label class="col-form-label" for="sign-up-expired-date-input" th:text="#{sing.up.driver.license.expired}">driver_license_expired_date</label>
+        <input type="date" class="form-control" th:placeholder="#{sing.up.driver.license.expired}"
                id="sign-up-expired-date-input"  name="driverLicenseExpiredDate" required/>
-        <small class="text-danger" id="sign-up-expired-date-error-small"></small>
+        <small class="text-danger" id="sign-up-expired-date-error-small" th:text="#{sing.up.password.error}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-password-input">password </label>
-        <input type="password" class="form-control" placeholder="password" id="sign-up-password-input" name="password" required/>
-        <small class="text-danger" id="sign-up-password-error-small"></small>
+        <label class="col-form-label" for="sign-up-password-input" th:text="#{sing.up.password}">password </label>
+        <input type="password" class="form-control" th:placeholder="#{sing.up.password}" id="sign-up-password-input" name="password"
+               pattern="(?=^.{6,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$)"
+               maxlength="40"
+               autocomplete="off" required/>
+        <small class="text-danger" id="sign-up-password-error-small" th:text="#{sing.up.non.match.password}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <label class="col-form-label" for="sign-up-confirm-password-input">confirm_password </label>
-        <input type="password" class="form-control" placeholder="confirm_password" id="sign-up-confirm-password-input" required/>
-        <small class="text-danger" id="sign-up-confirm-password-error-small"></small>
+        <label class="col-form-label" for="sign-up-confirm-password-input" th:text="#{sing.up.password.confirm}">confirm_password </label>
+        <input type="password" class="form-control" th:placeholder="#{sing.up.password.confirm}" id="sign-up-confirm-password-input"
+               pattern="(?=^.{6,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$)"
+               maxlength="40"
+               autocomplete="off" required/>
+        <small class="text-danger" id="sign-up-confirm-password-error-small" th:text="#{sing.up.non.match.password}" style="display: none"></small>
     </div>
     <div class="form-group">
-        <button type="submit" class="form-control btn btn-light" onclick="CheckFields()" value="Submit">
+        <button type="submit" class="form-control btn btn-light" onclick="CheckFields()" value="Submit" th:text="#{sing.up.button.save}">
             Sign up
         </button>
     </div>

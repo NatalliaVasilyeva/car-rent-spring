@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import java.time.LocalDate;
 
 import static org.springframework.http.ResponseEntity.noContent;

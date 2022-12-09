@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Car rent</a>
+    <a class="navbar-brand waves-effect waves-light fa fa-leaf" href="#">Car rent</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-3"
             aria-controls="navbarSupportedContent-3" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -7,47 +7,73 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent-3">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" th:href="@{'/welcome'}">Welcome<span class="sr-only">(current)</span></a>
+                <a class="nav-link" th:href="@{'/welcome'}" th:text="#{header.admin.welcome}"><span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
-                   id="navbarDropdownMenuLink-2"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Find orders
+                   id="navbarDropdownMenuLink-order"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.orders}">Orders
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
-                     aria-labelledby="navbarDropdownMenuLink-2">
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-orders-by-all-modal">Find all</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-orders-by-date-modal">Find by date</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-orders-by-dates-modal">Find by dates</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-orders-by-car-modal">Find by car number</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-orders-by-status-modal">Find by status</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-orders-by-with-accidents-modal">Find all with accidents</a>
+                     aria-labelledby="navbarDropdownMenuLink-order">
+                    <a class="dropdown-item" th:href="@{'/orders'}" th:text="#{header.admin.all.orders}">All orders</a>
+                    <a class="dropdown-item" th:href="@{'/orders/by-status?status=CONFIRMATION_WAIT'}" th:text="#{header.admin.not.confirm.orders}">All not confirm
+                        orders</a>
+                    <a class="dropdown-item" th:href="@{'/orders/by-status?status=NOT_PAYED'}" th:text="#{header.admin.not.paid.orders}">All not paid orders</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
-                   id="navbarDropdownMenuLink-3"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Find car
+                   id="navbarDropdownMenuLink-accident"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.accident}">Accidents
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
-                     aria-labelledby="navbarDropdownMenuLink-3">
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-brand-modal">Find by brand</a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-year-modal">Find by year</a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#find-by-years-modal">Find by years</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-by-category-modal">Find by category</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-by-accidents-modal">Find by accidents</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-by-repair-modal">Find all under repaired</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#find-by-number-modal">Find by number</a>
+                     aria-labelledby="navbarDropdownMenuLink-order">
+                    <a class="dropdown-item" th:href="@{'/accidents'}" th:text="#{header.admin.all.accidents}">All accidents</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
+                   id="navbarDropdownMenuLink-car"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.cars}">Cars
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="navbarDropdownMenuLink-car">
+                    <a class="dropdown-item" th:href="@{'/cars'}" th:text="#{header.admin.all.cars}">All cars</a>
+                    <a class="dropdown-item" th:href="@{'/cars/create'}" th:text="#{header.admin.create.car}">Create car</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
+                   id="navbarDropdownMenuLink-category"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.categories}">Categories
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="navbarDropdownMenuLink-category">
+                    <a class="dropdown-item" th:href="@{'/categories'}"th:text="#{header.admin.all.categories}" >All categories</a>
+                    <a class="dropdown-item" th:href="@{'/categories/create'}" th:text="#{header.admin.create.category}">Create category</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
+                   id="navbarDropdownMenuLink-model"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.models}">Models
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="navbarDropdownMenuLink-model">
+                    <a class="dropdown-item" th:href="@{'/models'}" th:text="#{header.admin.all.models}">All models</a>
+                    <a class="dropdown-item" th:href="@{'/models/create'}" th:text="#{header.admin.create.model}">Create model</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
+                   id="navbarDropdownMenuLink-brand"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.brands}">Brands
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-unique"
+                     aria-labelledby="navbarDropdownMenuLink-brand">
+                    <a class="dropdown-item" th:href="@{'/brands'}" th:text="#{header.admin.all.brands}">All brands</a>
+                    <a class="dropdown-item" th:href="@{'/brands/create'}" th:text="#{header.admin.create.brand}">Create brand</a>
                 </div>
             </li>
         </ul>
@@ -56,41 +82,30 @@
                 <a class="nav-link waves-effect waves-light dropdown-toggle" href="#" type="button"
                    id="dropdownMenuButton"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="flag-icon flag-icon-us"></span> Language
+                    <span class="flag-icon flag-icon-us" th:text="#{header.admin.language}"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
                      aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item"
-                       th:href="@{'/languages/' + 'US'}"><span
+                       th:href="@{''(lang=en)}"><span
                             class="flag-icon flag-icon-us"></span>
-                        US</a>
+                        EN</a>
                     <a class="dropdown-item"
-                       th:href="@{'/languages/' + 'RU'}"><span
+                       th:href="@{''(lang=ru)}"><span
                             class="flag-icon flag-icon-ru"></span>
                         RU</a>
                 </div>
             </li>
-
             <li class="nav-item dropdown">
                 <a class="nav-link waves-effect waves-light my-2 my-sm-0 dropdown-toggle" href="#" type="button"
-                   id="navbarDropdownMenuLink-5"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Create
+                   id="navbarDropdownMenuLink-reports"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{header.admin.reports}">Reports
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique"
-                     aria-labelledby="navbarDropdownMenuLink-5">
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#create-brand-modal">Create brand</a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#create-model-modal">Create model</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#create-category-modal">Create category</a>
-                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#create-car-modal">Create car</a>
-                    <a class="dropdown-item" href="" data-toggle="modal"
-                       data-target="#create-accident-modal">Create accident</a>
+                     aria-labelledby="navbarDropdownMenuLink-reports">
+                    <a class="dropdown-item" th:href="@{'/reports/orders_report'}" th:text="#{header.admin.reports.orders}">Download orders report</a>
+                    <a class="dropdown-item" th:href="@{'/reports/accidents_report'}" th:text="#{header.admin.reports.accidents}">Download accidents report</a>
                 </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" th:href="@{'/report'}">
-                Download report</a>
             </li>
 
             <li class="nav-item dropdown">
@@ -99,349 +114,16 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right dropdown-unique" aria-labelledby="navbarDropdownMenuLink"
                      th:with="auth=${#authentication.principal}">
-                    <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}">Profile</a>
-                    <a class="dropdown-item" th:href="@{'/settings' + ${auth.id}}">Settings</a>
-                    <a class="dropdown-item nav-link d-flex align-items-center" sec:authorize="isAuthenticated()"
-                       th:href="@{'/logout'}">Logout</a>
+                    <a class="dropdown-item" th:href="@{'/users/profile/' + ${auth.id}}" th:text="#{header.admin.profile}">Profile</a>
+                    <a class="dropdown-item" th:href="@{'/users/change-password'}" th:text="#{header.admin.settings}">Change password</a>
+                    <form name="logoutFormAdmin" th:action="@{'/logout'}" method="post">
+                        <a class="dropdown-item"
+                           href="javascript: document.logoutFormAdmin.submit()" role="menuitem" th:text="#{header.admin.logout}"> Logout</a>
+                    </form>
+<!--                    <a class="dropdown-item"-->
+<!--                       href="javascript: document.logoutForm.submit()" role="menuitem"> Logout</a>-->
                 </div>
             </li>
         </ul>
     </div>
 </nav>
-
-<!-- find orders -->
-
-<div class="modal fade" id="find-orders-by-all-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Find all orders
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-orders-all-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-orders-by-date-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Find order by date
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-orders-by-date-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-orders-by-dates-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Find orders by dates
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-orders-by-dates-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-orders-by-car-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Find orders by car number
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-orders-by-car-number-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-orders-by-status-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find orders by status
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-orders-by-status-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-orders-by-with-accidents-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find orders with accidents
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-orders-with-accidents-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--/ find orders -->
-
-<!-- create -->
-<div class="modal fade" id="create-brand-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Create brand
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/create-brand-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="create-accident-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Create accident
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/add-order-accident.jsp"/>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" form="add-accident-form" value="Submit">Submit
-                </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="create-category-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Create category
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/create-category-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="create-model-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Create model
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/create-model-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="create-car-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Create car
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/create-car-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- /create -->
-
-<!-- find car -->
-<div class="modal fade" id="find-by-brand-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                   Find car by brand
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-brand-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-year-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by year
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-year-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-years-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by years
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-years-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-category-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by category
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-category-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-accidents-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by accidents
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-with-accidents-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-repair-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find cars under repair
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-under-repair-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="find-by-number-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title">
-                    Find car by number
-                </h1>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <jsp:include page="/WEB-INF/form/find-cars-by-number-admin.jsp"/>
-            </div>
-        </div>
-    </div>
-</div>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
     <script type="text/javascript" th:src="@{/js/car/cars.js}"></script>
@@ -12,35 +13,35 @@
 <div th:replace="layout/header/header :: header"/>
 <div class="container-fluid">
     <div class="col-lg-auto">
-        <h3 class="text-center">Search cars</h3>
+        <h3 class="text-center" th:text="#{cars.header}">Search cars</h3>
         <div class="container">
             <div class="row">
                 <div class="col-md-12 col-md-offset-8">
                     <form class="form ml-3 mt-2" th:action="@{/cars}" method="get">
                         <div class="form-row">
                             <div class="col-md-3 mb-3">
-                                <label for="color">Color</label>
+                                <label for="color" th:text="#{cars.color} + ':'">Color:</label>
                                 <input id="color" type="text" class="form-control" name="color"
                                        th:value="${carFilter.getColor()}">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="year">Year:</label>
+                                <label for="year" th:text="#{cars.year} + ':'">Year:</label>
                                 <input id="year" type="number" class="form-control" name="year"
                                        th:value="${carFilter.getYear()}">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="transmission">Transmission:</label>
+                                <label for="transmission" th:text="#{cars.transmission} + ':'">Transmission:</label>
                                 <input id="transmission" type="text" class="form-control" name="transmission"
                                        th:value="${carFilter.getTransmission()}">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="engineType">EngineType:</label>
+                                <label for="engineType" th:text="#{cars.engine} + ':'">EngineType:</label>
                                 <input id="engineType" type="text" class="form-control" name="engineType"
                                        th:value="${carFilter.getEngineType()}">
                             </div>
                         </div>
                         <div class="form-row">
-                            <p>Models </p>
+                            <p th:text="#{cars.models} + ' '">Models </p>
                             </br>
                             <div class="custom-control custom-checkbox custom-control-inline"
                                  th:each="model: ${modelNames}">
@@ -52,7 +53,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <p>Brands </p>
+                            <p th:text="#{cars.brands} + ' '">Brands </p>
                             </br>
                             <div class="custom-control custom-checkbox custom-control-inline"
                                  th:each="brand: ${brandNames}">
@@ -64,7 +65,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <p>Category </p>
+                            <p th:text="#{cars.category} + ' '">Category </p>
                             </br>
                             <div class="custom-control custom-checkbox custom-control-inline"
                                  th:each="category: ${categoryNames}">
@@ -82,7 +83,7 @@
                                        th:value="${carPage.number + 1}">
                             </div>
                         </div>
-                        <button type="submit">Search</button>
+                        <button type="submit" th:text="#{cars.button.search}">Search</button>
                     </form>
                 </div>
             </div>
@@ -90,28 +91,28 @@
     </div>
 </div>
 
-<span th:if="${#lists.isEmpty(carPage.content)}">There are not available cars!</span>
+<span th:if="${#lists.isEmpty(carPage.content)}" th:text="#{cars.no.cars}">There are not available cars!</span>
 
 <div th:if="${not #lists.isEmpty(carPage.content)}">
     <div class="container-fluid col">
         <div class="col-lg-auto">
             <div class="panel panel-default">
-                <h3 class="text-center">Users list</h3>
+                <h3 class="text-center" th:text="#{cars.header.list}">Cars list</h3>
                 <div class="panel-body table-responsive">
                     <table class="table table-condensed table-striped text-center">
                         <thead class="thead-dark">
                         <tr>
-                            <th></th>
-                            <th scope="col">Image</th>
-                            <th scope="col">Brand</th>
-                            <th scope="col">Model</th>
-                            <th scope="col">Color</th>
-                            <th scope="col">Transmission</th>
-                            <th scope="col">EngineType</th>
-                            <th scope="col">Year</th>
-                            <th scope="col">Category</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Action</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN')"></th>
+                            <th scope="col" th:text="#{car.image}">Image</th>
+                            <th scope="col" th:text="#{car.brand}">Brand</th>
+                            <th scope="col" th:text="#{car.model}">Model</th>
+                            <th scope="col" th:text="#{car.color}">Color</th>
+                            <th scope="col" th:text="#{car.transmission}">Transmission</th>
+                            <th scope="col" th:text="#{car.engine}">EngineType</th>
+                            <th scope="col" th:text="#{car.year}">Year</th>
+                            <th scope="col" th:text="#{car.category}">Category</th>
+                            <th scope="col" th:text="#{car.price}">Price</th>
+                            <th scope="col" th:text="#{cars.action}">Action</th>
                         <tr>
                         </thead>
                         <tbody>
@@ -120,7 +121,7 @@
                                   th:alt-title="${iStat.even}? 'even' : 'odd'">
                             <tr data-toggle="collapse" th:attr="data-target='#car_' + ${iStat.index}"
                                 class="accordion-toggle">
-                                <td>
+                                <td sec:authorize="hasAnyAuthority('ADMIN')">
                                     <button class="btn btn-dark btn-xs">
                                         <i class="fa fa-eye" aria-hidden="true"></i>
                                     </button>
@@ -136,8 +137,10 @@
                                 <td th:text="${car.category}"></td>
                                 <td th:text="${car.price}"></td>
                                 <td>
-                                    <form th:action="@{/orders}" method="post">
-                                        <button class="btn btn-dark btn-xs">
+                                    <form th:action="@{/orders/create}" method="get" sec:authorize="hasAnyAuthority('CLIENT')">
+                                        <input type="text" name="carId" th:value="${car.id}"
+                                               hidden>
+                                        <button type="submit" class="btn btn-dark btn-xs" th:text="#{cars.make.order}">
                                             Make order
                                         </button>
                                     </form>
@@ -151,10 +154,10 @@
                                         <table class="table table-striped text-center" id="innerTable">
                                             <thead class="thead-dark">
                                             <tr class="info">
-                                                <th>Id</th>
-                                                <th>Number</th>
-                                                <th>Vin</th>
-                                                <th>Is repaired</th>
+                                                <th th:text="#{car.id}">Id</th>
+                                                <th th:text="#{car.number}">Number</th>
+                                                <th th:text="#{car.vin}">Vin</th>
+                                                <th th:text="#{car.repaired}">Is repaired</th>
                                                 <th colspan="2"></th>
                                             </tr>
                                             </thead>
@@ -164,7 +167,7 @@
                                                 <td th:text="${car.number}"></td>
                                                 <td th:text="${car.vin}"></td>
                                                 <td th:text="${car.repaired}"></td>
-                                                <td>
+                                                <td sec:authorize="hasAnyAuthority('ADMIN')">
                                                     <form th:action="@{/cars/{carId}/delete(carId=${car.id})}"
                                                           method="post">
                                                         <button class="btn btn-dark btn-xs">
@@ -173,11 +176,11 @@
                                                         </button>
                                                     </form>
                                                 </td>
-                                                <td>
+                                                <td sec:authorize="hasAnyAuthority('ADMIN')">
                                                     <form th:action="@{/cars/{carId}/(carId=${car.id})}"
                                                           method="get">
                                                         <button class="btn btn-dark btn-xs">
-                                                            <i class="fa pencil"
+                                                            <i class="fa fa-pencil"
                                                                aria-hidden="true"></i>
                                                         </button>
                                                     </form>

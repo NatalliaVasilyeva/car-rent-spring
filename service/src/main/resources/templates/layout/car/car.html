@@ -18,23 +18,21 @@
                   th:action="@{/cars/{carId}/update(carId=${car.id})}" method="POST" th:object="${car}"
                   enctype="multipart/form-data">
                 <div class="card mb-4">
-                    <div class="card-header content-center">Car info</div>
+                    <div class="card-header content-center" th:text="#{car.header}">Car info</div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="col-2 col-form-label">
+                            <label class="col-2 col-form-label" th:text="#{car.image} + ':'">
                                 Image:
                                 <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
                                 <input type="file" id="image" style="display:none">
                             </label>
-                            <!--                            <div class="card-img-top col-10">-->
                             <img id="old_image" class="col-10 card-img-top"
                                  th:src="@{/api/v1/cars/{carId}/car_image(carId=${car.id})}"
                                  alt="Car image">
-                            <!--                            </div>-->
                         </div>
                         <br>
                         <div class="form-group row">
-                            <label th:for="car-id-input" class="col-2 col-form-label">
+                            <label th:for="car-id-input" class="col-2 col-form-label" th:text="#{car.id} + ':'">
                                 Id:
                             </label>
                             <div class="col-10">
@@ -43,7 +41,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="car-brand-input" class="col-2 col-form-label">
+                            <label th:for="car-brand-input" class="col-2 col-form-label" th:text="#{car.brand} + ':'">
                                 Brand:
                             </label>
                             <div class="col-10">
@@ -53,7 +51,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="car-model-input" class="col-2 col-form-label">
+                            <label th:for="car-model-input" class="col-2 col-form-label" th:text="#{car.model} + ':'">
                                 Model:
                             </label>
                             <div class="col-10">
@@ -66,7 +64,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="car-color-input" class="col-2 col-form-label">
+                            <label th:for="car-color-input" class="col-2 col-form-label" th:text="#{car.color} + ':'">
                                 Color:
                             </label>
                             <div class="col-10">
@@ -78,7 +76,7 @@
                             </div>
                         </div>
                         <div class="form-group row" id="transmission">
-                            <label th:for="car-transmission-input" class="col-2 col-form-label">
+                            <label th:for="car-transmission-input" class="col-2 col-form-label" th:text="#{car.transmission} + ':'">
                                 Transmission:
                             </label>
                             <div class="col-10">
@@ -88,7 +86,7 @@
                             </div>
                         </div>
                         <div class="form-group row" id="engineType">
-                            <label th:for="car-engineType-input" class="col-2 col-form-label">
+                            <label th:for="car-engineType-input" class="col-2 col-form-label" th:text="#{car.engine} + ':'">
                                 Engine type:
                             </label>
                             <div class="col-10">
@@ -97,7 +95,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="car-year-input" class="col-2 col-form-label">
+                            <label th:for="car-year-input" class="col-2 col-form-label" th:text="#{car.year} + ':'">
                                 Year of production:
                             </label>
                             <div class="col-10">
@@ -106,7 +104,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="car-number-input" class="col-2 col-form-label">
+                            <label th:for="car-number-input" class="col-2 col-form-label" th:text="#{car.number} + ':'">
                                 Number:
                             </label>
                             <div class="col-10">
@@ -115,7 +113,7 @@
                             </div>
                         </div>
                         <div class="form-group row" id="vin">
-                            <label th:for="car-vin-input" class="col-2 col-form-label">
+                            <label th:for="car-vin-input" class="col-2 col-form-label" th:text="#{car.vin} + ':'">
                                 Vin:
                             </label>
                             <div class="col-10">
@@ -124,7 +122,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="car-repaired-input" class="col-2 col-form-label" name="isRepaired">
+                            <label th:for="car-repaired-input" class="col-2 col-form-label" name="isRepaired" th:text="#{car.repaired} + ':'">
                                 Is under repaired:
                             </label>
                             <div class="col-10" th:id="car-repaired-input">
@@ -139,7 +137,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label th:for="car-category-input" class="col-2 col-form-label">
+                            <label th:for="car-category-input" class="col-2 col-form-label" th:text="#{car.category} + ':'">
                                 Category:
                             </label>
                             <div class="col-10">
@@ -152,7 +150,7 @@
                             </div>
                         </div>
                         <div class="form-group row" id="price">
-                            <label th:for="car-price-input" class="col-2 col-form-label">
+                            <label th:for="car-price-input" class="col-2 col-form-label" th:text="#{car.price} + ':'">
                                 Price:
                             </label>
                             <div class="col-10">
@@ -167,16 +165,16 @@
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableCar()"
-                                   value="Edit">
+                                   th:value="#{car.button.edit}">
                         </div>
                         <div class="form-group row" id="edit-manage-car-buttons-div"
                              style="display: none">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <input type="submit" class="btn btn-primary" th:value="#{car.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableCar()"
-                                       value="Cancel">
+                                       th:value="#{car.button.cancel}">
                             </div>
                         </div>
                     </div>

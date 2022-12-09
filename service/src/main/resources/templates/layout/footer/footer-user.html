@@ -1,0 +1,27 @@
+<div class="card-footer">
+    <div class="form-group row" id="edit-order-button-div">
+        <input type="button"
+               class="from-control btn btn-light btn-lg btn-block"
+               onclick="MakeEditableOrder()"
+               th:value="#{order.button.edit}">
+    </div>
+    <div class="form-group row" id="cancelled-car-button-div">
+        <form th:action="@{/orders/{orderId}/change-status(orderId=${order.id})/?status='CANCELLED'}"
+              method="post">
+            <button class="from-control btn btn-light btn-lg btn-block">
+                <i class="fa fa-trash"
+                   aria-hidden="true"></i>
+            </button>
+        </form>
+    </div>
+    <div class="form-group row" id="edit-manage-order-buttons-div"
+         style="display: none">
+        <label class="col-md-3 control-label"></label>
+        <div class="col-md-8">
+            <input type="submit" class="btn btn-primary" th:value="#{order.button.save}">
+            <span></span>
+            <input type="reset" class="btn btn-default" onclick="MakeUnEditableOrder()"
+                   th:value="#{order.button.cancel}">
+        </div>
+    </div>
+</div>

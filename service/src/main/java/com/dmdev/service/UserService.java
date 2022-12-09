@@ -30,7 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -110,6 +113,12 @@ public class UserService implements UserDetailsService {
         return userFilter.getAllExpiredLicenses() == null || !userFilter.getAllExpiredLicenses()
                 ? userRepository.findAll(userPredicateBuilder.build(userFilter), PageableUtils.getSortedPageable(page, pageSize, Sort.Direction.ASC, "userDetails_surname")).map(userResponseMapper::mapToDto)
                 : userRepository.findAllWithExpiredDriverLicense(LocalDate.now(), PageableUtils.unSortedPageable(page, pageSize)).map(userResponseMapper::mapToDto);
+    }
+
+    public List<UserResponseDto> getAllWithoutPage() {
+        return userRepository.findAll().stream()
+                .map(userResponseMapper::mapToDto)
+                .collect(toList());
     }
 
     @Transactional

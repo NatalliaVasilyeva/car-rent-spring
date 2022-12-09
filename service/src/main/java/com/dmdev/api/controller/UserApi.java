@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 @Controller
@@ -32,11 +33,12 @@ public class UserApi {
     private final UserService userService;
 
     @PostMapping("/sing-up")
-    public String create(@ModelAttribute("registration") UserCreateRequestDto userCreateRequestDto, BindingResult bindingResult,
+    public String create(@ModelAttribute @Valid UserCreateRequestDto userCreateRequestDto, BindingResult bindingResult,
                          RedirectAttributes redirectedAttributes) {
-
         if (bindingResult.hasErrors()) {
-            redirectedAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+            redirectedAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userCreateRequestDto", bindingResult);
+            redirectedAttributes.addFlashAttribute("userCreateRequestDto", userCreateRequestDto);
+            System.out.println(bindingResult);
             return "redirect:/welcome";
         }
         return userService.create(userCreateRequestDto)
@@ -50,7 +52,7 @@ public class UserApi {
     @PostMapping("/{id}/update")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String update(@PathVariable("id") Long id,
-                         @ModelAttribute("updateUser") UserUpdateRequestDto userUpdateRequestDto) {
+                         @ModelAttribute @Valid UserUpdateRequestDto userUpdateRequestDto) {
         return userService.update(id, userUpdateRequestDto)
                 .map(result -> "redirect:/users/{id}")
                 .orElseThrow(() -> new UserBadRequestException("Can not update user. Please check input parameters"));
@@ -83,10 +85,19 @@ public class UserApi {
     @PostMapping("/{id}/change-password")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String changePassword(@PathVariable("id") Long id,
-                                 @ModelAttribute UserChangePasswordDto changedPasswordDto) {
+                                 @ModelAttribute @Valid UserChangePasswordDto changedPasswordDto) {
+
         return userService.changePassword(id, changedPasswordDto)
                 .map(result -> "redirect:/users/{id}")
                 .orElseThrow(() -> new UserBadRequestException("Password have not been changed. Please check if old password is correct"));
+    }
+
+    @GetMapping("/change-password")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
+    public String changePasswordForm(Model model,
+                                     @ModelAttribute @Valid UserChangePasswordDto changedPasswordDto) {
+        model.addAttribute("change_password", changedPasswordDto);
+        return "layout/user/change-password";
     }
 
     @PostMapping("/{id}/change-role")

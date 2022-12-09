@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 
 @Controller
@@ -31,7 +32,7 @@ public class UserDetailsApi {
     private final UserDetailsService userDetailsService;
 
     @PostMapping()
-    public String create(@ModelAttribute UserDetailsCreateRequestDto requestDto,
+    public String create(@ModelAttribute @Valid UserDetailsCreateRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         return userDetailsService.create(requestDto)
                 .map(userDetails -> {
@@ -43,7 +44,7 @@ public class UserDetailsApi {
     @PostMapping("/{id}/update")
     @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public String update(@PathVariable("id") Long id,
-                         @ModelAttribute UserDetailsUpdateRequestDto requestDto) {
+                         @ModelAttribute @Valid UserDetailsUpdateRequestDto requestDto) {
         return userDetailsService.update(id, requestDto)
                 .map(userDetails -> "redirect:/users/" + userDetails.getUserId())
                 .orElseThrow(() -> new UserDetailsBadRequestException("Can not update user details. Please check input parameters"));

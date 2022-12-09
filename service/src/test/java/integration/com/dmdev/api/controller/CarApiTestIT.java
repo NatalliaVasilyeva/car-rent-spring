@@ -17,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static integration.com.dmdev.api.controller.CarApiTestIT.MOCK_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -30,7 +29,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-@WithMockCustomUser(username = CategoryApiTestIT.MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
+@WithMockCustomUser(username = CarApiTestIT.MOCK_USERNAME, authorities = {"CLIENT", "ADMIN"})
 class CarApiTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/cars";
@@ -93,7 +92,6 @@ class CarApiTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    
     void shouldReturnCarByNumberCorrectly() throws Exception {
         var brandCreateRequestDto = TestDtoBuilder.createBrandCreateEditRequestDto();
         var savedBrand = brandService.create(brandCreateRequestDto);

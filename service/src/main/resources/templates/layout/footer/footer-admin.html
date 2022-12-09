@@ -1,0 +1,30 @@
+<div class="card-footer">
+    <div th:if="${order.orderStatus.name() eq 'CONFIRMATION_WAIT'}">
+        <div class="form-group row" id="order-change-status-decline">
+            <form th:action="@{/orders/{orderId}/change-status(orderId=${order.id})/?status='DECLINED'}"
+                  method="post">
+                <button type="button" class="from-control btn btn-light btn-lg btn-block"
+                        th:value="#{order.button.decline}">
+                </button>
+            </form>
+        </div>
+        <div class="form-group row" id="order-change-status-confirm" >
+            <form th:action="@{/orders/{orderId}/change-status(orderId=${order.id})/?status='NOT_PAYED'}"
+                  method="post">
+                <button type="button" class="from-control btn btn-light btn-lg btn-block"
+                        th:value="#{order.button.confirm}">
+                </button>
+            </form>
+        </div>
+    </div>
+    <div th:if="${order.orderStatus.name() eq 'NOT_PAYED'}">
+        <div class="form-group row" id="order-change-status-payed">
+            <form th:action="@{/orders/{orderId}/change-status(orderId=${order.id})/?status='PAYED'}"
+                  method="post">
+                <button type="button" class="from-control btn btn-light btn-lg btn-block"
+                        th:value="#{order.button.payed}">
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

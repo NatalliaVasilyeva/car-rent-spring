@@ -17,10 +17,10 @@
             <form id="user-info-form" th:action="@{/users/{userId}/update(userId=${user.id})}" method="POST"
                   th:object="${user}">
                 <div class="card mb-4">
-                    <div class="card-header ">User info</div>
+                    <div class="card-header" th:text="#{profile.user.header}">User info</div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="user-info-email-input" class="col-2 col-form-label">
+                            <label for="user-info-email-input" class="col-2 col-form-label" th:text="#{profile.email} + ':'">
                                 Email:
                             </label>
                             <div class="col-10">
@@ -29,7 +29,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-info-username-input" class="col-2 col-form-label">
+                            <label for="user-info-username-input" class="col-2 col-form-label" th:text="#{profile.username} + ':'">
                                 Username:
                             </label>
                             <div class="col-10">
@@ -38,7 +38,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-info-role-input" class="col-2 col-form-label">
+                            <label for="user-info-role-input" class="col-2 col-form-label" th:text="#{profile.role} + ':'">
                                 Role:
                             </label>
                             <div class="col-10">
@@ -49,17 +49,17 @@
                         <div class="form-group row" id="edit-user-info-button-div" sec:authorize="isAuthenticated()">
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block" onclick="MakeEditableInfo()"
-                                   value="Edit">
+                                   th:value="#{profile.button.edit}">
                         </div>
                         <div class="form-group row" id="edit-manage-user-info-buttons-div"
                              style="display: none" sec:authorize="isAuthenticated()">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="from control btn btn-primary" value="Save Changes">
+                                <input type="submit" class="from control btn btn-primary" value="Save Changes" th:text="#{profile.button.save}">
                                 <span></span>
                                 <input type="reset" class="from control btn btn-default"
                                        onclick="MakeUnEditableInfo()"
-                                       value="Cancel">
+                                       th:value="#{profile.button.cancel}">
                             </div>
                         </div>
                     </div>
@@ -69,10 +69,10 @@
                   th:action="@{/user-details/{userDetailsId}/update(userDetailsId=${user.userDetailsDto.id})}"
                   method="POST" th:object="${user.userDetailsDto}">
                 <div class="card mb-4">
-                    <div class="card-header">User details info</div>
+                    <div class="card-header"><span th:text="#{profile.user.details.header}"></span></div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="user-details-name-input" class="col-2 col-form-label">
+                            <label for="user-details-name-input" class="col-2 col-form-label" th:text="#{profile.user.details.name} + ':'">
                                 Name:
                             </label>
                             <div class="col-10">
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-surname-input" class="col-2 col-form-label">
+                            <label for="user-details-surname-input" class="col-2 col-form-label" th:text="#{profile.user.details.surname} + ':'">
                                 Surname:
                             </label>
                             <div class="col-10">
@@ -90,7 +90,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-address-input" class="col-2 col-form-label">
+                            <label for="user-details-address-input" class="col-2 col-form-label" th:text="#{profile.user.details.address} + ':'">
                                 Address:
                             </label>
                             <div class="col-10">
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-phone-input" class="col-2 col-form-label">
+                            <label for="user-details-phone-input" class="col-2 col-form-label" th:text="#{profile.user.details.phone} + ':'">
                                 Phone:
                             </label>
                             <div class="col-10">
@@ -108,7 +108,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-birthday-input" class="col-2 col-form-label">
+                            <label for="user-details-birthday-input" class="col-2 col-form-label" th:text="#{profile.user.details.birthday} + ':'">
                                 Birthday:
                             </label>
                             <div class="col-10">
@@ -117,8 +117,8 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-details-registration-input" class="col-2 col-form-label">
-                                Birthday:
+                            <label for="user-details-registration-input" class="col-2 col-form-label" th:text="#{profile.user.details.registration} + ':'">
+                                Registration date:
                             </label>
                             <div class="col-10">
                                 <input type="text" class="form-control" id="user-details-registration-input"
@@ -130,16 +130,16 @@
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableDetails()"
-                                   value="Edit">
+                                   th:value="#{profile.button.edit}">
                         </div>
                         <div class="form-group row" id="edit-manage-user-details-buttons-div"
                              style="display: none" sec:authorize="isAuthenticated()">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <input type="submit" class="btn btn-primary" value="Save Changes" th:text="#{profile.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableDetails()"
-                                       value="Cancel">
+                                       th:value="#{profile.button.cancel}">
                             </div>
                         </div>
                     </div>
@@ -149,10 +149,10 @@
                   th:action="@{/driverlicense/{driverLicenseId}/update(driverLicenseId=${user.driverLicenseDto.id})}"
                   method="POST" th:object="${user.driverLicenseDto}">
                 <div class="card mb-4">
-                    <div class="card-header">Driver license info</div>
+                    <div class="card-header"><span th:text="#{profile.license.header}"></span></div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="user-license-name-input" class="col-2 col-form-label">
+                            <label for="user-license-name-input" class="col-2 col-form-label" th:text="#{profile.license.number} + ':'">
                                 Driver license number:
                             </label>
                             <div class="col-10">
@@ -162,7 +162,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-license-issue-date-input" class="col-2 col-form-label">
+                            <label for="user-license-issue-date-input" class="col-2 col-form-label" th:text="#{profile.license.issue} + ':'">
                                 Driver license issue date:
                             </label>
                             <div class="col-10">
@@ -172,7 +172,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="user-license-expired-date-input" class="col-2 col-form-label">
+                            <label for="user-license-expired-date-input" class="col-2 col-form-label" th:text="#{profile.license.expired} + ':'">
                                 Driver license expired date::
                             </label>
                             <div class="col-10">
@@ -185,16 +185,16 @@
                             <input type="button"
                                    class="form-control btn btn-light align-content-lg-center"
                                    onclick="MakeEditableLicenses()"
-                                   value="Edit">
+                                   th:value="#{profile.button.edit}">
                         </div>
                         <div class="form-group row" id="edit-manage-license-buttons-div"
                              style="display: none" sec:authorize="isAuthenticated()">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <input type="submit" class="btn btn-primary" value="Save Changes" th:text="#{profile.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableLicenses()"
-                                       value="Cancel">
+                                       th:value="#{profile.button.cancel}">
                             </div>
                         </div>
                     </div>

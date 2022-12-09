@@ -5,7 +5,6 @@ import com.dmdev.domain.entity.Model;
 import com.dmdev.domain.model.EngineType;
 import com.dmdev.domain.model.Transmission;
 import com.dmdev.repository.BrandRepository;
-import com.dmdev.repository.CategoryRepository;
 import com.dmdev.repository.ModelRepository;
 import com.dmdev.utils.predicate.ModelPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;

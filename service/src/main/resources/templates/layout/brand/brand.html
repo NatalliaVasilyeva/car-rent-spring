@@ -33,11 +33,12 @@
                   th:action="@{/brands/{brandId}/update(brandId=${brand.id})}"
                   method="POST" th:object="${brand}" onsubmit="saveBrand(event)">
                 <div class="card mb-4">
-                    <div class="card-header">Brand info</div>
+                    <div class="card-header">
+                        <span th:text="#{brand.header}">Brand info</span>
+                    </div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="brand-id-input" class="col-2 col-form-label">
-                                Id:
+                            <label for="brand-id-input" class="col-2 col-form-label" th:text="#{brand.id} + ':'">Id
                             </label>
                             <div class="col-10">
                                 <input type="text" class="form-control" id="brand-id-input" name="id"
@@ -45,8 +46,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="brand-name-input" class="col-2 col-form-label">
-                                Name:
+                            <label for="brand-name-input" class="col-2 col-form-label" th:text="#{brand.name} + ':'">Name
                             </label>
                             <div class="col-10">
                                 <input type="text" class="form-control" id="brand-name-input" name="name"
@@ -58,21 +58,21 @@
                             <input type="button"
                                    class="from-control btn btn-light btn-lg btn-block"
                                    onclick="MakeEditableBrands()"
-                                   value="Edit">
+                                   value="Edit" th:text="#{brand.button.edit}">
                         </div>
                         <div class="form-group row btn btn-light btn-lg btn-block" id="show-brand-models-button-div">
                             <a th:href="@{/models/{brandId}/(brandId=${brand.id})}"
-                               class="btn btn-info" role="button">Show models</a>
+                               class="btn btn-info" role="button" th:text="#{brand.show.models}">Show models</a>
                         </div>
 
                         <div class="form-group row" id="edit-manage-brand-buttons-div"
                              style="display: none" sec:authorize="hasAnyAuthority('ADMIN')">
                             <label class="col-md-3 control-label"></label>
                             <div class="col-md-8">
-                                <input type="submit" class="btn btn-primary" value="Save Changes">
+                                <input type="submit" class="btn btn-primary" value="Save Changes" th:text="#{brand.button.save}">
                                 <span></span>
                                 <input type="reset" class="btn btn-default" onclick="MakeUnEditableBrands()"
-                                       value="Cancel">
+                                       value="Cancel" th:text="#{brand.button.cancel}">
                             </div>
                         </div>
                     </div>

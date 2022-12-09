@@ -12,22 +12,22 @@
 <div>
     <div class="container my-5">
         <div class="form-group row">
-            <span th:size="16" class="mr-2">Search by user id</span>
+            <span th:size="16" class="mr-2" th:text="#{driver.licenses.search.user}">Search by user id</span>
             <button
                     class="from-control btn btn-light btn-lg btn-block"
-                    onclick="ShowSearchByUserIdForm()">Search
+                    onclick="ShowSearchByUserIdForm()" th:text="#{driver.licenses.button.search}">Search
             </button>
         </div>
         <div class="row" id="search-user-id-form" style="display: none">
             <form th:action="@{/driver-licenses/by-user-id}" method="get">
                 <div class="form-row">
                     <div class="col-md-6 mb-3">
-                        <label for="userId">User id:</label>
+                        <label for="userId" th:text="#{driver.licenses.user.id} + ':'">User id:</label>
                         <input class="form-control" id="userId" type="text" name="id">
                     </div>
                 </div>
                 <div class="col-md-8 mb-3 content-center">
-                    <button type="submit">Search</button>
+                    <button type="submit" th:text="#{driver.licenses.button.search}">Search</button>
                 </div>
             </form>
         </div>
@@ -37,22 +37,22 @@
 <div>
     <div class="container my-5">
         <div class="form-group row">
-            <span th:size="16" class="mr-2">Search by number</span>
+            <span th:size="16" class="mr-2" th:text="#{driver.licenses.search.number}">Search by number</span>
             <button
                     class="from-control btn btn-light btn-lg btn-block"
-                    onclick="ShowSearchByNumberForm()">Search
+                    onclick="ShowSearchByNumberForm()" th:text="#{driver.licenses.button.search}">Search
             </button>
         </div>
         <div class="row" id="search-number-form" style="display: none">
             <form th:action="@{/driver-licenses/by-number}" method="get">
                 <div class="form-row">
                     <div class="col-md-6 mb-3">
-                        <label for="number">Driver license number:</label>
+                        <label for="number" th:text="#{driver.licenses.number} + ':'">Driver license number:</label>
                         <input class="form-control" id="number" type="text" name="number">
                     </div>
                 </div>
                 <div class="col-md-8 mb-3 content-center">
-                    <button type="submit">Search</button>
+                    <button type="submit" th:text="#{driver.licenses.button.search}">Search</button>
                 </div>
             </form>
         </div>
@@ -62,10 +62,10 @@
 <div>
     <div class="container my-5">
         <div class="row" id="search-expired-form">
-            <span class="mr-2">Search all expired driver license</span>
+            <span class="mr-2" th:text="#{driver.licenses.search.expired}">Search all expired driver license</span>
             <form th:action="@{/driver-licenses/expired}" method="get">
                 <div class="col-md-8 mb-3 content-center">
-                    <button type="submit">Search</button>
+                    <button type="submit" th:text="#{driver.licenses.button.search}">Search</button>
                 </div>
             </form>
         </div>
@@ -73,18 +73,18 @@
 </div>
 
 
-<span th:if="${#lists.isEmpty(driverLicensesPage.content)}">There are not available driver licenses!</span>
+<span th:if="${#lists.isEmpty(driverLicensesPage.content)}" th:text="#{driver.licenses.no.driver.licenses}">There are not available driver licenses!</span>
 
 <div th:if="${not #lists.isEmpty(driverLicensesPage.content)}">
     <div class="col-lg-auto my-5">
         <div class="panel panel-default">
-            <h3 class="text-center">Driver licenses list</h3>
+            <h3 class="text-center" th:text="#{driver.licenses.header.list}">Driver licenses list</h3>
             <div class="panel-body table-responsive">
                 <table class="table table-condensed table-striped text-center">
                     <thead class="thead-dark">
                     <tr>
-                        <th scope="col">Id</th>
-                        <th scope="col">Number</th>
+                        <th scope="col" th:text="#{driver.license.id}">Id</th>
+                        <th scope="col" th:text="#{driver.license.number}">Number</th>
                         <th></th>
                         <th></th>
                     <tr>
@@ -98,7 +98,7 @@
                             <td th:text="${driverLicense.driverLicenseNumber}"></td>
                             <td>
                                 <a th:href="@{'/driver-licenses/' + ${driverLicense.id}}"
-                                   th:text="|See more info about driver licenses|">Driver license</a>
+                                   th:text="#{driver.licenses.see.licenses.info}">Driver license</a>
                             </td>
                             <td>
                                 <form th:action="@{/driver-licenses/{driverLicenseId}/delete(driverLicenseId=${driverLicense.id})}"

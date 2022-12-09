@@ -8,6 +8,8 @@ import com.dmdev.domain.dto.driverlicense.request.DriverLicenseUpdateRequestDto;
 import com.dmdev.domain.dto.driverlicense.response.DriverLicenseResponseDto;
 import com.dmdev.domain.dto.model.ModelCreateRequestDto;
 import com.dmdev.domain.dto.model.ModelUpdateRequestDto;
+import com.dmdev.domain.dto.order.OrderCreateRequestDto;
+import com.dmdev.domain.dto.order.OrderUpdateRequestDto;
 import com.dmdev.domain.dto.user.request.UserCreateRequestDto;
 import com.dmdev.domain.dto.user.request.UserUpdateRequestDto;
 import com.dmdev.domain.dto.user.response.UserResponseDto;
@@ -21,6 +23,7 @@ import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @UtilityClass
 public class TestDtoBuilder {
@@ -58,6 +61,14 @@ public class TestDtoBuilder {
 
     public static CategoryCreateEditRequestDto createCategoryCreateEditRequestDto() {
         return new CategoryCreateEditRequestDto("super-econome", BigDecimal.valueOf(120L));
+    }
+
+    public static OrderCreateRequestDto createOrderRequestDto(Long userId, Long carId) {
+        return new OrderCreateRequestDto(userId, carId, "passport", true, LocalDateTime.now(), LocalDateTime.now().plusDays(3));
+    }
+
+    public static OrderCreateRequestDto createOrderRequestDtoWithNecessaryData(Long userId, Long carId, LocalDateTime start, LocalDateTime end) {
+        return new OrderCreateRequestDto(userId, carId, "passport", true, start, end);
     }
 
 
@@ -101,6 +112,14 @@ public class TestDtoBuilder {
                 "test1@gmal.com",
                 "test",
                 Role.CLIENT);
+    }
+
+    public static OrderUpdateRequestDto createOrderUpdateRequestDTO(Long carId) {
+        return new OrderUpdateRequestDto(
+                carId,
+                false,
+                LocalDateTime.now().plusDays(4),
+                LocalDateTime.now().plusDays(10));
     }
 
     public static UserDetailsUpdateRequestDto createUserDetailsUpdateRequestDTO() {

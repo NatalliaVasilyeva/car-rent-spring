@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +44,7 @@ public class BrandApi {
 
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public String create(@ModelAttribute BrandCreateEditRequestDto requestDto,
+    public String create(@ModelAttribute @Valid BrandCreateEditRequestDto requestDto,
                          RedirectAttributes redirectedAttributes) {
         return brandService.create(requestDto)
                 .map(brand -> {
@@ -55,7 +56,7 @@ public class BrandApi {
     @PostMapping("/{id}/update")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String update(@PathVariable("id") Long id,
-                         @ModelAttribute BrandCreateEditRequestDto requestDto) {
+                         @ModelAttribute @Valid BrandCreateEditRequestDto requestDto) {
         return brandService.update(id, requestDto)
                 .map(driverLicense -> "redirect:/brands/{id}")
                 .orElseThrow(() -> new BrandBadRequestException("Can not update brand. Please check input parameters"));

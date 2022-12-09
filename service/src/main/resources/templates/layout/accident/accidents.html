@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head th:replace="layout/common :: head_common(~{this :: script})">
+    <script type="text/javascript" th:src="@{/js/car/cars.js}"></script>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+
+<body>
+<div th:replace="layout/header/header :: header"/>
+<div class="container-fluid">
+    <div class="col-lg-auto">
+        <h3 class="text-center" th:text="#{accidents.header}">Search accidents</h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-md-offset-8">
+                    <h3 class="text-center" th:text="#{accidents.order.header}">Search by order id</h3>
+                    <form class="form ml-3 mt-2" th:action="@{/accidents/by-order}" method="get">
+                        <div class="form-row">
+                            <div class="col-md-3 mb-2">
+                                <label for="order" th:text="#{accidents.order.id} + ':'">Order number:</label>
+                                <input id="order" type="text" class="form-control" name="orderId">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="page">Page(start from 0):</label>
+                            <input id="page" type="number" name="page" min="0"
+                                   th:value="${accidentsPage.number }">
+                        </div>
+                        <button type="submit" th:text="#{accidents.button.search}">Search</button>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-md-offset-8">
+                    <h3 class="text-center" th:text="#{accidents.order.header.car.number}">Search by car number</h3>
+                    <form class="form ml-3 mt-2" th:action="@{/accidents/by-car}" method="get">
+                        <div class="form-row">
+                            <div class="col-md-3 mb-2">
+                                <label for="car" th:text="#{accidents.car.number} + ':'">Car number:</label>
+                                <input id="car" type="text" class="form-control" name="carNumber">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="pageAccident">Page(start from 0):</label>
+                            <input id="pageAccident" type="number" name="page" min="0"
+                                   th:value="${accidentsPage.number }">
+                        </div>
+                        <button type="submit" th:text="#{accidents.button.search}">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span th:if="${#lists.isEmpty(accidentsPage.content)}" th:text="#{accidents.no.accidents}">There are not available accidents!</span>
+
+<div th:if="${not #lists.isEmpty(accidentsPage.content)}">
+    <div class="container-fluid col">
+        <div class="col-lg-auto">
+            <div class="panel panel-default">
+                <h3 class="text-center" th:text="#{accidents.header.list}">Accidents list</h3>
+                <div class="panel-body table-responsive">
+                    <table class="table table-condensed table-striped text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col" th:text="#{accident.id}">Number</th>
+                            <th scope="col" th:text="#{accident.order}">Order number</th>
+                            <th scope="col" th:text="#{accident.date}">Date</th>
+                            <th scope="col" th:text="#{accident.car.description}">Car</th>
+                            <th scope="col" th:text="#{accident.user.description}">User</th>
+                            <th scope="col" th:text="#{accident.description}">Description</th>
+                            <th scope="col" th:text="#{accident.damage}">Damage</th>
+                            <th>Action</th>
+                        <tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="accident, iStat: ${accidentsPage.content}"
+                                  th:style="${iStat.odd}? 'font-weight: bold;'"
+                                  th:alt-title="${iStat.even}? 'even' : 'odd'">
+                            <tr>
+                                <td th:text="${accident.id}"></td>
+                                <td th:text="${accident.orderNumber}"></td>
+                                <td th:text="${accident.date}"></td>
+                                <td th:text="|${accident.brand} ${accident.model} ${accident.carNumber}|"></td>
+                                <td th:text="|${accident.userFirstName} ${accident.userLastName}|"></td>
+                                <td th:text="${accident.description}"></td>
+                                <td th:text="${accident.damage}"></td>
+
+                                <td>
+                                    <form th:action="@{/accidents/{accidentId}(accidentId=${accident.id})}"
+                                          method="get">
+                                        <button class="btn btn-dark btn-xs">
+                                            <i class="fa fa-pencil"
+                                               aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- pagination -->
+                <nav aria-label="Pagination" th:if="${accidentsPage.totalPages gt 0}">
+                    <ul class="pagination justify-content-center font-weight-bold">
+                        <li class="page-item" th:classappend="${accidentsPage.number eq 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/accidents(page=${accidentsPage.number lt 2 ? 1 : accidentsPage.number})}"
+                               aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i eq accidentsPage.number + 1} ? 'active'"
+                            th:each="i : ${#numbers.sequence( 1, accidentsPage.totalPages, 1)}">
+                            <a class="page-link" th:href="@{/accidents(accidentsPage=${i})}" th:text="${i}"
+                               th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${accidentsPage.number + 1 eq accidentsPage.totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/accidents(page=${accidentsPage.number + 2})}"
+                               aria-label="Next" title="Next Page" data-toggle="tooltip">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
