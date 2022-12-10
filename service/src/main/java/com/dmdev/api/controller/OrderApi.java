@@ -52,7 +52,7 @@ public class OrderApi {
         Optional<OrderResponseDto> order = orderService.create(requestDto);
         if (order.isEmpty()) {
             redirectedAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Car is unavailable for these dates. Please choose other dates or car");
-            return "redirect:/cars";
+            return "redirect:/cars/" + requestDto.getCarId();
         }
 
         redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "You create order successfully.");
