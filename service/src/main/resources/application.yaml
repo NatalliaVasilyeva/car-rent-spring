@@ -39,7 +39,7 @@ server:
   port: 8030
 logging:
   level:
-    root: WARN
+    root: DEBUG
     org.springframework.boot.autoconfigure.security: INFO
     org.springframework.web: INFO
     org.springframework.security: INFO
@@ -57,3 +57,6 @@ app:
     client: /Users/natallia.vasilyeva/myProjects/car-rent/service/src/main/resources/static/report/client
   insurance:
     percent: 5
+application:
+  name: '@project.name@'
+  version: '@project.version@'

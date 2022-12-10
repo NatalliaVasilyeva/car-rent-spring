@@ -4,7 +4,6 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head th:replace="layout/common :: head_common(~{this :: script})">
-    <script th:src="@{/assets/intl-tel-input/js/intlTelInput-jquery.js}"></script>
 </head>
 <body>
 
@@ -187,9 +186,5 @@
     </div>
 </div>
 <!-- /Attachment Modal -->
-
-<script>
-    $("#sign-up-phone-input").intlTelInput();
-</script>
 </body>
 </html>

@@ -16,6 +16,11 @@ public interface CarRepository extends JpaRepository<Car, Long>, QuerydslPredica
 
     Optional<Car> findByCarNumber(String carNumber);
 
+    @Query(value = "SELECT c " +
+            "FROM car c " +
+            "WHERE c.id = :carId for UPDATE",  nativeQuery = true)
+    Optional<Car> findByIdWithLock(Long carId);
+
     List<Car> findByCarNumberContainingIgnoreCase(String carNumber);
 
     @EntityGraph(attributePaths = {"model"})

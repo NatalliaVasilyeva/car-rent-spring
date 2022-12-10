@@ -65,6 +65,8 @@ public class OrderService {
         checkIsCarExists(orderCreateRequestDto.getCarId());
         checkIsUserExists(orderCreateRequestDto.getUserId());
 
+        getCarByIdWithLockOrElseThrow(orderCreateRequestDto.getCarId());
+
         if (!ensureCarAvailable(orderCreateRequestDto.getCarId(), orderCreateRequestDto.getStartRentalDate(), orderCreateRequestDto.getEndRentalDate())) {
             return Optional.empty();
         }
@@ -196,6 +198,11 @@ public class OrderService {
 
     private Car getCarByIdOrElseThrow(Long carId) {
         return carRepository.findById(carId)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Car", "id", carId)));
+    }
+
+    private Car getCarByIdWithLockOrElseThrow(Long carId) {
+        return carRepository.findByIdWithLock(carId)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessageUtil.getNotFoundMessage("Car", "id", carId)));
     }
 
